@@ -15,6 +15,10 @@ export default function SignIn() {
       body: JSON.stringify(formData),
   });
   const data = await response.json();
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("role", data.role);
+  console.log(localStorage.getItem("role") );
+  console.log(localStorage.getItem("token") );
   console.log(data);
 }
   return (
