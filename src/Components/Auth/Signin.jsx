@@ -16,9 +16,11 @@ export default function SignIn() {
   });
   const data = await response.json();
   localStorage.setItem("token", data.token);
+  localStorage.setItem("user_id", data.id);
   localStorage.setItem("role", data.role);
   console.log(localStorage.getItem("role") );
   console.log(localStorage.getItem("token") );
+  console.log(localStorage.getItem("user_id") );
   console.log(data);
 }
   return (

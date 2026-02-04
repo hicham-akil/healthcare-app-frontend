@@ -6,7 +6,6 @@ import Navbar from "../Components/reusable/Navbar";
 export default function HomePage() {
   return (
     <>
-    <Navbar />
     <div className="min-h-screen bg-gray-50 p-6">
       <section className="max-w-6xl mx-auto mb-12 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
