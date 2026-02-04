@@ -1,11 +1,10 @@
 import React from "react";
-import AuthLayout from "./Components/Auth/AuthLayout";
-import Navbar from "./Components/reusable/Navbar";
-
+import AuthLayout from "./components/Auth/AuthLayout";
+import Navbar from "./components/reusable/Navbar";
+import HomePage from "./Pages/Home";
 function App() {
   return<>
-  <Navbar></Navbar>
-  <AuthLayout />;
+  <HomePage>  </HomePage>
   </> 
 }
 
