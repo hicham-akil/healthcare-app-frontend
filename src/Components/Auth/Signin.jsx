@@ -7,21 +7,30 @@ export default function SignIn() {
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const [message, setMessage] = useState("");
+  const [typemessage, settypeMessage] = useState("");
   const handleSubmit = async (e) => {
+    try{
+
     e.preventDefault();
     const response = await fetch("http://localhost:8080/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
-  });
-  const data = await response.json();
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user_id", data.id);
-  localStorage.setItem("role", data.role);
-  console.log(localStorage.getItem("role") );
-  console.log(localStorage.getItem("token") );
-  console.log(localStorage.getItem("user_id") );
-  console.log(data);
+    });
+    const data = await response.json();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user_id", data.id);
+    localStorage.setItem("role", data.role);
+    setMessage("Login successful!");
+    settypeMessage("success");
+    window.location.href = "/";
+    }
+    catch(error){
+      setMessage("Login failed. Please try again.");
+      settypeMessage("error");
+      return;
+    }
 }
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
@@ -59,6 +68,7 @@ export default function SignIn() {
       >
         Sign In
       </button>
+      {message && <p className={`text-center text-sm ${typemessage === "success" ? "text-green-500" : "text-red-500"}`}>{message}</p>}
     </form>
   );
 }

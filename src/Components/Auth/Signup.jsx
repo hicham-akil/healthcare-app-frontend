@@ -11,6 +11,7 @@ export default function SignUp() {
   });
 
   const [message, setMessage] = useState("");
+  const [typemessage, settypeMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -39,14 +40,17 @@ export default function SignUp() {
 
       const data = await response.json();
       setMessage(data.message || "Account created successfully!");
+      settypeMessage("success");
+      window.location.href = "/signin";
     } catch (error) {
+      settypeMessage("error");
       setMessage("Server error: " + error.message);
     }
   };
 
   return (
     <div className="max-w-md mx-auto p-6">
-      {/* Role selection */}
+      
       <h2 className="text-xl font-bold mb-4 text-center">Who are you?</h2>
       <div className="flex justify-center gap-6 mb-6">
         <div
@@ -56,14 +60,13 @@ export default function SignUp() {
           } hover:border-blue-600 transition text-center`}
         >
           <img
-            src="/images/doctor.png" // replace with your doctor image
+            src="/images/doctor.png"
             alt="Doctor"
             className="w-20 h-20 mx-auto mb-2"
           />
           <p className="font-medium">Doctor</p>
         </div>
 
-        {/* Patient */}
         <div
           onClick={() => handleRoleSelect("PATIENT")}
           className={`cursor-pointer p-4 rounded-lg border-2 ${
@@ -71,7 +74,7 @@ export default function SignUp() {
           } hover:border-blue-600 transition text-center`}
         >
           <img
-            src="/images/patient.png" // replace with your patient image
+            src="/images/patient.png" 
             alt="Patient"
             className="w-20 h-20 mx-auto mb-2"
           />
@@ -148,7 +151,8 @@ export default function SignUp() {
           Create Account
         </button>
 
-        {message && <p className="mt-2 text-center text-red-500">{message}</p>}
+              {message && <p className={`text-center text-sm ${typemessage === "success" ? "text-green-500" : "text-red-500"}`}>{message}</p>}
+
       </form>
     </div>
   );
