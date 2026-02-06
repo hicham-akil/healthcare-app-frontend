@@ -24,9 +24,10 @@ export default function SignIn() {
     localStorage.setItem("role", data.role);
     setMessage("Login successful!");
     settypeMessage("success");
-    window.location.href = "/";
-    }
-    catch(error){
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1500);
+    } catch(error){
       setMessage("Login failed. Please try again.");
       settypeMessage("error");
       return;
