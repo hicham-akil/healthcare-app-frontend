@@ -3,7 +3,8 @@ import AuthLayout from "./components/Auth/AuthLayout";
 import Navbar from "./components/reusable/Navbar";
 import HomePage from "./Pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Profile from "./components/Reusable/Profile";
+import Profile from "./components/Profile/Profile";
+import EditProfileForm from "./components/Profile/updateProfile";
 function App() {
   return(
     <Router>
@@ -11,6 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/edit-profile" element={<EditProfileForm/>} />
         <Route path="/auth" element={<AuthLayout/>} />
       </Routes>
     </Router>
