@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -9,7 +9,8 @@ export default function RegisterForm() {
     adresse: "",
     password: "",
     role: "",
-    dateNaissance: "", // For patients
+    dateNaissance: "",
+    specialites: [], 
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -17,6 +18,7 @@ export default function RegisterForm() {
   const [message, setMessage] = useState("");
   const [typemessage, setTypeMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [specdata, setSpecdata] = useState([]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,6 +28,25 @@ export default function RegisterForm() {
   const handleRoleSelect = (selectedRole) => {
     setFormData({ ...formData, role: selectedRole });
     setMessage("");
+  };
+
+  const handleSpecialityToggle = (specId) => {
+    const numericId = Number(specId);
+    const currentSpecialites = [...formData.specialites];
+    
+    if (currentSpecialites.includes(numericId)) {
+      // Remove if already selected
+      setFormData({ 
+        ...formData, 
+        specialites: currentSpecialites.filter(id => id !== numericId) 
+      });
+    } else {
+      // Add if not selected
+      setFormData({ 
+        ...formData, 
+        specialites: [...currentSpecialites, numericId] 
+      });
+    }
   };
 
   const handleImageChange = (e) => {
@@ -80,6 +101,13 @@ export default function RegisterForm() {
       return;
     }
 
+    // Add validation for specialities
+    if (formData.role === "MEDECIN" && formData.specialites.length === 0) {
+      setMessage("Please select at least one speciality");
+      setTypeMessage("error");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -115,6 +143,25 @@ export default function RegisterForm() {
       setLoading(false);
     }
   };
+
+  const fetchSpecialities = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/specialites", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      setSpecdata(data);
+    } catch (error) {
+      console.error("Error fetching specialities:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSpecialities();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -176,7 +223,6 @@ export default function RegisterForm() {
           </div>
         </div>
 
-        {/* Alert */}
         {message && (
           <div
             className={`mb-6 p-4 rounded-lg ${
@@ -189,9 +235,7 @@ export default function RegisterForm() {
           </div>
         )}
 
-        {/* Form */}
         <form className="space-y-5" onSubmit={handleSubmit}>
-          {/* Image */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Image</label>
             <input
@@ -212,36 +256,60 @@ export default function RegisterForm() {
             )}
           </div>
 
-          {/* Nom */}
           <input type="text" name="nom" placeholder="Nom *" value={formData.nom} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Prénom */}
           <input type="text" name="prenom" placeholder="Prénom *" value={formData.prenom} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Email */}
           <input type="email" name="email" placeholder="Email *" value={formData.email} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Telephone */}
           <input type="tel" name="telephone" placeholder="Téléphone *" value={formData.telephone} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Adresse */}
           <input type="text" name="adresse" placeholder="Adresse" value={formData.adresse} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Date de naissance (only for patient) */}
           {formData.role === "PATIENT" && (
             <input type="date" name="dateNaissance" placeholder="Date de naissance" value={formData.dateNaissance} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
           )}
 
-          {/* Password */}
+          {formData.role === "MEDECIN" && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Specialities *
+              </label>
+              <div className="border border-gray-300 rounded-lg p-4 max-h-60 overflow-y-auto">
+                {specdata.map((spec) => (
+                  <div key={spec.id} className="flex items-center mb-2">
+                    <input
+                      type="checkbox"
+                      id={`spec-${spec.id}`}
+                      checked={formData.specialites.includes(spec.id)}
+                      onChange={() => handleSpecialityToggle(spec.id)}
+                      disabled={loading}
+                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor={`spec-${spec.id}`}
+                      className="ml-2 text-sm text-gray-700 cursor-pointer"
+                    >
+                      {spec.nomspecialite}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              {formData.specialites.length > 0 && (
+                <p className="mt-2 text-sm text-green-600">
+                  {formData.specialites.length} specialit{formData.specialites.length > 1 ? 'ies' : 'y'} selected
+                </p>
+              )}
+            </div>
+          )}
+
           <input type="password" name="password" placeholder="Password *" value={formData.password} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
 
-          {/* Submit */}
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-white font-semibold hover:from-blue-700 hover:to-indigo-700">
+          <button type="submit" disabled={loading} className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-white font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50">
             {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
-        {/* Login link */}
         <p className="mt-6 text-center text-sm text-gray-600">
           Already have an account? <a href="/signin" className="font-semibold text-blue-600 hover:text-blue-700">Sign in</a>
         </p>
