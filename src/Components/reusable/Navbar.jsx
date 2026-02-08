@@ -28,6 +28,9 @@ export default function Navbar() {
             <a href="/profile" className="text-gray-700 hover:text-blue-600">
               profile
             </a>
+            <a href="/workinghours" className="text-gray-700 hover:text-blue-600">
+              Working Hours
+            </a>
           </div>
 
           <button
