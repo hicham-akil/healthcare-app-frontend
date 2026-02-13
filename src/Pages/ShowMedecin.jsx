@@ -49,7 +49,7 @@ setSpecialites(data);
       );
 
       if (!res.ok) throw new Error("Failed to load doctors");
-
+      
       setMedecins(await res.json());
     } catch (err) {
       alert(err.message);
