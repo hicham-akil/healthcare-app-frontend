@@ -25,6 +25,9 @@ export default function Navbar() {
             <a href="/auth" className="text-gray-700 hover:text-blue-600">
               Auth
             </a>
+            <a href="/ShowMed" className="text-gray-700 hover:text-blue-600">
+              Show Doctors
+            </a>
             <a href="/profile" className="text-gray-700 hover:text-blue-600">
               profile
             </a>

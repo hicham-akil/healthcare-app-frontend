@@ -19,6 +19,13 @@ export default function SignIn() {
       body: JSON.stringify(formData),
     });
     const data = await response.json();
+
+    if (!response.ok) {
+      setMessage("Login failed. Please try again.");
+      settypeMessage("error");
+      return;
+    }
+
     localStorage.setItem("token", data.token);
     localStorage.setItem("user_id", data.id);
     localStorage.setItem("role", data.role);
@@ -30,7 +37,6 @@ export default function SignIn() {
     } catch(error){
       setMessage("Login failed. Please try again.");
       settypeMessage("error");
-      return;
     }
 }
   return (
