@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { data } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 
 const ShowMedecin = () => {
   const [specialites, setSpecialites] = useState([]);
   const [selectedSpecialite, setSelectedSpecialite] = useState("");
   const [medecins, setMedecins] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -49,8 +49,9 @@ setSpecialites(data);
       );
 
       if (!res.ok) throw new Error("Failed to load doctors");
-      
-      setMedecins(await res.json());
+       const data = await res.json();
+      setMedecins(data);
+      console.log("Doctors data:", data);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -110,8 +111,7 @@ setSpecialites(data);
               <p className="text-sm text-gray-600">{m.email}</p>
               <p className="text-sm text-gray-600">{m.telephone}</p>
             </div>
-
-            <button className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            <button onClick={() => navigate(`/Takeapointement/${m.id}`)}className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
               Book Appointment
             </button>
           </div>

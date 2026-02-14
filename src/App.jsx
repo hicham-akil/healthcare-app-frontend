@@ -7,6 +7,7 @@ import Profile from "./components/Profile/Profile";
 import EditProfileForm from "./components/Profile/updateProfile";
 import WorkingHours from "./components/schedule/WorkingTime";
 import ShowMedecin from "./Pages/ShowMedecin";
+import Takeapointement from "./components/Apointement/Takeapointement";
 function App() {
   return(
     <Router>
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/ShowMed" element={<ShowMedecin />} />
+        <Route path="/Takeapointement/:id" element={<Takeapointement />} />
         <Route path="/workinghours" element={<WorkingHours />} />
         <Route path="/profile" element={<Profile/>} />
         <Route path="/edit-profile" element={<EditProfileForm/>} />
