@@ -2,7 +2,8 @@ import { useState } from "react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const role = localStorage.getItem("role");
+  
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4">
@@ -25,15 +26,20 @@ export default function Navbar() {
             <a href="/auth" className="text-gray-700 hover:text-blue-600">
               Auth
             </a>
+            {
+              role === "PATIENT" && (
             <a href="/ShowMed" className="text-gray-700 hover:text-blue-600">
               Show Doctors
             </a>
+              )}
             <a href="/profile" className="text-gray-700 hover:text-blue-600">
               profile
             </a>
+            {role === "MEDECIN" && (
             <a href="/workinghours" className="text-gray-700 hover:text-blue-600">
               Working Hours
             </a>
+            )}
           </div>
 
           <button
