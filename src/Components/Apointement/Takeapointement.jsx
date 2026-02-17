@@ -13,7 +13,7 @@ const Takeapointement = () => {
     const fetchSchedule = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/horaires/medecin/${id}/available-slots`,
+          `http://localhost:8080/api/horaires/medecin/${id}/available`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
