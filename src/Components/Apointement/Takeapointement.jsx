@@ -37,8 +37,9 @@ const TakeAppointment = () => {
   }, [id, token]);
 
   const handleSelectSlot = (horaire) => {
+    console.log("Selected slot:", horaire, "Patient ID:", parseInt(localStorage.getItem("user_id")), "Doctor ID:", parseInt(id));
     navigate(`/confirm-appointment/${horaire.idHoraire}`, {
-      state: { horaire },
+      state: { horaire , patientId: parseInt(localStorage.getItem("user_id")),doctorid: parseInt(id)}, 
     });
   };
 
