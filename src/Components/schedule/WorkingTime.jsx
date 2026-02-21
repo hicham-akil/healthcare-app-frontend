@@ -1,20 +1,28 @@
 import { useState, useEffect } from "react";
 
-const daysOfWeek = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+// Get the next occurrence of a weekday from today
+const getNextDateForDay = (dayName) => {
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const target = days.indexOf(dayName);
+  const today = new Date();
+  const current = today.getDay();
+  const diff = (target - current + 7) % 7;
+  const result = new Date(today);
+  result.setDate(today.getDate() + (diff === 0 ? 0 : diff));
+  return result.toISOString().split("T")[0]; // "YYYY-MM-DD"
+};
+
+const formatDisplayDate = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+};
 
 const WorkingHours = () => {
   const medecinId = Number(localStorage.getItem("user_id"));
-  const currentDate = new Date();
-  const fixedMonth = currentDate.getMonth() + 1; // 1-12
-  const fixedYear = currentDate.getFullYear();
+  const token = localStorage.getItem("token");
 
   const [schedule, setSchedule] = useState(
     daysOfWeek.map((day) => ({
@@ -24,19 +32,15 @@ const WorkingHours = () => {
       start: "09:00",
       end: "17:00",
       status: "INACTIVE",
-      month: fixedMonth,
-      year: fixedYear,
+      date: getNextDateForDay(day), // ✅ real date instead of month/year
     }))
   );
 
-  // Fetch schedule from backend
   const fetchSchedule = async () => {
-    const token = localStorage.getItem("token");
     try {
       const response = await fetch(
         `http://localhost:8080/api/horaires/medecin/${medecinId}`,
         {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -47,12 +51,12 @@ const WorkingHours = () => {
       if (!response.ok) throw new Error("Failed to fetch schedule");
 
       const data = await response.json();
-      console.log("Fetched schedule data:", data);
+      console.log("Fetched schedule:", data);
 
+      // ✅ Match by date's day of week instead of joursSemaine string
       const updatedSchedule = daysOfWeek.map((day) => {
-        const matching = data.find(
-          (d) => d && d.joursSemaine && d.joursSemaine.toLowerCase() === day.toLowerCase()
-        );
+        const targetDate = getNextDateForDay(day);
+        const matching = data.find((d) => d.date === targetDate);
 
         return {
           day,
@@ -61,8 +65,7 @@ const WorkingHours = () => {
           start: matching ? matching.heureDebut : "09:00",
           end: matching ? matching.heureFin : "17:00",
           status: matching ? matching.status : "INACTIVE",
-          month: fixedMonth,
-          year: fixedYear,
+          date: targetDate, // ✅ always use the computed date
         };
       });
 
@@ -76,12 +79,10 @@ const WorkingHours = () => {
     fetchSchedule();
   }, []);
 
-  // Handle checkbox or time changes
   const handleChange = (index, field, value) => {
     const updated = [...schedule];
     updated[index][field] = value;
 
-    // Automatically update status based on checkbox
     if (field === "enabled") {
       updated[index].status = value ? "ACTIVE" : "INACTIVE";
     }
@@ -89,18 +90,15 @@ const WorkingHours = () => {
     setSchedule(updated);
   };
 
-  // Submit schedule to backend
   const handleSubmit = async () => {
-    const token = localStorage.getItem("token");
+    // ✅ Only send enabled days, with real date field
     const payload = schedule.map((d) => ({
       idHoraire: d.idHoraire,
-      joursSemaine: d.day.toUpperCase(),
-      heureDebut: d.start,
-      heureFin: d.end,
+      date: d.date,           // ✅ "YYYY-MM-DD"
+      heureDebut: d.start,    // "HH:mm"
+      heureFin: d.end,        // "HH:mm"
       status: d.status,
       medecinId: medecinId,
-      month: d.month,
-      year: d.year,
     }));
 
     try {
@@ -116,7 +114,7 @@ const WorkingHours = () => {
       if (!response.ok) throw new Error("Failed to save schedule");
 
       alert("Working hours saved successfully!");
-      fetchSchedule(); // Refresh schedule after save
+      fetchSchedule();
     } catch (error) {
       alert("Server error: " + error.message);
     }
@@ -125,6 +123,9 @@ const WorkingHours = () => {
   return (
     <div className="max-w-lg mx-auto bg-white p-6 rounded-xl shadow-md">
       <h2 className="text-xl font-semibold mb-6">Working Hours</h2>
+      <p className="text-sm text-gray-500 mb-4">
+        Showing schedule for the current week starting {formatDisplayDate(getNextDateForDay("Monday"))}
+      </p>
 
       <div className="space-y-4">
         {schedule.map((item, index) => (
@@ -132,9 +133,7 @@ const WorkingHours = () => {
             <input
               type="checkbox"
               checked={item.enabled}
-              onChange={(e) =>
-                handleChange(index, "enabled", e.target.checked)
-              }
+              onChange={(e) => handleChange(index, "enabled", e.target.checked)}
             />
 
             <span className="w-24 font-medium">{item.day}</span>
@@ -157,9 +156,9 @@ const WorkingHours = () => {
               onChange={(e) => handleChange(index, "end", e.target.value)}
             />
 
-            {/* Display month and year (not editable) */}
-            <span className="ml-4 text-gray-600">
-              {item.month}/{item.year}
+            {/* ✅ Show real date instead of month/year */}
+            <span className="text-xs text-gray-400 ml-2">
+              {formatDisplayDate(item.date)}
             </span>
           </div>
         ))}
