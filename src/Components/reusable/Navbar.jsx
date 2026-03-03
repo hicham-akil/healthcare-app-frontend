@@ -26,6 +26,9 @@ export default function Navbar() {
             <a href="/auth" className="text-gray-700 hover:text-blue-600">
               Auth
             </a>
+            <a href="/myapoin" className="text-gray-700 hover:text-blue-600">
+              My Appointments
+            </a>
             {
               role === "PATIENT" && (
             <a href="/ShowMed" className="text-gray-700 hover:text-blue-600">

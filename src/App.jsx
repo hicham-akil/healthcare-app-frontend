@@ -9,6 +9,7 @@ import WorkingHours from "./components/schedule/WorkingTime";
 import ShowMedecin from "./Pages/ShowMedecin";
 import Takeapointement from "./components/Apointement/Takeapointement";
 import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
+import MyRendezVous from "./components/Apointement/MyRendezVous";
 function App() {
   return(
     <Router>
@@ -21,6 +22,7 @@ function App() {
           path="/confirm-appointment/:idHoraire"
           element={<ConfirmAppointment />}
         />
+        <Route path="/myapoin" element={<MyRendezVous/>} />
 
         <Route path="/workinghours" element={<WorkingHours />} />
         <Route path="/profile" element={<Profile/>} />
