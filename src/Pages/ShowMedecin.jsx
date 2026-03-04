@@ -111,9 +111,16 @@ setSpecialites(data);
               <p className="text-sm text-gray-600">{m.email}</p>
               <p className="text-sm text-gray-600">{m.telephone}</p>
             </div>
-            <button onClick={() => navigate(`/Takeapointement/${m.id}`)}className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-              Book Appointment
-            </button>
+            <button
+  onClick={() =>
+    navigate(`/Takeapointement/${m.id}`, {
+      state: { specialite: selectedSpecialite },
+    })
+  }
+  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+>
+  Book Appointment
+</button>
           </div>
         ))}
       </div>

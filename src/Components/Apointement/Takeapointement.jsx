@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {useLocation, useParams, useNavigate } from "react-router-dom";
 
 const TakeAppointment = () => {
-  const { id } = useParams();
+    const { id } = useParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  const { specialite } = state || {}; // ✅ Get the selected speciality
+
+  console.log("Selected specialite:", specialite);
 
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,6 +48,7 @@ const TakeAppointment = () => {
         horaire,
         patientId: parseInt(localStorage.getItem("user_id")),
         doctorid: parseInt(id),
+        specialite,
       },
     });
   };

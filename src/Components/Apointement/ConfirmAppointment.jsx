@@ -8,7 +8,7 @@ const ConfirmAppointment = () => {
   const token = localStorage.getItem("token");
 
   // ✅ Read all state correctly
-  const { horaire, patientId, doctorid } = state || {};
+  const { horaire, patientId, doctorid,specialite } = state || {};
 
   const [startTime, setStartTime] = useState("");
   const [duration, setDuration] = useState(""); // 60 or 120
@@ -69,6 +69,7 @@ const ConfirmAppointment = () => {
           patientId: patientId,
           medecinId: doctorid,
           heureDebut: startTime,
+          specialiteId: specialite, 
           heureFin: endTime,
            date: horaire.date ?? new Date().toISOString().split("T")[0],
         }),

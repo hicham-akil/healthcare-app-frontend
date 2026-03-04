@@ -52,20 +52,16 @@ const MyRendezVous = () => {
               <th>Statut</th>
             </tr>
           </thead>
-        <tbody>
+            <tbody>
   {rendezVous.map((rdv) => (
     <tr key={rdv.id}>
-      <td>
-        {new Date(rdv.dateHeureDebut).toLocaleDateString()}
-      </td>
-
+      <td>{new Date(rdv.dateHeureDebut).toLocaleDateString()}</td>
       <td>
         {new Date(rdv.dateHeureDebut).toLocaleTimeString()} -{" "}
         {new Date(rdv.dateHeureFin).toLocaleTimeString()}
       </td>
-
-      <td>{rdv.medecin}</td> 
-      <td>—</td> 
+      <td>{rdv.medecinNom}</td> 
+      <td>{rdv.specialite}</td> 
       <td>{rdv.status}</td>
     </tr>
   ))}
