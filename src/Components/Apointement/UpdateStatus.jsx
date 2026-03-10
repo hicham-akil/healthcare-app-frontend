@@ -43,22 +43,38 @@ const STATUS_OPTIONS = [
   },
 ];
 
-const UpdateStatusModal = ({ rdv, onClose, onSuccess }) => {
-  const [selected, setSelected] = useState(rdv?.status?.toUpperCase() || "PENDING");
+const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState(currentStatus?.toUpperCase() || "PENDING");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  if (!rdv) return null;
+  const role = localStorage.getItem("role");
+  const isMedecin = role === "MEDECIN";
+
+  // Only doctors can update status
+  if (!isMedecin) return null;
+
+  const handleOpen = () => {
+    setSelected(currentStatus?.toUpperCase() || "PENDING");
+    setError(null);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setError(null);
+  };
 
   const handleSubmit = async () => {
-    if (selected === rdv.status?.toUpperCase()) {
-      onClose();
+    if (selected === currentStatus?.toUpperCase()) {
+      handleClose();
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/rendezvous/${rdv.id}/status`, {
+      const res = await fetch(`http://localhost:8080/api/rendezvous/${rendezVousId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -67,8 +83,8 @@ const UpdateStatusModal = ({ rdv, onClose, onSuccess }) => {
         body: JSON.stringify({ status: selected }),
       });
       if (!res.ok) throw new Error("Erreur lors de la mise à jour");
-      onSuccess && onSuccess(rdv.id, selected);
-      onClose();
+      onUpdate && onUpdate(selected);
+      handleClose();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -76,19 +92,28 @@ const UpdateStatusModal = ({ rdv, onClose, onSuccess }) => {
     }
   };
 
-  const patientName = rdv.patientnom || rdv.patientNom || "—";
-  const dateStr = new Date(rdv.dateHeureDebut).toLocaleDateString("fr-FR", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  const timeStr = `${new Date(rdv.dateHeureDebut).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} – ${new Date(rdv.dateHeureFin).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`;
+  const currentSt = STATUS_OPTIONS.find(o => o.value === currentStatus?.toUpperCase());
 
   return (
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600&display=swap');
+
+        .usm-trigger-btn {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 6px 14px; border-radius: 8px;
+          border: 1.5px solid #d1fae5;
+          background: #f0fdf4; color: #065f46;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 12px; font-weight: 500;
+          cursor: pointer; transition: all 0.15s;
+          white-space: nowrap;
+        }
+        .usm-trigger-btn:hover {
+          background: #dcfce7; border-color: #86efac;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 8px rgba(16,185,129,0.15);
+        }
 
         .usm-backdrop {
           position: fixed; inset: 0; z-index: 1000;
@@ -105,225 +130,185 @@ const UpdateStatusModal = ({ rdv, onClose, onSuccess }) => {
           background: #ffffff;
           border-radius: 24px;
           box-shadow: 0 24px 80px rgba(6, 78, 59, 0.18), 0 4px 16px rgba(0,0,0,0.06);
-          width: 100%; max-width: 480px;
+          width: 100%; max-width: 460px;
           overflow: hidden;
           animation: usm-slide-up 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         @keyframes usm-slide-up {
           from { opacity: 0; transform: translateY(24px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)    scale(1);    }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .usm-header {
           background: linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%);
-          padding: 28px 32px 24px;
-          position: relative;
+          padding: 24px 28px 20px;
         }
-        .usm-header-top { display: flex; align-items: flex-start; justify-content: space-between; }
+        .usm-header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
         .usm-icon-wrap {
-          width: 46px; height: 46px;
+          width: 42px; height: 42px;
           background: rgba(255,255,255,0.15);
-          border-radius: 14px;
+          border-radius: 12px;
           display: flex; align-items: center; justify-content: center;
-          font-size: 22px; backdrop-filter: blur(4px);
+          font-size: 20px;
         }
         .usm-close-btn {
-          width: 32px; height: 32px;
+          width: 30px; height: 30px;
           background: rgba(255,255,255,0.12);
           border: none; border-radius: 8px; cursor: pointer;
-          color: rgba(255,255,255,0.7); font-size: 16px;
+          color: rgba(255,255,255,0.7); font-size: 14px;
           display: flex; align-items: center; justify-content: center;
-          transition: background 0.15s, color 0.15s;
+          transition: background 0.15s;
         }
         .usm-close-btn:hover { background: rgba(255,255,255,0.25); color: #fff; }
-
         .usm-title {
           font-family: 'Playfair Display', serif;
-          font-size: 20px; color: #ffffff;
-          margin: 12px 0 4px; letter-spacing: -0.2px;
+          font-size: 18px; color: #fff; margin-bottom: 4px;
         }
-        .usm-patient-row { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
-        .usm-patient-avatar {
-          width: 30px; height: 30px; border-radius: 50%;
-          background: rgba(255,255,255,0.2);
-          display: flex; align-items: center; justify-content: center;
-          font-size: 12px; font-weight: 600; color: #fff;
+        .usm-current {
+          display: inline-flex; align-items: center; gap: 6px;
+          background: rgba(255,255,255,0.12);
+          border-radius: 20px; padding: 4px 12px;
+          font-size: 12px; color: rgba(255,255,255,0.85);
         }
-        .usm-patient-info { display: flex; flex-direction: column; gap: 1px; }
-        .usm-patient-name { color: #ffffff; font-size: 13.5px; font-weight: 500; }
-        .usm-patient-time { color: rgba(255,255,255,0.6); font-size: 12px; font-weight: 300; }
+        .usm-current-dot { width: 6px; height: 6px; border-radius: 50%; }
 
-        .usm-body { padding: 28px 32px 32px; }
-
+        .usm-body { padding: 24px 28px 28px; }
         .usm-section-label {
           font-size: 11px; font-weight: 600;
           text-transform: uppercase; letter-spacing: 1px;
-          color: #6b7280; margin-bottom: 14px;
+          color: #6b7280; margin-bottom: 12px;
         }
-
-        .usm-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .usm-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
 
         .usm-option {
-          display: flex; align-items: center; gap: 14px;
-          padding: 14px 16px; border-radius: 14px;
+          display: flex; align-items: center; gap: 12px;
+          padding: 12px 14px; border-radius: 12px;
           border: 1.5px solid #e5e7eb;
-          cursor: pointer; transition: all 0.18s ease;
+          cursor: pointer; transition: all 0.15s;
           background: #fafafa;
-          position: relative; overflow: hidden;
         }
         .usm-option:hover { border-color: #a7f3d0; background: #f0fdf4; transform: translateX(2px); }
         .usm-option.selected { border-width: 2px; transform: translateX(2px); }
 
         .usm-option-icon {
-          width: 36px; height: 36px; border-radius: 10px;
+          width: 32px; height: 32px; border-radius: 8px;
           display: flex; align-items: center; justify-content: center;
-          font-size: 14px; font-weight: 700; flex-shrink: 0;
+          font-size: 13px; font-weight: 700; flex-shrink: 0;
         }
         .usm-option-text { flex: 1; }
-        .usm-option-label { font-size: 14px; font-weight: 500; color: #1a2e1a; line-height: 1.2; }
-        .usm-option-desc { font-size: 12px; color: #6b7280; margin-top: 2px; }
+        .usm-option-label { font-size: 13px; font-weight: 500; color: #1a2e1a; }
+        .usm-option-desc { font-size: 11px; color: #6b7280; margin-top: 1px; }
 
         .usm-radio {
-          width: 18px; height: 18px; border-radius: 50%;
+          width: 16px; height: 16px; border-radius: 50%;
           border: 2px solid #d1d5db;
           display: flex; align-items: center; justify-content: center;
           flex-shrink: 0; transition: all 0.15s;
         }
-        .usm-radio-inner {
-          width: 8px; height: 8px; border-radius: 50%;
-          background: transparent; transition: all 0.15s;
-        }
-        .usm-option.selected .usm-radio { border-color: currentColor; }
-        .usm-option.selected .usm-radio-inner { background: currentColor; }
+        .usm-radio-inner { width: 7px; height: 7px; border-radius: 50%; transition: all 0.15s; }
 
         .usm-error {
-          display: flex; align-items: center; gap: 10px;
+          display: flex; align-items: center; gap: 8px;
           background: #fee2e2; border: 1px solid #fca5a5;
-          border-radius: 10px; padding: 12px 16px;
-          color: #991b1b; font-size: 13px; margin-bottom: 20px;
+          border-radius: 10px; padding: 10px 14px;
+          color: #991b1b; font-size: 13px; margin-bottom: 16px;
         }
 
-        .usm-actions { display: flex; gap: 12px; }
-
+        .usm-actions { display: flex; gap: 10px; }
         .usm-btn-cancel {
-          flex: 1; padding: 13px; border-radius: 12px;
-          border: 1.5px solid #e5e7eb; background: #ffffff;
-          font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+          flex: 1; padding: 11px; border-radius: 10px;
+          border: 1.5px solid #e5e7eb; background: #fff;
+          font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
           color: #374151; cursor: pointer; transition: all 0.15s;
         }
-        .usm-btn-cancel:hover { background: #f9fafb; border-color: #d1d5db; }
-
+        .usm-btn-cancel:hover { background: #f9fafb; }
         .usm-btn-confirm {
-          flex: 2; padding: 13px; border-radius: 12px;
+          flex: 2; padding: 11px; border-radius: 10px;
           border: none;
           background: linear-gradient(135deg, #065f46, #047857);
-          font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
-          color: #ffffff; cursor: pointer; transition: all 0.18s;
-          display: flex; align-items: center; justify-content: center; gap: 8px;
-          box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+          font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+          color: #fff; cursor: pointer; transition: all 0.18s;
+          display: flex; align-items: center; justify-content: center; gap: 7px;
+          box-shadow: 0 4px 14px rgba(16,185,129,0.25);
         }
-        .usm-btn-confirm:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
+        .usm-btn-confirm:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
         .usm-btn-confirm:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
         .usm-spinner {
-          width: 16px; height: 16px;
+          width: 14px; height: 14px;
           border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: #fff;
-          border-radius: 50%;
+          border-top-color: #fff; border-radius: 50%;
           animation: usm-spin 0.7s linear infinite;
         }
         @keyframes usm-spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div className="usm-backdrop" onClick={(e) => e.target === e.currentTarget && onClose()}>
-        <div className="usm-modal">
-          {/* Header */}
-          <div className="usm-header">
-            <div className="usm-header-top">
-              <div className="usm-icon-wrap">📋</div>
-              <button className="usm-close-btn" onClick={onClose}>✕</button>
-            </div>
-            <h2 className="usm-title">Modifier le statut</h2>
-            <div className="usm-patient-row">
-              <div className="usm-patient-avatar">
-                {patientName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
-              </div>
-              <div className="usm-patient-info">
-                <span className="usm-patient-name">{patientName}</span>
-                <span className="usm-patient-time">{dateStr} · {timeStr}</span>
-              </div>
-            </div>
-          </div>
+      {/* Trigger Button */}
+      <button className="usm-trigger-btn" onClick={handleOpen}>
+        ✏️ Modifier
+      </button>
 
-          {/* Body */}
-          <div className="usm-body">
-            <p className="usm-section-label">Choisir le nouveau statut</p>
+      {/* Modal */}
+      {open && (
+        <div className="usm-backdrop" onClick={(e) => e.target === e.currentTarget && handleClose()}>
+          <div className="usm-modal">
+            <div className="usm-header">
+              <div className="usm-header-top">
+                <div className="usm-icon-wrap">📋</div>
+                <button className="usm-close-btn" onClick={handleClose}>✕</button>
+              </div>
+              <h2 className="usm-title">Modifier le statut</h2>
+              {currentSt && (
+                <div className="usm-current">
+                  <span className="usm-current-dot" style={{ background: currentSt.dot }} />
+                  Actuel : {currentSt.label}
+                </div>
+              )}
+            </div>
 
-            <div className="usm-options">
-              {STATUS_OPTIONS.map((opt) => {
-                const isSelected = selected === opt.value;
-                return (
-                  <div
-                    key={opt.value}
-                    className={`usm-option${isSelected ? " selected" : ""}`}
-                    style={isSelected ? {
-                      borderColor: opt.border,
-                      background: opt.bg,
-                      color: opt.color,
-                    } : {}}
-                    onClick={() => setSelected(opt.value)}
-                  >
+            <div className="usm-body">
+              <p className="usm-section-label">Choisir le nouveau statut</p>
+
+              <div className="usm-options">
+                {STATUS_OPTIONS.map((opt) => {
+                  const isSelected = selected === opt.value;
+                  return (
                     <div
-                      className="usm-option-icon"
-                      style={{ background: isSelected ? opt.bg : "#f3f4f6", color: opt.color }}
+                      key={opt.value}
+                      className={`usm-option${isSelected ? " selected" : ""}`}
+                      style={isSelected ? { borderColor: opt.border, background: opt.bg } : {}}
+                      onClick={() => setSelected(opt.value)}
                     >
-                      {opt.icon}
+                      <div className="usm-option-icon" style={{ background: isSelected ? opt.bg : "#f3f4f6", color: opt.color }}>
+                        {opt.icon}
+                      </div>
+                      <div className="usm-option-text">
+                        <div className="usm-option-label">{opt.label}</div>
+                        <div className="usm-option-desc">{opt.desc}</div>
+                      </div>
+                      <div className="usm-radio" style={isSelected ? { borderColor: opt.dot } : {}}>
+                        <div className="usm-radio-inner" style={isSelected ? { background: opt.dot } : {}} />
+                      </div>
                     </div>
-                    <div className="usm-option-text">
-                      <div className="usm-option-label">{opt.label}</div>
-                      <div className="usm-option-desc">{opt.desc}</div>
-                    </div>
-                    <div
-                      className="usm-radio"
-                      style={isSelected ? { borderColor: opt.dot, color: opt.dot } : {}}
-                    >
-                      <div
-                        className="usm-radio-inner"
-                        style={isSelected ? { background: opt.dot } : {}}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {error && (
-              <div className="usm-error">
-                <span>⚠️</span>
-                <span>{error}</span>
+                  );
+                })}
               </div>
-            )}
 
-            <div className="usm-actions">
-              <button className="usm-btn-cancel" onClick={onClose}>Annuler</button>
-              <button
-                className="usm-btn-confirm"
-                onClick={handleSubmit}
-                disabled={loading}
-              >
-                {loading ? (
-                  <><div className="usm-spinner" /> Mise à jour…</>
-                ) : (
-                  <>✓ Confirmer le statut</>
-                )}
-              </button>
+              {error && (
+                <div className="usm-error">
+                  <span>⚠️</span><span>{error}</span>
+                </div>
+              )}
+
+              <div className="usm-actions">
+                <button className="usm-btn-cancel" onClick={handleClose}>Annuler</button>
+                <button className="usm-btn-confirm" onClick={handleSubmit} disabled={loading}>
+                  {loading ? <><div className="usm-spinner" /> Mise à jour…</> : <>✓ Confirmer</>}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
