@@ -32,6 +32,7 @@ const ShowMedecin = () => {
   }, []);
 
   const fetchMedecins = async (specialiteId) => {
+    console.log("Fetching doctors for speciality ID:", specialiteId);
     setLoading(true);
     try {
       const res = await fetch(
@@ -41,6 +42,7 @@ const ShowMedecin = () => {
       if (!res.ok) throw new Error("Failed to load doctors");
       const data = await res.json();
       setMedecins(data);
+      
     } catch (err) {
       alert(err.message);
     } finally {
@@ -532,7 +534,7 @@ const ShowMedecin = () => {
                     className="sm-book-btn"
                     onClick={() =>
                       navigate(`/Takeapointement/${m.id}`, {
-                        state: { specialite: selectedSpecialiteLabel },
+                        state: { specialiteId: selectedSpecialite, specialite: selectedSpecialiteLabel },
                       })
                     }
                   >

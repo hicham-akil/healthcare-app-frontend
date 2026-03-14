@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { Calendar, Clock, ArrowRight, Stethoscope, AlertCircle } from "lucide-react";
+import { Calendar, Users, ArrowRight, Stethoscope, AlertCircle } from "lucide-react";
 
 const TakeAppointment = () => {
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
-  const { specialite } = state || {};
-
+  const { specialiteId,specialite } = state || {};
+ console.log(specialiteId);
   const [schedule, setSchedule] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,19 +39,17 @@ const TakeAppointment = () => {
         patientId: parseInt(localStorage.getItem("user_id")),
         doctorid: parseInt(id),
         specialite,
+        specialiteId: parseInt(specialiteId),
       },
     });
   };
 
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      weekday: "long", month: "short", day: "numeric", year: "numeric",
-    });
-  };
-  const formatDay   = (dateStr) => !dateStr ? "" : new Date(dateStr).toLocaleDateString("en-US", { weekday: "short" });
-  const formatDayNum= (dateStr) => !dateStr ? "" : new Date(dateStr).toLocaleDateString("en-US", { day: "numeric" });
-  const formatMonth = (dateStr) => !dateStr ? "" : new Date(dateStr).toLocaleDateString("en-US", { month: "short" });
+  const formatDay    = (d) => !d ? "" : new Date(d).toLocaleDateString("en-US", { weekday: "short" });
+  const formatDayNum = (d) => !d ? "" : new Date(d).toLocaleDateString("en-US", { day: "numeric" });
+  const formatMonth  = (d) => !d ? "" : new Date(d).toLocaleDateString("en-US", { month: "short" });
+  const formatDate   = (d) => !d ? "" : new Date(d).toLocaleDateString("en-US", {
+    weekday: "long", month: "short", day: "numeric", year: "numeric",
+  });
 
   return (
     <>
@@ -74,11 +71,11 @@ const TakeAppointment = () => {
         .ta-card-top { background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
         .ta-card-top::after { content: ''; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none; }
         .ta-card-top-left { display: flex; align-items: center; gap: 12px; }
-        .ta-card-icon-wrap { width: 38px; height: 38px; border-radius: 11px; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .ta-card-icon-wrap { width: 38px; height: 38px; border-radius: 11px; background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; }
         .ta-card-top-title { font-size: 15px; font-weight: 600; color: #ffffff; margin: 0 0 2px; }
         .ta-card-top-desc { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 300; margin: 0; }
 
-        .ta-count-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #a7f3d0; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; padding: 5px 13px; border-radius: 20px; backdrop-filter: blur(4px); }
+        .ta-count-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: #a7f3d0; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; padding: 5px 13px; border-radius: 20px; }
         .ta-count-dot { width: 6px; height: 6px; background: #34d399; border-radius: 50%; animation: ta-pulse 2s infinite; }
         @keyframes ta-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.4); } }
 
@@ -93,9 +90,10 @@ const TakeAppointment = () => {
         .ta-date-month { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #6b7280; margin-top: 1px; }
 
         .ta-slot-info { flex: 1; min-width: 0; }
-        .ta-slot-date-full { font-size: 14px; font-weight: 600; color: #064e3b; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ta-slot-time { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b7280; font-weight: 400; }
-        .ta-partial-badge { display: inline-block; margin-top: 5px; font-size: 11px; font-weight: 600; letter-spacing: 0.4px; text-transform: uppercase; background: #fff7ed; color: #c2410c; border: 1px solid #fed7aa; padding: 2px 9px; border-radius: 20px; }
+        .ta-slot-date-full { font-size: 14px; font-weight: 600; color: #064e3b; margin-bottom: 4px; }
+
+        /* Queue info badge */
+        .ta-queue-info { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b7280; font-weight: 400; }
 
         .ta-book-btn { display: inline-flex; align-items: center; gap: 7px; background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); color: #ffffff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 12px; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(6,79,58,0.25); transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap; flex-shrink: 0; }
         .ta-book-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6,79,58,0.32); }
@@ -126,9 +124,7 @@ const TakeAppointment = () => {
       {error && (
         <div className="ta-state">
           <div className="ta-state-box">
-            <div className="ta-error-icon">
-              <AlertCircle size={20} color="#dc2626" />
-            </div>
+            <div className="ta-error-icon"><AlertCircle size={20} color="#dc2626" /></div>
             <p className="ta-error-text">{error}</p>
           </div>
         </div>
@@ -137,12 +133,11 @@ const TakeAppointment = () => {
       {!loading && !error && (
         <div className="ta-root">
           <div className="ta-container">
-
             <p className="ta-page-label">Book a Visit</p>
-            <h1 className="ta-page-title">Available Slots</h1>
+            <h1 className="ta-page-title">Available Days</h1>
             <p className="ta-page-sub">
               <Calendar size={14} color="#10b981" />
-              Choose a time that works for you
+              Pick a day — you'll be added to the queue automatically
             </p>
 
             {specialite && (
@@ -160,12 +155,12 @@ const TakeAppointment = () => {
                   </div>
                   <div>
                     <p className="ta-card-top-title">Doctor's Schedule</p>
-                    <p className="ta-card-top-desc">Select a slot to confirm your appointment</p>
+                    <p className="ta-card-top-desc">Select a day to join the queue</p>
                   </div>
                 </div>
                 <div className="ta-count-badge">
                   <span className="ta-count-dot" />
-                  {schedule.length} slot{schedule.length !== 1 ? "s" : ""} available
+                  {schedule.length} day{schedule.length !== 1 ? "s" : ""} available
                 </div>
               </div>
 
@@ -174,7 +169,7 @@ const TakeAppointment = () => {
                   <div className="ta-empty-icon">
                     <Calendar size={24} color="#10b981" strokeWidth={1.8} />
                   </div>
-                  <p>No available slots at the moment</p>
+                  <p>No available days at the moment</p>
                 </div>
               ) : (
                 <div className="ta-slots">
@@ -187,16 +182,13 @@ const TakeAppointment = () => {
                       </div>
                       <div className="ta-slot-info">
                         <p className="ta-slot-date-full">{formatDate(horaire.date)}</p>
-                        <div className="ta-slot-time">
-                          <Clock size={12} color="#10b981" />
-                          {horaire.heureDebut} → {horaire.heureFin}
+                        <div className="ta-queue-info">
+                          <Users size={12} color="#10b981" />
+                          Join the queue for this day
                         </div>
-                        {horaire.partiallyBooked && (
-                          <span className="ta-partial-badge">Partially booked</span>
-                        )}
                       </div>
                       <button className="ta-book-btn" onClick={() => handleSelectSlot(horaire)}>
-                        Book
+                        Join Queue
                         <ArrowRight size={14} />
                       </button>
                     </div>
@@ -204,7 +196,6 @@ const TakeAppointment = () => {
                 </div>
               )}
             </div>
-
           </div>
         </div>
       )}
