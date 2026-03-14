@@ -2,24 +2,24 @@ import React, { useState } from "react";
 
 const STATUS_OPTIONS = [
   {
-    value: "CONFIRMED",
-    label: "Confirmé",
-    icon: "✓",
-    color: "#065f46",
-    bg: "#d1fae5",
-    border: "#6ee7b7",
-    dot: "#10b981",
-    desc: "Le rendez-vous est confirmé",
-  },
-  {
-    value: "PENDING",
+    value: "EN_ATTENTE",
     label: "En attente",
     icon: "⏳",
     color: "#92400e",
     bg: "#fef3c7",
     border: "#fcd34d",
     dot: "#f59e0b",
-    desc: "En attente de confirmation",
+    desc: "Patient en attente dans la file",
+  },
+  {
+    value: "EN_COURS",
+    label: "En cours",
+    icon: "🟢",
+    color: "#065f46",
+    bg: "#d1fae5",
+    border: "#6ee7b7",
+    dot: "#10b981",
+    desc: "Patient en consultation",
   },
   {
     value: "COMPLETED",
@@ -32,7 +32,7 @@ const STATUS_OPTIONS = [
     desc: "La consultation est terminée",
   },
   {
-    value: "CANCELLED",
+    value: "ANNULE",
     label: "Annulé",
     icon: "✕",
     color: "#991b1b",
@@ -44,19 +44,18 @@ const STATUS_OPTIONS = [
 ];
 
 const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
-  const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(currentStatus?.toUpperCase() || "PENDING");
+  const [open, setOpen]       = useState(false);
+  const [selected, setSelected] = useState(currentStatus?.toUpperCase() || "EN_ATTENTE");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError]     = useState(null);
 
-  const role = localStorage.getItem("role");
+  const role      = localStorage.getItem("role");
   const isMedecin = role === "MEDECIN";
 
-  // Only doctors can update status
   if (!isMedecin) return null;
 
   const handleOpen = () => {
-    setSelected(currentStatus?.toUpperCase() || "PENDING");
+    setSelected(currentStatus?.toUpperCase() || "EN_ATTENTE");
     setError(null);
     setOpen(true);
   };
@@ -278,7 +277,8 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
                       style={isSelected ? { borderColor: opt.border, background: opt.bg } : {}}
                       onClick={() => setSelected(opt.value)}
                     >
-                      <div className="usm-option-icon" style={{ background: isSelected ? opt.bg : "#f3f4f6", color: opt.color }}>
+                      <div className="usm-option-icon"
+                        style={{ background: isSelected ? opt.bg : "#f3f4f6", color: opt.color }}>
                         {opt.icon}
                       </div>
                       <div className="usm-option-text">
@@ -286,7 +286,8 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
                         <div className="usm-option-desc">{opt.desc}</div>
                       </div>
                       <div className="usm-radio" style={isSelected ? { borderColor: opt.dot } : {}}>
-                        <div className="usm-radio-inner" style={isSelected ? { background: opt.dot } : {}} />
+                        <div className="usm-radio-inner"
+                          style={isSelected ? { background: opt.dot } : {}} />
                       </div>
                     </div>
                   );
@@ -302,7 +303,9 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
               <div className="usm-actions">
                 <button className="usm-btn-cancel" onClick={handleClose}>Annuler</button>
                 <button className="usm-btn-confirm" onClick={handleSubmit} disabled={loading}>
-                  {loading ? <><div className="usm-spinner" /> Mise à jour…</> : <>✓ Confirmer</>}
+                  {loading
+                    ? <><div className="usm-spinner" /> Mise à jour…</>
+                    : <>✓ Confirmer</>}
                 </button>
               </div>
             </div>

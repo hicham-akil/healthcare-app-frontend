@@ -14,12 +14,12 @@ const getStatus = (status) =>
   };
 
 const MyRendezVous = () => {
-  const [rendezVous, setRendezVous]     = useState([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState(null);
-  const [nextLoading, setNextLoading]   = useState(false);
-  const [nextError, setNextError]       = useState(null);
-  const [currentPatient, setCurrentPatient] = useState(null); // EN_COURS patient
+  const [rendezVous, setRendezVous]         = useState([]);
+  const [loading, setLoading]               = useState(true);
+  const [error, setError]                   = useState(null);
+  const [nextLoading, setNextLoading]       = useState(false);
+  const [nextError, setNextError]           = useState(null);
+  const [currentPatient, setCurrentPatient] = useState(null);
 
   const role      = localStorage.getItem("role");
   const isMedecin = role === "MEDECIN";
@@ -37,7 +37,6 @@ const MyRendezVous = () => {
       .then((res) => { if (!res.ok) throw new Error("Erreur lors du chargement"); return res.json(); })
       .then((data) => {
         setRendezVous(data);
-        // find currently EN_COURS patient for medecin
         if (isMedecin) {
           setCurrentPatient(data.find(r => r.status?.toUpperCase() === "EN_COURS") || null);
         }
@@ -48,7 +47,6 @@ const MyRendezVous = () => {
 
   useEffect(() => { fetchData(); }, [endpoint, userId]);
 
-  // Doctor clicks "Next Patient"
   const handleNextPatient = async () => {
     setNextError(null);
     setNextLoading(true);
@@ -62,7 +60,6 @@ const MyRendezVous = () => {
         throw new Error(msg || "Aucun patient en attente");
       }
       const next = await res.json();
-      // Refresh the list
       fetchData();
       setCurrentPatient(next);
     } catch (err) {
@@ -74,16 +71,16 @@ const MyRendezVous = () => {
 
   const stats = isMedecin
     ? [
-        { num: rendezVous.length, label: "Total", icon: "📋", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_ATTENTE").length, label: "En attente", icon: "⏳", color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_COURS").length,   label: "En cours",   icon: "🔵", color: "#065f46", bg: "#f0fdf4", border: "#86efac" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "COMPLETED").length,  label: "Terminés",   icon: "✔✔", color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
+        { num: rendezVous.length,                                                                       label: "Total",      icon: "📋", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_ATTENTE").length,                 label: "En attente", icon: "⏳", color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_COURS").length,                   label: "En cours",   icon: "🔵", color: "#065f46", bg: "#f0fdf4", border: "#86efac" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "COMPLETED").length,                  label: "Terminés",   icon: "✔✔", color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
       ]
     : [
-        { num: rendezVous.length, label: "Total", icon: "📋", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_ATTENTE").length, label: "En attente", icon: "⏳", color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_COURS").length,   label: "En cours",   icon: "🟢", color: "#065f46", bg: "#f0fdf4", border: "#86efac" },
-        { num: rendezVous.filter(r => r.status?.toUpperCase() === "COMPLETED").length,  label: "Terminés",   icon: "✔✔", color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
+        { num: rendezVous.length,                                                                       label: "Total",      icon: "📋", color: "#065f46", bg: "#f0fdf4", border: "#bbf7d0" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_ATTENTE").length,                 label: "En attente", icon: "⏳", color: "#b45309", bg: "#fffbeb", border: "#fde68a" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "EN_COURS").length,                   label: "En cours",   icon: "🟢", color: "#065f46", bg: "#f0fdf4", border: "#86efac" },
+        { num: rendezVous.filter(r => r.status?.toUpperCase() === "COMPLETED").length,                  label: "Terminés",   icon: "✔✔", color: "#1d4ed8", bg: "#eff6ff", border: "#bfdbfe" },
       ];
 
   return (
@@ -108,7 +105,6 @@ const MyRendezVous = () => {
 
         .rv-body { padding: 28px 32px 36px; }
 
-        /* ── NEXT PATIENT BANNER (medecin only) ── */
         .rv-next-banner { border-radius: 16px; overflow: hidden; margin-bottom: 24px; border: 1px solid #d1fae5; }
         .rv-next-banner-top { background: linear-gradient(135deg, #064e3b, #047857); padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
         .rv-next-info { display: flex; align-items: center; gap: 12px; }
@@ -123,9 +119,14 @@ const MyRendezVous = () => {
         .rv-next-empty-text { font-size: 13px; color: #6b7280; }
         .rv-next-error { padding: 10px 22px; background: #fef2f2; font-size: 12px; color: #dc2626; }
 
-        /* ── EN_COURS row highlight ── */
         .rv-row-active { background: #f0fdf4 !important; }
         .rv-row-active td:first-child { border-left: 3px solid #10b981; }
+
+        /* Completed rows dimmed */
+        .rv-row-completed { opacity: 0.55; }
+
+        /* Divider row between active and completed */
+        .rv-divider td { padding: 6px 18px; background: #f9fafb; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: #9ca3af; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; }
 
         .rv-loading { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 70px 0; color: #6b7280; font-size: 14px; }
         .rv-spinner { width: 36px; height: 36px; border: 3px solid #d1fae5; border-top-color: #059669; border-radius: 50%; animation: rv-spin 0.75s linear infinite; }
@@ -154,9 +155,10 @@ const MyRendezVous = () => {
         .rv-table td { padding: 15px 18px; vertical-align: middle; }
         .rv-table td:last-child { text-align: center; }
 
-        /* Queue number cell */
         .rv-queue-block { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); border: 1px solid #a7f3d0; font-family: 'Lora', serif; font-size: 18px; font-weight: 700; color: #064e3b; }
         .rv-queue-block.active { background: linear-gradient(135deg, #064e3b, #047857); color: #6ee7b7; border-color: #047857; }
+        .rv-queue-block.done { background: #f3f4f6; border-color: #e5e7eb; color: #9ca3af; }
+
         .rv-date-main { font-weight: 600; color: #064e3b; font-size: 13px; }
         .rv-date-sub { font-size: 11.5px; color: #6b7280; margin-top: 2px; font-weight: 300; }
 
@@ -206,7 +208,7 @@ const MyRendezVous = () => {
               </div>
             ) : (
               <>
-                {/* ── NEXT PATIENT BANNER (médecin only) ── */}
+                {/* Next Patient Banner — médecin only */}
                 {isMedecin && (
                   <div className="rv-next-banner">
                     {currentPatient ? (
@@ -214,7 +216,7 @@ const MyRendezVous = () => {
                         <div className="rv-next-info">
                           <div className="rv-next-avatar">
                             {(currentPatient.patientNom || currentPatient.patientnom || "PT")
-                              .split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase()}
+                              .split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                           </div>
                           <div>
                             <p className="rv-next-label">En consultation</p>
@@ -235,8 +237,12 @@ const MyRendezVous = () => {
                         <p className="rv-next-empty-text">
                           Aucun patient en cours — appelez le premier patient en attente.
                         </p>
-                        <button className="rv-next-btn" onClick={handleNextPatient} disabled={nextLoading}
-                          style={{ background: "linear-gradient(135deg,#064e3b,#047857)", color: "#fff" }}>
+                        <button
+                          className="rv-next-btn"
+                          onClick={handleNextPatient}
+                          disabled={nextLoading}
+                          style={{ background: "linear-gradient(135deg,#064e3b,#047857)", color: "#fff" }}
+                        >
                           {nextLoading ? "..." : "▶ Appeler premier patient"}
                         </button>
                       </div>
@@ -271,12 +277,22 @@ const MyRendezVous = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Sort by queueNumber so list is in order */}
-                      {[...rendezVous]
-                        .sort((a, b) => (a.queueNumber ?? 99) - (b.queueNumber ?? 99))
-                        .map((rdv) => {
-                          const st = getStatus(rdv.status);
-                          const isActive = rdv.status?.toUpperCase() === "EN_COURS";
+                      {(() => {
+                        // Split into active (EN_ATTENTE, EN_COURS, ANNULE) and completed
+                        const sorted = [...rendezVous].sort((a, b) => {
+                          const aCompleted = a.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
+                          const bCompleted = b.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
+                          if (aCompleted !== bCompleted) return aCompleted - bCompleted;
+                          return (a.queueNumber ?? 99) - (b.queueNumber ?? 99);
+                        });
+
+                        const activeRows    = sorted.filter(r => r.status?.toUpperCase() !== "COMPLETED");
+                        const completedRows = sorted.filter(r => r.status?.toUpperCase() === "COMPLETED");
+
+                        const renderRow = (rdv) => {
+                          const st         = getStatus(rdv.status);
+                          const isActive   = rdv.status?.toUpperCase() === "EN_COURS";
+                          const isDone     = rdv.status?.toUpperCase() === "COMPLETED";
                           const personName = isMedecin
                             ? (rdv.patientnom || rdv.patientNom || "—")
                             : (rdv.medecinNom?.nom || rdv.medecinNom || "—");
@@ -286,16 +302,21 @@ const MyRendezVous = () => {
                           const specialiteName = rdv.specialite?.nomspecialite || rdv.specialite || "—";
 
                           return (
-                            <tr key={rdv.id} className={isActive ? "rv-row-active" : ""}>
-
+                            <tr
+                              key={rdv.id}
+                              className={
+                                isActive ? "rv-row-active" :
+                                isDone   ? "rv-row-completed" : ""
+                              }
+                            >
                               {/* Queue number */}
                               <td>
-                                <span className={`rv-queue-block${isActive ? " active" : ""}`}>
+                                <span className={`rv-queue-block${isActive ? " active" : isDone ? " done" : ""}`}>
                                   {rdv.queueNumber ?? "—"}
                                 </span>
                               </td>
 
-                              {/* Date (day only, no time) */}
+                              {/* Date */}
                               <td>
                                 <div className="rv-date-main">
                                   {new Date(rdv.dateHeureDebut).toLocaleDateString("fr-FR", {
@@ -351,7 +372,27 @@ const MyRendezVous = () => {
                               )}
                             </tr>
                           );
-                        })}
+                        };
+
+                        return (
+                          <>
+                            {/* Active rows first */}
+                            {activeRows.map(renderRow)}
+
+                            {/* Divider only if both groups exist */}
+                            {activeRows.length > 0 && completedRows.length > 0 && (
+                              <tr className="rv-divider">
+                                <td colSpan={isMedecin ? 6 : 5}>
+                                  ✔ Consultations terminées
+                                </td>
+                              </tr>
+                            )}
+
+                            {/* Completed rows at the bottom, dimmed */}
+                            {completedRows.map(renderRow)}
+                          </>
+                        );
+                      })()}
                     </tbody>
                   </table>
                 </div>
