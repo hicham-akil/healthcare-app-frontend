@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { User, Mail, Lock, Phone, MapPin, Calendar, Stethoscope, ArrowRight, Shield, Upload, X } from "lucide-react";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ export default function RegisterForm() {
     password: "",
     role: "",
     dateNaissance: "",
-    specialites: [], 
+    specialites: [],
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -33,43 +34,30 @@ export default function RegisterForm() {
   const handleSpecialityToggle = (specId) => {
     const numericId = Number(specId);
     const currentSpecialites = [...formData.specialites];
-    
     if (currentSpecialites.includes(numericId)) {
-      // Remove if already selected
-      setFormData({ 
-        ...formData, 
-        specialites: currentSpecialites.filter(id => id !== numericId) 
-      });
+      setFormData({ ...formData, specialites: currentSpecialites.filter((id) => id !== numericId) });
     } else {
-      // Add if not selected
-      setFormData({ 
-        ...formData, 
-        specialites: [...currentSpecialites, numericId] 
-      });
+      setFormData({ ...formData, specialites: [...currentSpecialites, numericId] });
     }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       setMessage("Please select a valid image file");
       setTypeMessage("error");
       e.target.value = "";
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       setMessage("Image size must be less than 5MB");
       setTypeMessage("error");
       e.target.value = "";
       return;
     }
-
     setImageFile(file);
     setMessage("");
-
     const reader = new FileReader();
     reader.onloadend = () => setImagePreview(reader.result);
     reader.readAsDataURL(file);
@@ -85,7 +73,6 @@ export default function RegisterForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
-
     const requiredFields = ["nom", "prenom", "email", "telephone", "password", "role"];
     for (let field of requiredFields) {
       if (!formData[field]) {
@@ -94,51 +81,38 @@ export default function RegisterForm() {
         return;
       }
     }
-
     if (formData.role === "PATIENT" && !formData.dateNaissance) {
       setMessage("Please fill the date of birth");
       setTypeMessage("error");
       return;
     }
-
-    // Add validation for specialities
     if (formData.role === "MEDECIN" && formData.specialites.length === 0) {
       setMessage("Please select at least one speciality");
       setTypeMessage("error");
       return;
     }
-
     setLoading(true);
-
     try {
       const formToSend = new FormData();
-
       const jsonBlob = new Blob([JSON.stringify(formData)], { type: "application/json" });
       formToSend.append("data", jsonBlob);
-
       if (imageFile) formToSend.append("image", imageFile);
-
       const response = await fetch("http://localhost:8080/api/auth/register", {
         method: "POST",
         body: formToSend,
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        setMessage(data.message || "Account created successfully!");
+        setMessage(data.message || "Compte créé avec succès !");
         setTypeMessage("success");
-
-        setTimeout(() => {
-          window.location.href = "/signin";
-        }, 1500);
+        setTimeout(() => { window.location.href = "/signin"; }, 1500);
       } else {
-        setMessage(data.error || "Registration failed");
+        setMessage(data.error || "Échec de l'inscription");
         setTypeMessage("error");
       }
     } catch (error) {
       setTypeMessage("error");
-      setMessage("Server error: " + error.message);
+      setMessage("Erreur serveur : " + error.message);
     } finally {
       setLoading(false);
     }
@@ -148,9 +122,7 @@ export default function RegisterForm() {
     try {
       const response = await fetch("http://localhost:8080/api/specialites", {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
       });
       const data = await response.json();
       setSpecdata(data);
@@ -159,161 +131,610 @@ export default function RegisterForm() {
     }
   };
 
-  useEffect(() => {
-    fetchSpecialities();
-  }, []);
+  useEffect(() => { fetchSpecialities(); }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-          <p className="text-gray-600">Join us today</p>
-        </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=Playfair+Display:wght@600;700&display=swap');
 
-        {/* Role Selection */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4 text-center text-gray-800">Who are you?</h3>
-          <div className="flex justify-center gap-6">
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        .rf-page {
+          font-family: 'DM Sans', sans-serif;
+          min-height: 100vh;
+          background: #f0faf4;
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          padding: 40px 24px;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .rf-blob1 {
+          position: fixed; top: -100px; right: -100px;
+          width: 400px; height: 400px; border-radius: 50%;
+          background: linear-gradient(145deg, rgba(6,78,59,0.08), rgba(16,185,129,0.06));
+          pointer-events: none;
+        }
+        .rf-blob2 {
+          position: fixed; bottom: -120px; left: -80px;
+          width: 350px; height: 350px; border-radius: 50%;
+          background: rgba(16,185,129,0.07);
+          pointer-events: none;
+        }
+
+        .rf-card {
+          background: #ffffff;
+          border: 1px solid #d1fae5;
+          border-radius: 28px;
+          padding: 44px 40px;
+          width: 100%;
+          max-width: 520px;
+          box-shadow: 0 8px 40px rgba(6,78,59,0.08);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .rf-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #10b981, #34d399);
+        }
+
+        /* ── Header ── */
+        .rf-logo-wrap {
+          display: flex;
+          justify-content: center;
+          margin-bottom: 20px;
+        }
+
+        .rf-logo-icon {
+          width: 60px; height: 60px;
+          border-radius: 18px;
+          background: linear-gradient(135deg, #064e3b, #065f46);
+          display: flex; align-items: center; justify-content: center;
+          box-shadow: 0 6px 20px rgba(6,78,59,0.25);
+        }
+
+        .rf-logo-cross {
+          color: #ffffff;
+          font-size: 28px;
+          font-weight: 700;
+          line-height: 1;
+          font-family: 'Playfair Display', serif;
+        }
+
+        .rf-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 26px;
+          color: #064e3b;
+          text-align: center;
+          letter-spacing: -0.3px;
+          margin-bottom: 6px;
+        }
+
+        .rf-subtitle {
+          text-align: center;
+          font-size: 13.5px;
+          color: #9ca3af;
+          font-weight: 300;
+          margin-bottom: 32px;
+        }
+
+        /* ── Section label ── */
+        .rf-section-label {
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 1.2px;
+          text-transform: uppercase;
+          color: #10b981;
+          margin-bottom: 14px;
+          text-align: center;
+        }
+
+        /* ── Role cards ── */
+        .rf-roles {
+          display: flex;
+          gap: 14px;
+          margin-bottom: 28px;
+        }
+
+        .rf-role-card {
+          flex: 1;
+          border: 1.5px solid #d1fae5;
+          border-radius: 18px;
+          padding: 20px 14px;
+          text-align: center;
+          cursor: pointer;
+          background: #f9fefb;
+          transition: all 0.2s;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .rf-role-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #10b981, #34d399);
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+
+        .rf-role-card:hover {
+          border-color: #a7f3d0;
+          box-shadow: 0 4px 16px rgba(16,185,129,0.1);
+          transform: translateY(-2px);
+        }
+
+        .rf-role-card.active {
+          border-color: #10b981;
+          background: #ecfdf5;
+          box-shadow: 0 4px 20px rgba(16,185,129,0.15);
+        }
+
+        .rf-role-card.active::before { opacity: 1; }
+
+        .rf-role-icon {
+          width: 56px; height: 56px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+          display: flex; align-items: center; justify-content: center;
+          margin: 0 auto 12px;
+          transition: transform 0.2s;
+        }
+
+        .rf-role-card.active .rf-role-icon {
+          background: linear-gradient(135deg, #064e3b, #065f46);
+          transform: scale(1.05);
+        }
+
+        .rf-role-card.active .rf-role-icon svg { color: #ffffff !important; }
+
+        .rf-role-name {
+          font-size: 14px;
+          font-weight: 600;
+          color: #064e3b;
+        }
+
+        .rf-role-desc {
+          font-size: 12px;
+          color: #9ca3af;
+          font-weight: 300;
+          margin-top: 4px;
+        }
+
+        /* ── Avatar upload ── */
+        .rf-avatar-section {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+
+        .rf-avatar-ring {
+          width: 88px; height: 88px;
+          border-radius: 50%;
+          border: 2px dashed #a7f3d0;
+          display: flex; align-items: center; justify-content: center;
+          background: #f9fefb;
+          cursor: pointer;
+          transition: border-color 0.2s, background 0.2s;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .rf-avatar-ring:hover { border-color: #10b981; background: #ecfdf5; }
+
+        .rf-avatar-ring img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+        }
+
+        .rf-avatar-btn {
+          margin-top: 10px;
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #10b981;
+          cursor: pointer;
+          background: none;
+          border: none;
+          font-family: 'DM Sans', sans-serif;
+          transition: color 0.2s;
+        }
+        .rf-avatar-btn:hover { color: #064e3b; }
+
+        .rf-avatar-remove {
+          font-size: 12px;
+          color: #ef4444;
+          cursor: pointer;
+          background: none;
+          border: none;
+          font-family: 'DM Sans', sans-serif;
+          margin-top: 4px;
+          font-weight: 500;
+          display: flex; align-items: center; gap: 4px;
+          transition: color 0.2s;
+        }
+        .rf-avatar-remove:hover { color: #b91c1c; }
+
+        /* ── Grid ── */
+        .rf-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+          margin-bottom: 14px;
+        }
+
+        /* ── Field ── */
+        .rf-field { margin-bottom: 14px; }
+
+        .rf-label {
+          display: block;
+          font-size: 13px;
+          font-weight: 600;
+          color: #064e3b;
+          margin-bottom: 7px;
+        }
+
+        .rf-input-wrap { position: relative; }
+
+        .rf-input-icon {
+          position: absolute;
+          left: 14px; top: 50%;
+          transform: translateY(-50%);
+          color: #10b981;
+          pointer-events: none;
+          display: flex; align-items: center;
+        }
+
+        .rf-input {
+          font-family: 'DM Sans', sans-serif;
+          width: 100%;
+          padding: 11px 14px 11px 42px;
+          border: 1.5px solid #d1fae5;
+          border-radius: 14px;
+          font-size: 14px;
+          color: #064e3b;
+          background: #f9fefb;
+          outline: none;
+          transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .rf-input::placeholder { color: #adb5bd; font-weight: 300; }
+
+        .rf-input:focus {
+          border-color: #10b981;
+          background: #ffffff;
+          box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+        }
+
+        .rf-input:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── Specialities ── */
+        .rf-spec-box {
+          border: 1.5px solid #d1fae5;
+          border-radius: 14px;
+          padding: 14px;
+          max-height: 180px;
+          overflow-y: auto;
+          background: #f9fefb;
+          scrollbar-width: thin;
+          scrollbar-color: #a7f3d0 transparent;
+        }
+
+        .rf-spec-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 7px 8px;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: background 0.15s;
+        }
+
+        .rf-spec-item:hover { background: #ecfdf5; }
+
+        .rf-spec-item input[type="checkbox"] {
+          width: 16px; height: 16px;
+          accent-color: #10b981;
+          cursor: pointer;
+        }
+
+        .rf-spec-item label {
+          font-size: 13.5px;
+          color: #374151;
+          cursor: pointer;
+          font-weight: 400;
+        }
+
+        .rf-spec-count {
+          margin-top: 8px;
+          font-size: 12.5px;
+          color: #10b981;
+          font-weight: 600;
+          display: flex; align-items: center; gap: 5px;
+        }
+
+        /* ── Message ── */
+        .rf-message {
+          margin-bottom: 20px;
+          padding: 11px 16px;
+          border-radius: 12px;
+          font-size: 13.5px;
+          font-weight: 500;
+          text-align: center;
+          display: flex; align-items: center; justify-content: center;
+          gap: 7px;
+        }
+
+        .rf-message.success {
+          background: #ecfdf5;
+          color: #065f46;
+          border: 1px solid #a7f3d0;
+        }
+
+        .rf-message.error {
+          background: #fef2f2;
+          color: #991b1b;
+          border: 1px solid #fecaca;
+        }
+
+        /* ── Button ── */
+        .rf-btn {
+          font-family: 'DM Sans', sans-serif;
+          width: 100%;
+          display: flex; align-items: center; justify-content: center;
+          gap: 8px;
+          background: linear-gradient(135deg, #064e3b, #065f46 60%, #047857);
+          color: #ffffff;
+          font-size: 15px;
+          font-weight: 600;
+          padding: 14px;
+          border-radius: 14px;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 20px rgba(6,78,59,0.25);
+          transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+          margin-top: 24px;
+        }
+
+        .rf-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(6,78,59,0.3);
+        }
+
+        .rf-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .rf-spinner {
+          width: 16px; height: 16px;
+          border: 2px solid rgba(255,255,255,0.35);
+          border-top-color: #ffffff;
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(1.4); }
+        }
+
+        /* ── Divider ── */
+        .rf-divider {
+          display: flex; align-items: center; gap: 12px;
+          margin: 24px 0 20px;
+        }
+        .rf-divider-line { flex: 1; height: 1px; background: #d1fae5; }
+        .rf-divider span { font-size: 12px; color: #9ca3af; }
+
+        .rf-signin {
+          text-align: center;
+          font-size: 13.5px;
+          color: #6b7280;
+          font-weight: 300;
+        }
+        .rf-signin a {
+          color: #10b981; font-weight: 600;
+          text-decoration: none; transition: color 0.2s;
+        }
+        .rf-signin a:hover { color: #064e3b; }
+
+        .rf-trust {
+          display: flex; justify-content: center; align-items: center;
+          gap: 6px; margin-top: 28px;
+          font-size: 12px; color: #9ca3af;
+        }
+        .rf-trust svg { color: #10b981; }
+      `}</style>
+
+      <div className="rf-page">
+        <div className="rf-blob1" />
+        <div className="rf-blob2" />
+
+        <div className="rf-card">
+          {/* Logo */}
+          <div className="rf-logo-wrap">
+            <div className="rf-logo-icon">
+              <span className="rf-logo-cross">✚</span>
+            </div>
+          </div>
+
+          <h1 className="rf-title">Créer un compte</h1>
+          <p className="rf-subtitle">Rejoignez des milliers de patients et médecins sur healthMax</p>
+
+          {/* Role selection */}
+          <p className="rf-section-label">Vous êtes ?</p>
+          <div className="rf-roles">
             <div
+              className={`rf-role-card ${formData.role === "MEDECIN" ? "active" : ""}`}
               onClick={() => handleRoleSelect("MEDECIN")}
-              className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-200 ${
-                formData.role === "MEDECIN"
-                  ? "border-blue-600 bg-blue-50 shadow-md"
-                  : "border-gray-300 hover:border-blue-400 hover:shadow-sm"
-              }`}
             >
-              <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-3 bg-blue-100 rounded-full flex items-center justify-center">
-                  <svg className="w-10 h-10 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
-                <p className="font-semibold text-gray-800">Doctor</p>
+              <div className="rf-role-icon">
+                <Stethoscope size={24} color="#065f46" strokeWidth={1.8} />
               </div>
+              <p className="rf-role-name">Médecin</p>
+              <p className="rf-role-desc">Professionnel de santé</p>
             </div>
 
             <div
+              className={`rf-role-card ${formData.role === "PATIENT" ? "active" : ""}`}
               onClick={() => handleRoleSelect("PATIENT")}
-              className={`cursor-pointer p-6 rounded-xl border-2 transition-all duration-200 ${
-                formData.role === "PATIENT"
-                  ? "border-blue-600 bg-blue-50 shadow-md"
-                  : "border-gray-300 hover:border-blue-400 hover:shadow-sm"
-              }`}
             >
-              <div className="text-center">
-                <div className="w-20 h-20 mx-auto mb-3 bg-green-100 rounded-full flex items-center justify-center">
-                  <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-                <p className="font-semibold text-gray-800">Patient</p>
+              <div className="rf-role-icon">
+                <User size={24} color="#065f46" strokeWidth={1.8} />
               </div>
+              <p className="rf-role-name">Patient</p>
+              <p className="rf-role-desc">Je cherche un médecin</p>
             </div>
           </div>
-        </div>
 
-        {message && (
-          <div
-            className={`mb-6 p-4 rounded-lg ${
-              typemessage === "success"
-                ? "bg-green-50 border border-green-200 text-green-800"
-                : "bg-red-50 border border-red-200 text-red-800"
-            }`}
-          >
-            <p className="text-sm font-medium text-center">{message}</p>
-          </div>
-        )}
-
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Profile Image</label>
-            <input
-              type="file"
-              id="imageInput"
-              accept="image/*"
-              onChange={handleImageChange}
-              disabled={loading}
-              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
-            />
-            {imagePreview && (
-              <div className="mt-4 text-center">
-                <img src={imagePreview} alt="Preview" className="w-32 h-32 mx-auto rounded-full object-cover border-4 border-blue-200" />
-                <button type="button" onClick={removeImage} disabled={loading} className="mt-2 text-sm text-red-600 hover:text-red-800 font-medium disabled:opacity-50">
-                  Remove Image
-                </button>
-              </div>
-            )}
-          </div>
-
-          <input type="text" name="nom" placeholder="Nom *" value={formData.nom} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-
-          <input type="text" name="prenom" placeholder="Prénom *" value={formData.prenom} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-
-          <input type="email" name="email" placeholder="Email *" value={formData.email} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-
-          <input type="tel" name="telephone" placeholder="Téléphone *" value={formData.telephone} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-
-          <input type="text" name="adresse" placeholder="Adresse" value={formData.adresse} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
-
-          {formData.role === "PATIENT" && (
-            <input type="date" name="dateNaissance" placeholder="Date de naissance" value={formData.dateNaissance} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
+          {/* Message */}
+          {message && (
+            <div className={`rf-message ${typemessage}`}>
+              {typemessage === "success" ? "✓" : "✕"} {message}
+            </div>
           )}
 
-          {formData.role === "MEDECIN" && (
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Specialities *
-              </label>
-              <div className="border border-gray-300 rounded-lg p-4 max-h-60 overflow-y-auto">
-                {specdata.map((spec) => (
-                  <div key={spec.id} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={`spec-${spec.id}`}
-                      checked={formData.specialites.includes(spec.id)}
-                      onChange={() => handleSpecialityToggle(spec.id)}
-                      disabled={loading}
-                      className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
-                    />
-                    <label
-                      htmlFor={`spec-${spec.id}`}
-                      className="ml-2 text-sm text-gray-700 cursor-pointer"
-                    >
-                      {spec.nomspecialite}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              {formData.specialites.length > 0 && (
-                <p className="mt-2 text-sm text-green-600">
-                  {formData.specialites.length} specialit{formData.specialites.length > 1 ? 'ies' : 'y'} selected
-                </p>
+          {/* Avatar upload */}
+          <div className="rf-avatar-section">
+            <div className="rf-avatar-ring" onClick={() => !imagePreview && document.getElementById("imageInput").click()}>
+              {imagePreview ? (
+                <img src={imagePreview} alt="Preview" />
+              ) : (
+                <Upload size={22} color="#10b981" strokeWidth={1.8} />
               )}
             </div>
-          )}
+            {!imagePreview ? (
+              <button type="button" className="rf-avatar-btn" onClick={() => document.getElementById("imageInput").click()}>
+                Choisir une photo
+              </button>
+            ) : (
+              <button type="button" className="rf-avatar-remove" onClick={removeImage} disabled={loading}>
+                <X size={13} /> Supprimer la photo
+              </button>
+            )}
+            <input type="file" id="imageInput" accept="image/*" onChange={handleImageChange} disabled={loading} style={{ display: "none" }} />
+          </div>
 
-          <input type="password" name="password" placeholder="Password *" value={formData.password} onChange={handleChange} disabled={loading} className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" />
+          <form onSubmit={handleSubmit}>
+            {/* Nom / Prénom */}
+            <div className="rf-grid-2">
+              <div className="rf-field">
+                <label className="rf-label">Nom *</label>
+                <div className="rf-input-wrap">
+                  <span className="rf-input-icon"><User size={14} /></span>
+                  <input className="rf-input" type="text" name="nom" value={formData.nom} onChange={handleChange} placeholder="Dupont" disabled={loading} required />
+                </div>
+              </div>
+              <div className="rf-field">
+                <label className="rf-label">Prénom *</label>
+                <div className="rf-input-wrap">
+                  <span className="rf-input-icon"><User size={14} /></span>
+                  <input className="rf-input" type="text" name="prenom" value={formData.prenom} onChange={handleChange} placeholder="Marie" disabled={loading} required />
+                </div>
+              </div>
+            </div>
 
-          <button type="submit" disabled={loading} className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 py-3 text-white font-semibold hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50">
-            {loading ? "Creating Account..." : "Create Account"}
-          </button>
-        </form>
+            {/* Email */}
+            <div className="rf-field">
+              <label className="rf-label">Adresse e-mail *</label>
+              <div className="rf-input-wrap">
+                <span className="rf-input-icon"><Mail size={15} /></span>
+                <input className="rf-input" type="email" name="email" value={formData.email} onChange={handleChange} placeholder="exemple@email.com" disabled={loading} required />
+              </div>
+            </div>
 
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account? <a href="/signin" className="font-semibold text-blue-600 hover:text-blue-700">Sign in</a>
-        </p>
+            {/* Téléphone */}
+            <div className="rf-field">
+              <label className="rf-label">Téléphone *</label>
+              <div className="rf-input-wrap">
+                <span className="rf-input-icon"><Phone size={15} /></span>
+                <input className="rf-input" type="tel" name="telephone" value={formData.telephone} onChange={handleChange} placeholder="+212 6XX XXX XXX" disabled={loading} required />
+              </div>
+            </div>
+
+            {/* Adresse */}
+            <div className="rf-field">
+              <label className="rf-label">Adresse</label>
+              <div className="rf-input-wrap">
+                <span className="rf-input-icon"><MapPin size={15} /></span>
+                <input className="rf-input" type="text" name="adresse" value={formData.adresse} onChange={handleChange} placeholder="Casablanca, Maroc" disabled={loading} />
+              </div>
+            </div>
+
+            {/* Date naissance (PATIENT only) */}
+            {formData.role === "PATIENT" && (
+              <div className="rf-field">
+                <label className="rf-label">Date de naissance *</label>
+                <div className="rf-input-wrap">
+                  <span className="rf-input-icon"><Calendar size={15} /></span>
+                  <input className="rf-input" type="date" name="dateNaissance" value={formData.dateNaissance} onChange={handleChange} disabled={loading} />
+                </div>
+              </div>
+            )}
+
+            {/* Specialities (MEDECIN only) */}
+            {formData.role === "MEDECIN" && (
+              <div className="rf-field">
+                <label className="rf-label">Spécialités *</label>
+                <div className="rf-spec-box">
+                  {specdata.map((spec) => (
+                    <div key={spec.id} className="rf-spec-item">
+                      <input
+                        type="checkbox"
+                        id={`spec-${spec.id}`}
+                        checked={formData.specialites.includes(spec.id)}
+                        onChange={() => handleSpecialityToggle(spec.id)}
+                        disabled={loading}
+                      />
+                      <label htmlFor={`spec-${spec.id}`}>{spec.nomspecialite}</label>
+                    </div>
+                  ))}
+                </div>
+                {formData.specialites.length > 0 && (
+                  <p className="rf-spec-count">
+                    ✓ {formData.specialites.length} spécialité{formData.specialites.length > 1 ? "s" : ""} sélectionnée{formData.specialites.length > 1 ? "s" : ""}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Password */}
+            <div className="rf-field">
+              <label className="rf-label">Mot de passe *</label>
+              <div className="rf-input-wrap">
+                <span className="rf-input-icon"><Lock size={15} /></span>
+                <input className="rf-input" type="password" name="password" value={formData.password} onChange={handleChange} placeholder="••••••••" disabled={loading} required />
+              </div>
+            </div>
+
+            {/* Submit */}
+            <button type="submit" className="rf-btn" disabled={loading}>
+              {loading ? (
+                <span className="rf-spinner" />
+              ) : (
+                <>
+                  Créer mon compte
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+
+          <div className="rf-trust">
+            <Shield size={13} />
+            Inscription sécurisée — healthMax
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

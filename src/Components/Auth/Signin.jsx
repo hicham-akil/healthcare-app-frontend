@@ -401,17 +401,8 @@ export default function SignIn() {
             )}
           </form>
 
-          {/* Divider + Register */}
-          <div className="si-divider">
-            <div className="si-divider-line" />
-            <span>ou</span>
-            <div className="si-divider-line" />
-          </div>
-
-          <p className="si-register">
-            Pas encore de compte ?{" "}
-            <a href="/register">Créer un compte</a>
-          </p>
+          
+          
 
           <div className="si-trust">
             <Shield size={13} />
