@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { User, Mail, Lock, Phone, MapPin, Calendar, Stethoscope, ArrowRight, Shield, Upload, X } from "lucide-react";
+import BASE_URL from "../../utils/api.js";
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -97,7 +98,7 @@ export default function RegisterForm() {
       const jsonBlob = new Blob([JSON.stringify(formData)], { type: "application/json" });
       formToSend.append("data", jsonBlob);
       if (imageFile) formToSend.append("image", imageFile);
-      const response = await fetch("http://localhost:8080/api/auth/register", {
+      const response = await fetch(`${BASE_URL}/api/auth/register`, {
         method: "POST",
         body: formToSend,
       });
@@ -120,7 +121,7 @@ export default function RegisterForm() {
 
   const fetchSpecialities = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/specialites", {
+      const response = await fetch(`${BASE_URL}/api/specialites`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });

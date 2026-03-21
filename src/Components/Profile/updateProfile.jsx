@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { logout } from "../../utils/logout";
 import { useLocation } from "react-router-dom";
+import BASE_URL from "../../utils/api.js";
 
 export default function EditProfileForm() {
   const location = useLocation();
@@ -41,7 +42,7 @@ export default function EditProfileForm() {
 
       if (imageFile) formData.append("image", imageFile);
 
-      const response = await fetch(`http://localhost:8080/api/users/${user_id}`, {
+      const response = await fetch(`${BASE_URL}/api/users/${user_id}`, {
         method: "PUT", 
         headers: {
           Authorization: `Bearer ${token}`,

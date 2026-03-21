@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Calendar, Users, ArrowRight, Stethoscope, AlertCircle } from "lucide-react";
+import BASE_URL from "../../utils/api.js";
 
 const TakeAppointment = () => {
   const { id } = useParams();
@@ -17,7 +18,7 @@ const TakeAppointment = () => {
     const fetchSchedule = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/api/horaires/medecin/${id}/available-slots`,
+          `${BASE_URL}/api/horaires/medecin/${id}/available-slots`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!res.ok) throw new Error("Failed to load schedule");

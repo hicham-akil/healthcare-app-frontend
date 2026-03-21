@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import UpdateStatusModal from "./UpdateStatus";
+import BASE_URL from "../../utils/api.js";
 
 const statusConfig = {
   EN_ATTENTE: { label: "En attente",  color: "#92400e", bg: "#fef9c3", dot: "#ca8a04", ring: "#fde68a" },
@@ -27,8 +28,8 @@ const MyRendezVous = () => {
   const token     = localStorage.getItem("token");
 
   const endpoint = isMedecin
-    ? `http://localhost:8080/api/rendezvous/medecin/${userId}`
-    : `http://localhost:8080/api/rendezvous/patient/${userId}`;
+    ? `${BASE_URL}/api/rendezvous/medecin/${userId}`
+    : `${BASE_URL}/api/rendezvous/patient/${userId}`;
 
   const fetchData = () => {
     if (!userId) { setError("Utilisateur non connecté"); setLoading(false); return; }
@@ -52,7 +53,7 @@ const MyRendezVous = () => {
     setNextLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/rendezvous/medecin/${userId}/next`,
+        `${BASE_URL}/api/rendezvous/medecin/${userId}/next`,
         { method: "POST", headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) {

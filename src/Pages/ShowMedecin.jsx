@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Stethoscope, Search, Phone, Mail, ArrowRight, User, AlertCircle } from "lucide-react";
+import BASE_URL from "../utils/api.js";
 
 const ShowMedecin = () => {
   const [specialites, setSpecialites] = useState([]);
@@ -14,7 +15,7 @@ const ShowMedecin = () => {
   useEffect(() => {
     const fetchSpecialites = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/specialites", {
+        const response = await fetch(`${BASE_URL}/api/specialites`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -36,7 +37,7 @@ const ShowMedecin = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/medecins/specialite/${specialiteId}`,
+        `${BASE_URL}/api/medecins/specialite/${specialiteId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (!res.ok) throw new Error("Failed to load doctors");

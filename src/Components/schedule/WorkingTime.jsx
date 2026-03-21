@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Clock, Calendar, Save, CheckCircle } from "lucide-react";
+import BASE_URL from "../../utils/api.js";
 
 const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -89,7 +90,7 @@ const WorkingHours = () => {
       medecinId,
     }));
     try {
-      const response = await fetch("http://localhost:8080/api/horaires", {
+      const response = await fetch(`${BASE_URL}/api/horaires`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),

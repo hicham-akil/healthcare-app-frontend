@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Mail, Lock, ArrowRight, Shield } from "lucide-react";
-
+import BASE_URL from "../../utils/api.js";
 export default function SignIn() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
@@ -15,7 +15,7 @@ export default function SignIn() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/auth/login", {
+      const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

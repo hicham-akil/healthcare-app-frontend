@@ -1,7 +1,7 @@
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Calendar, User, Stethoscope, Hash, CheckCircle, AlertCircle } from "lucide-react";
-
+import BASE_URL from "../../utils/api.js";
 const ConfirmAppointment = () => {
   const { idHoraire } = useParams();
   const { state } = useLocation();
@@ -11,7 +11,7 @@ const ConfirmAppointment = () => {
   const { horaire, patientId, doctorid, specialite, specialiteId } = state || {};
  console.log(specialiteId);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); 
   const [queueNumber, setQueueNumber] = useState(null); // ✅ show after booking
 
   if (!horaire || !patientId || !doctorid) {
@@ -30,7 +30,7 @@ const ConfirmAppointment = () => {
     setError(null);
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/api/rendezvous", {
+      const res = await fetch(`${BASE_URL}/api/rendezvous`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

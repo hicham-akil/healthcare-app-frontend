@@ -4,6 +4,7 @@ import { Mail, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { logout } from "../../utils/logout";
 import { useNavigate } from "react-router-dom";
+import BASE_URL from "../../utils/api.js";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const [data, setData] = useState({
 
   const fetchProfileData = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${user_id}`, {
+      const response = await fetch(`${BASE_URL}/api/users/${user_id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BASE_URL from "../../utils/api.js";
 
 const STATUS_OPTIONS = [
   {
@@ -73,7 +74,7 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`http://localhost:8080/api/rendezvous/${rendezVousId}/status`, {
+      const res = await fetch(`${BASE_URL}/api/rendezvous/${rendezVousId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
