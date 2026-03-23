@@ -76,9 +76,9 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
     try {
       const res = await fetch(`${BASE_URL}/api/rendezvous/${rendezVousId}/status`, {
         method: "PUT",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ status: selected }),
       });

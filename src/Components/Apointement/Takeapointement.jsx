@@ -7,7 +7,7 @@ const TakeAppointment = () => {
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+
   const { specialiteId,specialite } = state || {};
  console.log(specialiteId);
   const [schedule, setSchedule] = useState([]);
@@ -19,7 +19,7 @@ const TakeAppointment = () => {
       try {
         const res = await fetch(
           `${BASE_URL}/api/horaires/medecin/${id}/available-slots`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { credentials: "include", }
         );
         if (!res.ok) throw new Error("Failed to load schedule");
         const data = await res.json();
@@ -31,7 +31,7 @@ const TakeAppointment = () => {
       }
     };
     fetchSchedule();
-  }, [id, token]);
+  }, [id]);
 
   const handleSelectSlot = (horaire) => {
     navigate(`/confirm-appointment/${horaire.idHoraire}`, {

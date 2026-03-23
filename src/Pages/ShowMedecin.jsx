@@ -10,7 +10,6 @@ const ShowMedecin = () => {
   const [medecins, setMedecins] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchSpecialites = async () => {
@@ -19,7 +18,7 @@ const ShowMedecin = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+           credentials: "include",
           },
         });
         if (!response.ok) throw new Error("Failed to load specialities");
@@ -38,7 +37,7 @@ const ShowMedecin = () => {
     try {
       const res = await fetch(
         `${BASE_URL}/api/medecins/specialite/${specialiteId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { credentials: "include" }
       );
       if (!res.ok) throw new Error("Failed to load doctors");
       const data = await res.json();

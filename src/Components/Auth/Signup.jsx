@@ -100,6 +100,7 @@ export default function RegisterForm() {
       if (imageFile) formToSend.append("image", imageFile);
       const response = await fetch(`${BASE_URL}/api/auth/register`, {
         method: "POST",
+        credentials: "include",
         body: formToSend,
       });
       const data = await response.json();

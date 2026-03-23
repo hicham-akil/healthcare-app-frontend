@@ -17,6 +17,7 @@ export default function SignIn() {
     try {
       const response = await fetch(`${BASE_URL}/api/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
@@ -28,7 +29,6 @@ export default function SignIn() {
         return;
       }
 
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user_id", data.id);
       localStorage.setItem("role", data.role);
       setMessage("Login successful!");

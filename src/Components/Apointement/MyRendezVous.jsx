@@ -25,7 +25,7 @@ const MyRendezVous = () => {
   const role      = localStorage.getItem("role");
   const isMedecin = role === "MEDECIN";
   const userId    = localStorage.getItem("user_id");
-  const token     = localStorage.getItem("token");
+
 
   const endpoint = isMedecin
     ? `${BASE_URL}/api/rendezvous/medecin/${userId}`
@@ -34,7 +34,7 @@ const MyRendezVous = () => {
   const fetchData = () => {
     if (!userId) { setError("Utilisateur non connecté"); setLoading(false); return; }
     setLoading(true);
-    fetch(endpoint, { headers: { Authorization: `Bearer ${token}` } })
+    fetch(endpoint, { credentials: "include" })
       .then((res) => { if (!res.ok) throw new Error("Erreur lors du chargement"); return res.json(); })
       .then((data) => {
         setRendezVous(data);
@@ -54,7 +54,7 @@ const MyRendezVous = () => {
     try {
       const res = await fetch(
         `${BASE_URL}/api/rendezvous/medecin/${userId}/next`,
-        { method: "POST", headers: { Authorization: `Bearer ${token}` } }
+        { method: "POST", credentials: "include" }
       );
       if (!res.ok) {
         const msg = await res.text();

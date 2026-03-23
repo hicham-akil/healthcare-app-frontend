@@ -6,13 +6,12 @@ const ConfirmAppointment = () => {
   const { idHoraire } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
 
   const { horaire, patientId, doctorid, specialite, specialiteId } = state || {};
  console.log(specialiteId);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null); 
-  const [queueNumber, setQueueNumber] = useState(null); // ✅ show after booking
+  const [queueNumber, setQueueNumber] = useState(null); 
 
   if (!horaire || !patientId || !doctorid) {
     return (
@@ -34,7 +33,7 @@ const ConfirmAppointment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          credentials: "include",
         },
         body: JSON.stringify({
           horaireId: parseInt(idHoraire),
@@ -51,7 +50,7 @@ const ConfirmAppointment = () => {
       }
 
       const data = await res.json();
-      setQueueNumber(data.queueNumber); // ✅ show queue number to patient
+      setQueueNumber(data.queueNumber); 
     } catch (err) {
       setError(err.message);
     } finally {

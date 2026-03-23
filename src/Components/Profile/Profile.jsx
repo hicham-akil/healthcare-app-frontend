@@ -20,7 +20,7 @@ const [data, setData] = useState({
 
 
   const user_id = localStorage.getItem("user_id");
-  const token = localStorage.getItem("token");
+ 
 
   const fetchProfileData = async () => {
     try {
@@ -28,8 +28,9 @@ const [data, setData] = useState({
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
+         credentials: "include",
+
       });
       const userData = await response.json();
 setData({

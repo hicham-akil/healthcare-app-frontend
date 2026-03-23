@@ -25,7 +25,7 @@ export default function EditProfileForm() {
   const [typeMessage, setTypeMessage] = useState("success");
 
   const user_id = localStorage.getItem("user_id");
-  const token = localStorage.getItem("token");
+  
 
   useEffect(() => {
     setData(userData);
@@ -44,9 +44,8 @@ export default function EditProfileForm() {
 
       const response = await fetch(`${BASE_URL}/api/users/${user_id}`, {
         method: "PUT", 
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+       
+       credentials: "include",
         body: formData,
       });
 

@@ -23,7 +23,7 @@ const formatDisplayDate = (dateStr) => {
 
 const WorkingHours = () => {
   const medecinId = Number(localStorage.getItem("user_id"));
-  const token = localStorage.getItem("token");
+  
 
   const [schedule, setSchedule] = useState(
     daysOfWeek.map((day) => ({
@@ -44,7 +44,7 @@ const WorkingHours = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            credentials: "include",
           },
         }
       );
