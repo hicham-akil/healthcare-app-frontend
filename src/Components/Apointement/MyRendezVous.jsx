@@ -54,10 +54,11 @@ const MyRendezVous = () => {
     try {
       const res = await fetch(
         `${BASE_URL}/api/rendezvous/medecin/${userId}/next`,
-        { method: "POST", credentials: "include" }
+        { method: "POST", withCredentials: true}
       );
       if (!res.ok) {
         const msg = await res.text();
+      console.log("userId:", userId);
         throw new Error(msg || "Aucun patient en attente");
       }
       const next = await res.json();

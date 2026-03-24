@@ -33,8 +33,8 @@ const ConfirmAppointment = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          credentials: "include",
         },
+        credentials: "include",
         body: JSON.stringify({
           horaireId: parseInt(idHoraire),
           patientId,

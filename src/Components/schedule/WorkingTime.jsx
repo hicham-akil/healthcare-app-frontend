@@ -44,8 +44,8 @@ const WorkingHours = () => {
         {
           headers: {
             "Content-Type": "application/json",
-            credentials: "include",
           },
+          credentials: "include",
         }
       );
       if (!response.ok) throw new Error("Failed to fetch schedule");
@@ -92,7 +92,8 @@ const WorkingHours = () => {
     try {
       const response = await fetch(`${BASE_URL}/api/horaires`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: { "Content-Type": "application/json"},
+        credentials: "include" ,
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error("Failed to save schedule");
