@@ -44,10 +44,10 @@ const ConfirmAppointment = () => {
         }),
       });
 
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg || "Booking failed");
-      }
+   if (!res.ok) {
+  const errorData = await res.json().catch(() => null);
+  throw new Error(errorData?.message || "Booking failed check you apointment details and try again.");
+}
 
       const data = await res.json();
       setQueueNumber(data.queueNumber); 
