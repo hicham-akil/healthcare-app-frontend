@@ -118,8 +118,8 @@ export default function Profile() {
             </div>
 
             {/* Right column */}
-            <div className="pf-card">
-              <div className="pf-form-grid">
+            <div className="pf-card" >
+              <div className="pf-form-grid" style={{marginTop:"50px"}}>
                 <div className="pf-field">
                   <label>Nom Complet</label>
                   <div className="pf-input-wrap">
@@ -148,7 +148,7 @@ export default function Profile() {
                     <input className="pf-input" type="text" value={data.date_naissance || ""} readOnly />
                   </div>
                 </div>
-                <textarea className="pf-textarea" placeholder="Ajoutez des précisions pour vos futurs rendez-vous..." />
+                <div style={{height:"80px"}}></div>
               </div>
 
               <div className="pf-actions">
