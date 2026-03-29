@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import { Clock, Calendar, Save, CheckCircle } from "lucide-react";
 import BASE_URL from "../../utils/api.js";
 
-const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const daysOfWeek = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 const getNextDateForDay = (dayName) => {
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -18,12 +26,15 @@ const getNextDateForDay = (dayName) => {
 const formatDisplayDate = (dateStr) => {
   if (!dateStr) return "";
   const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 };
 
 const WorkingHours = () => {
   const medecinId = Number(localStorage.getItem("user_id"));
-  
 
   const [schedule, setSchedule] = useState(
     daysOfWeek.map((day) => ({
@@ -40,43 +51,50 @@ const WorkingHours = () => {
   const fetchSchedule = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/horaires/medecin/${medecinId}`,
+        `${BASE_URL}/api/horaires/medecin/${medecinId}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           credentials: "include",
         }
       );
+
       if (!response.ok) throw new Error("Failed to fetch schedule");
+
       const data = await response.json();
 
-      const updatedSchedule = daysOfWeek.map((day) => {
+      const updated = daysOfWeek.map((day) => {
         const targetDate = getNextDateForDay(day);
-        const matching = data.find((d) => d.date === targetDate);
+        const match = data.find((d) => d.date === targetDate);
+
         return {
           day,
-          idHoraire: matching ? matching.idHoraire : null,
-          enabled: matching ? matching.status === "ACTIVE" : false,
-          start: matching ? matching.heureDebut : "09:00",
-          end: matching ? matching.heureFin : "17:00",
-          status: matching ? matching.status : "INACTIVE",
+          idHoraire: match ? match.idHoraire : null,
+          enabled: match ? match.status === "ACTIVE" : false,
+          start: match ? match.heureDebut : "09:00",
+          end: match ? match.heureFin : "17:00",
+          status: match ? match.status : "INACTIVE",
           date: targetDate,
         };
       });
 
-      setSchedule(updatedSchedule);
-    } catch (error) {
-      alert("Server error: " + error.message);
+      setSchedule(updated);
+    } catch (err) {
+      alert("Server error: " + err.message);
     }
   };
 
-  useEffect(() => { fetchSchedule(); }, []);
+  useEffect(() => {
+    fetchSchedule();
+  }, []);
 
   const handleChange = (index, field, value) => {
     const updated = [...schedule];
     updated[index][field] = value;
-    if (field === "enabled") updated[index].status = value ? "ACTIVE" : "INACTIVE";
+
+    if (field === "enabled") {
+      updated[index].status = value ? "ACTIVE" : "INACTIVE";
+    }
+
     setSchedule(updated);
   };
 
@@ -89,18 +107,21 @@ const WorkingHours = () => {
       status: d.status,
       medecinId,
     }));
+
     try {
       const response = await fetch(`${BASE_URL}/api/horaires`, {
         method: "POST",
-        headers: { "Content-Type": "application/json"},
-        credentials: "include" ,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(payload),
       });
+
       if (!response.ok) throw new Error("Failed to save schedule");
+
       alert("Working hours saved successfully!");
       fetchSchedule();
-    } catch (error) {
-      alert("Server error: " + error.message);
+    } catch (err) {
+      alert("Server error: " + err.message);
     }
   };
 
@@ -109,447 +130,268 @@ const WorkingHours = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap');
 
         .wh-root {
           font-family: 'DM Sans', sans-serif;
-          background: #f0faf4;
+          background: linear-gradient(180deg, #f3fbf7 0%, #f8fffc 100%);
           min-height: 100vh;
-          padding: 48px 24px;
+          padding: 64px 24px;
         }
 
         .wh-container {
-          max-width: 700px;
+          max-width: 920px;
           margin: 0 auto;
         }
 
-        /* ── Page header ── */
         .wh-page-label {
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: 1.5px;
+          font-size: 12px;
+          letter-spacing: 2px;
           text-transform: uppercase;
           color: #10b981;
+          font-weight: 600;
           margin-bottom: 10px;
         }
 
         .wh-page-title {
           font-family: 'Playfair Display', serif;
-          font-size: clamp(24px, 4vw, 32px);
+          font-size: 42px;
           color: #064e3b;
-          letter-spacing: -0.3px;
-          margin-bottom: 6px;
+          margin-bottom: 8px;
         }
 
         .wh-page-sub {
           display: flex;
           align-items: center;
-          gap: 6px;
-          font-size: 13.5px;
+          gap: 8px;
+          font-size: 14px;
           color: #6b7280;
-          font-weight: 300;
-          margin-bottom: 32px;
+          margin-bottom: 30px;
         }
 
-        /* ── Stat pills ── */
         .wh-pills {
           display: flex;
-          gap: 12px;
-          margin-bottom: 28px;
+          gap: 14px;
+          margin-bottom: 26px;
           flex-wrap: wrap;
         }
 
         .wh-pill {
+          background: rgba(255,255,255,0.9);
+          backdrop-filter: blur(10px);
+          border: 1px solid #d1fae5;
+          border-radius: 16px;
+          padding: 10px 16px;
           display: flex;
           align-items: center;
-          gap: 7px;
-          background: #ffffff;
-          border: 1px solid #d1fae5;
-          border-radius: 12px;
-          padding: 9px 16px;
+          gap: 8px;
+          box-shadow: 0 8px 24px rgba(16,185,129,0.08);
           font-size: 13px;
-          font-weight: 500;
           color: #065f46;
         }
 
-        .wh-pill strong { color: #064e3b; font-weight: 600; }
-
-        /* ── Card ── */
         .wh-card {
-          background: #ffffff;
-          border: 1px solid #d1fae5;
-          border-radius: 20px;
+          background: #fff;
+          border-radius: 24px;
           overflow: hidden;
-          box-shadow: 0 4px 24px rgba(16,185,129,0.07);
-          transition: box-shadow 0.25s;
+          border: 1px solid #ecfdf5;
+          box-shadow: 0 18px 50px rgba(16,185,129,0.12);
         }
 
-        .wh-card:hover {
-          box-shadow: 0 8px 40px rgba(16,185,129,0.13);
-        }
-
-        /* Card top bar — matches hp-hero gradient */
         .wh-card-top {
-          background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%);
-          padding: 20px 28px;
+          background: linear-gradient(135deg, #064e3b, #065f46, #047857);
+          padding: 26px 30px;
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
           position: relative;
-          overflow: hidden;
         }
 
         .wh-card-top::after {
-          content: '';
+          content: "";
           position: absolute;
-          top: -40px; right: -40px;
-          width: 140px; height: 140px;
+          width: 240px;
+          height: 240px;
+          background: rgba(255,255,255,0.06);
           border-radius: 50%;
-          background: rgba(255,255,255,0.05);
-          pointer-events: none;
+          top: -90px;
+          right: -90px;
         }
 
-        .wh-card-top-left {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .wh-card-icon-wrap {
-          width: 38px; height: 38px;
-          border-radius: 11px;
-          background: rgba(255,255,255,0.14);
-          border: 1px solid rgba(255,255,255,0.2);
-          display: flex; align-items: center; justify-content: center;
-          backdrop-filter: blur(4px);
-        }
-
-        .wh-card-top-title {
-          font-size: 15px;
-          font-weight: 600;
-          color: #ffffff;
-          margin: 0 0 2px;
-        }
-
-        .wh-card-top-desc {
-          font-size: 12px;
-          color: rgba(255,255,255,0.6);
-          font-weight: 300;
-          margin: 0;
-        }
-
-        /* matches hp-badge style */
-        .wh-count-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(255,255,255,0.12);
-          border: 1px solid rgba(255,255,255,0.2);
-          color: #a7f3d0;
-          font-size: 12px;
-          font-weight: 600;
-          letter-spacing: 0.5px;
-          padding: 5px 13px;
-          border-radius: 20px;
-          backdrop-filter: blur(4px);
-        }
-
-        .wh-count-dot {
-          width: 6px; height: 6px;
-          background: #34d399;
-          border-radius: 50%;
-          animation: wh-pulse 2s infinite;
-        }
-
-        @keyframes wh-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50%       { opacity: 0.5; transform: scale(1.4); }
-        }
-
-        /* ── Day rows ── */
-        .wh-rows { padding: 6px 0; }
-
+        /* ROW */
         .wh-row {
           display: flex;
           align-items: center;
-          gap: 14px;
-          padding: 13px 28px;
-          border-bottom: 1px solid #f0fdf4;
-          transition: background 0.15s;
+          gap: 16px;
+          margin: 10px 16px;
+          padding: 16px 18px;
+          border-radius: 16px;
+          background: #ffffff;
+          border: 1px solid #f0fdf4;
+          transition: all 0.2s ease;
         }
 
-        .wh-row:last-child { border-bottom: none; }
-        .wh-row:hover      { background: #f0fdf4; }
-        .wh-row.is-active  { background: #f0fdf4; }
+        .wh-row:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(16,185,129,0.10);
+        }
 
-        /* custom checkbox */
-        .wh-cb-wrap {
+        .wh-row.is-active {
+          background: #f0fdf4;
+          border-color: #a7f3d0;
+        }
+
+        /* SWITCH */
+        .wh-switch {
+          width: 46px;
+          height: 26px;
+          background: #e5e7eb;
+          border-radius: 999px;
           position: relative;
-          width: 20px; height: 20px;
-          flex-shrink: 0;
-        }
-
-        .wh-cb-wrap input {
-          position: absolute;
-          opacity: 0;
-          inset: 0;
           cursor: pointer;
-          margin: 0;
-        }
-
-        .wh-cb-box {
-          width: 20px; height: 20px;
-          border-radius: 6px;
-          border: 2px solid #d1fae5;
-          background: #fff;
-          display: flex; align-items: center; justify-content: center;
-          transition: all 0.2s;
-          pointer-events: none;
-        }
-
-        .wh-row.is-active .wh-cb-box {
-          background: linear-gradient(135deg, #065f46, #10b981);
-          border-color: transparent;
-        }
-
-        .wh-cb-tick {
-          display: none;
-        }
-
-        .wh-row.is-active .wh-cb-tick {
-          display: block;
-        }
-
-        /* day name */
-        .wh-day-name {
-          width: 94px;
-          font-size: 14px;
-          font-weight: 500;
-          color: #374151;
+          transition: 0.25s ease;
           flex-shrink: 0;
         }
 
-        .wh-row.is-active .wh-day-name {
-          color: #064e3b;
-          font-weight: 600;
+        .wh-switch-knob {
+          width: 20px;
+          height: 20px;
+          background: white;
+          border-radius: 50%;
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          transition: 0.25s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
-        /* open / off badge — matches hp-card status pill style */
+        .wh-switch.active {
+          background: #10b981;
+        }
+
+        .wh-switch.active .wh-switch-knob {
+          transform: translateX(20px);
+        }
+
         .wh-badge {
           font-size: 11px;
           font-weight: 600;
-          letter-spacing: 0.5px;
-          text-transform: uppercase;
-          padding: 3px 10px;
-          border-radius: 20px;
-          flex-shrink: 0;
-          min-width: 42px;
-          text-align: center;
+          padding: 4px 10px;
+          border-radius: 999px;
         }
 
-        .wh-badge.open { background: #d1fae5; color: #065f46; }
-        .wh-badge.off  { background: #f3f4f6; color: #9ca3af; }
+        .wh-badge.open {
+          background: #dcfce7;
+          color: #065f46;
+        }
 
-        /* time inputs */
-        .wh-times {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          flex: 1;
+        .wh-badge.off {
+          background: #f3f4f6;
+          color: #9ca3af;
         }
 
         .wh-time {
-          font-family: 'DM Sans', sans-serif;
-          font-size: 13.5px;
-          font-weight: 500;
-          color: #064e3b;
-          background: #f0fdf4;
+          border-radius: 12px;
+          background: #f9fffc;
           border: 1px solid #d1fae5;
-          border-radius: 10px;
-          padding: 7px 10px;
-          width: 96px;
-          outline: none;
-          transition: border-color 0.2s, box-shadow 0.2s;
-          cursor: pointer;
-        }
-
-        .wh-time:focus {
-          border-color: #10b981;
-          box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
-        }
-
-        .wh-time:disabled {
-          background: #f9fafb;
-          border-color: #e5e7eb;
-          color: #d1d5db;
-          cursor: not-allowed;
-        }
-
-        .wh-sep { font-size: 13px; color: #9ca3af; font-weight: 300; }
-
-        /* date label */
-        .wh-date {
-          font-size: 11.5px;
-          color: #9ca3af;
-          flex-shrink: 0;
-          min-width: 72px;
-          text-align: right;
-        }
-
-        .wh-row.is-active .wh-date { color: #6b7280; }
-
-        /* ── Card footer ── */
-        .wh-card-footer {
-          border-top: 1px solid #d1fae5;
-          padding: 18px 28px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          flex-wrap: wrap;
-        }
-
-        .wh-footer-note {
+          padding: 8px 12px;
           font-size: 13px;
-          color: #6b7280;
-          font-weight: 300;
+          color: #065f46;
         }
 
-        .wh-footer-note strong { color: #065f46; font-weight: 600; }
-
-        /* save button — matches hp-btn-primary inverted */
         .wh-save-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%);
-          color: #ffffff;
-          font-family: 'DM Sans', sans-serif;
-          font-size: 14px;
-          font-weight: 600;
-          padding: 11px 24px;
+          background: linear-gradient(135deg, #064e3b, #047857);
           border-radius: 14px;
+          padding: 12px 22px;
+          font-weight: 600;
+          color: white;
           border: none;
           cursor: pointer;
-          box-shadow: 0 4px 20px rgba(6,79,58,0.28);
-          transition: transform 0.2s, box-shadow 0.2s;
         }
-
-        .wh-save-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 28px rgba(6,79,58,0.35);
-        }
-
-        .wh-save-btn:active { transform: translateY(0); }
       `}</style>
 
       <div className="wh-root">
         <div className="wh-container">
 
-          {/* Page header */}
           <p className="wh-page-label">Availability</p>
           <h1 className="wh-page-title">Working Hours</h1>
+
           <p className="wh-page-sub">
             <Calendar size={14} color="#10b981" />
             Week of {formatDisplayDate(getNextDateForDay("Monday"))}
           </p>
 
-          {/* Stat pills */}
           <div className="wh-pills">
             <div className="wh-pill">
-              <CheckCircle size={14} color="#10b981" />
-              <span><strong>{activeDaysCount}</strong> active days</span>
-            </div>
-            <div className="wh-pill">
-              <Clock size={14} color="#10b981" />
-              <span><strong>{7 - activeDaysCount}</strong> days off</span>
+              <CheckCircle size={14} />
+              {activeDaysCount} active days
             </div>
           </div>
 
-          {/* Card */}
           <div className="wh-card">
 
-            {/* Card hero bar */}
             <div className="wh-card-top">
-              <div className="wh-card-top-left">
-                <div className="wh-card-icon-wrap">
-                  <Clock size={18} color="#ffffff" strokeWidth={1.8} />
-                </div>
-                <div>
-                  <p className="wh-card-top-title">Weekly Schedule</p>
-                  <p className="wh-card-top-desc">Toggle days and set consultation hours</p>
-                </div>
-              </div>
-              <div className="wh-count-badge">
-                <span className="wh-count-dot" />
-                {activeDaysCount} / 7 active
+              <div style={{ color: "white" }}>
+                <h3 style={{ margin: 0 }}>Weekly Schedule</h3>
+                <small>Manage availability</small>
               </div>
             </div>
 
-            {/* Rows */}
-            <div className="wh-rows">
-              {schedule.map((item, index) => (
-                <div key={item.day} className={`wh-row${item.enabled ? " is-active" : ""}`}>
+            {schedule.map((item, index) => (
+              <div
+                key={item.day}
+                className={`wh-row ${item.enabled ? "is-active" : ""}`}
+              >
 
-                  {/* Checkbox */}
-                  <div className="wh-cb-wrap">
-                    <input
-                      type="checkbox"
-                      checked={item.enabled}
-                      onChange={(e) => handleChange(index, "enabled", e.target.checked)}
-                    />
-                    <div className="wh-cb-box">
-                      <svg className="wh-cb-tick" width="10" height="10" viewBox="0 0 10 10" fill="none">
-                        <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Day name */}
-                  <span className="wh-day-name">{item.day}</span>
-
-                  {/* Status badge */}
-                  <span className={`wh-badge ${item.enabled ? "open" : "off"}`}>
-                    {item.enabled ? "Open" : "Off"}
-                  </span>
-
-                  {/* Times */}
-                  <div className="wh-times">
-                    <input
-                      type="time"
-                      value={item.start}
-                      disabled={!item.enabled}
-                      className="wh-time"
-                      onChange={(e) => handleChange(index, "start", e.target.value)}
-                    />
-                    <span className="wh-sep">–</span>
-                    <input
-                      type="time"
-                      value={item.end}
-                      disabled={!item.enabled}
-                      className="wh-time"
-                      onChange={(e) => handleChange(index, "end", e.target.value)}
-                    />
-                  </div>
-
-                  {/* Date */}
-                  <span className="wh-date">{formatDisplayDate(item.date)}</span>
+                {/* SWITCH (scroll button) */}
+                <div
+                  className={`wh-switch ${item.enabled ? "active" : ""}`}
+                  onClick={() =>
+                    handleChange(index, "enabled", !item.enabled)
+                  }
+                >
+                  <div className="wh-switch-knob"></div>
                 </div>
-              ))}
-            </div>
 
-            {/* Footer */}
-            <div className="wh-card-footer">
-              <p className="wh-footer-note">
-                <strong>{activeDaysCount} day{activeDaysCount !== 1 ? "s" : ""}</strong> visible to patients
-              </p>
+                <strong style={{ width: 100 }}>{item.day}</strong>
+
+                <span className={`wh-badge ${item.enabled ? "open" : "off"}`}>
+                  {item.enabled ? "Open" : "Off"}
+                </span>
+
+                <input
+                  type="time"
+                  className="wh-time"
+                  value={item.start}
+                  disabled={!item.enabled}
+                  onChange={(e) =>
+                    handleChange(index, "start", e.target.value)
+                  }
+                />
+
+                <input
+                  type="time"
+                  className="wh-time"
+                  value={item.end}
+                  disabled={!item.enabled}
+                  onChange={(e) =>
+                    handleChange(index, "end", e.target.value)
+                  }
+                />
+
+                <span style={{ marginLeft: "auto", color: "#9ca3af" }}>
+                  {formatDisplayDate(item.date)}
+                </span>
+              </div>
+            ))}
+
+            <div style={{ padding: 20, textAlign: "right" }}>
               <button className="wh-save-btn" onClick={handleSubmit}>
-                <Save size={15} />
-                Save Working Hours
+                <Save size={16} /> Save Working Hours
               </button>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </>
