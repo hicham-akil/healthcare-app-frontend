@@ -322,11 +322,12 @@ const ShowMedecin = () => {
 
                   <div className="avatar-wrapper">
 
-                    <div className="avatar" style={{background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                   <img
+  src={m.profileImageUrl || "https://via.placeholder.com/70"}
+  alt={`${m.nom} ${m.prenom}`}
+  className="avatar"
+/>
 
-                      <User size={30} color="#999" />
-
-                    </div>
 
                     <div className="status-dot"></div>
 
