@@ -108,7 +108,6 @@ export default function AuthLayout() {
         <div className="al-blob1" />
         <div className="al-blob2" />
 
-        {/* Tab switcher */}
         <div className="al-tabs">
           <button
             className={`al-tab ${mode === "signin" ? "active" : ""}`}
