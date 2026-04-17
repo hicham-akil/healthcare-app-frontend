@@ -38,6 +38,7 @@ const MyRendezVous = () => {
       .then((res) => { if (!res.ok) throw new Error("Erreur lors du chargement"); return res.json(); })
       .then((data) => {
         setRendezVous(data);
+        console.log("Fetched rendez-vous:", data);
         if (isMedecin) {
           setCurrentPatient(data.find(r => r.status?.toUpperCase() === "EN_COURS") || null);
         }
@@ -280,7 +281,7 @@ const MyRendezVous = () => {
                     </thead>
                     <tbody>
                       {(() => {
-                        // Split into active (EN_ATTENTE, EN_COURS, ANNULE) and completed
+                        
                         const sorted = [...rendezVous].sort((a, b) => {
                           const aCompleted = a.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
                           const bCompleted = b.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
@@ -321,7 +322,7 @@ const MyRendezVous = () => {
                               {/* Date */}
                               <td>
                                 <div className="rv-date-main">
-                                  {new Date(rdv.dateHeureDebut).toLocaleDateString("fr-FR", {
+                                  {new Date(rdv.rendezvousdate).toLocaleDateString("fr-FR", {
                                     weekday: "short", day: "numeric", month: "short", year: "numeric"
                                   })}
                                 </div>
