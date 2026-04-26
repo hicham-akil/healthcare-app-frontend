@@ -2,7 +2,7 @@ import { Mail, Phone, Calendar, User, Upload, X, LogOut, ArrowLeft } from "lucid
 import { useState, useEffect } from "react";
 import { logout } from "../../utils/logout";
 import { useLocation, useNavigate } from "react-router-dom";
-import BASE_URL from "../../utils/api.js";
+import { useAction } from "../../hooks/useFetch"; // Use your standardized hook
 
 export default function EditProfileForm() {
   const location = useLocation();
@@ -15,9 +15,10 @@ export default function EditProfileForm() {
   });
 
   const [imageFile, setImageFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [typeMessage, setTypeMessage] = useState("success");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Use the action hook for the PUT request
+  const { execute: updateProfile, loading, error, reset: resetStatus } = useAction();
 
   const user_id = localStorage.getItem("user_id");
 
@@ -27,32 +28,26 @@ export default function EditProfileForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage("");
-    try {
-      const formData = new FormData();
-      const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
-      formData.append("data", jsonBlob);
-      if (imageFile) formData.append("image", imageFile);
+    setSuccessMessage("");
+    resetStatus(); // Clear any previous errors
 
-      const response = await fetch(`${BASE_URL}/api/users/${user_id}`, {
-        method: "PUT",
-        credentials: "include",
-        body: formData,
-      });
-      const result = await response.json();
-      if (response.ok) {
-        setMessage(result.message || "Profil mis à jour avec succès !");
-        setTypeMessage("success");
-      } else {
-        setMessage(result.error || "Échec de la mise à jour");
-        setTypeMessage("error");
-      }
-    } catch (error) {
-      setMessage("Erreur serveur : " + error.message);
-      setTypeMessage("error");
-    } finally {
-      setLoading(false);
+    const formData = new FormData();
+    // Wrap data in a Blob to match your backend's expected application/json part
+    const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
+    formData.append("data", jsonBlob);
+
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
+
+    // execute() automatically handles the fetch, credentials, and error extraction
+    const result = await updateProfile(`/api/users/${user_id}`, {
+      method: "PUT",
+      body: formData, // Passing FormData directly; browser sets the correct Boundary
+    });
+
+    if (result) {
+      setSuccessMessage(result.message || "Profil mis à jour avec succès !");
     }
   };
 
@@ -76,7 +71,6 @@ export default function EditProfileForm() {
         @media(max-width:640px){ .ep-grid { grid-template-columns:1fr; } }
         .ep-card { background:#fff; border:1px solid #d1fae5; border-radius:16px; padding:24px; }
 
-        /* Left sidebar */
         .ep-avatar-section { display:flex; flex-direction:column; align-items:center; text-align:center; }
         .ep-avatar-wrap { position:relative; margin-bottom:14px; }
         .ep-avatar { width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid #d1fae5; }
@@ -90,12 +84,10 @@ export default function EditProfileForm() {
         .ep-divider { border:none; border-top:1px solid #d1fae5; margin:0 0 18px; width:100%; }
         .ep-logout-btn { display:flex; align-items:center; gap:8px; font-size:13px; color:#dc2626; background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; }
 
-        /* Alert */
         .ep-alert { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:20px; }
         .ep-alert.success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
         .ep-alert.error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
 
-        /* Form */
         .ep-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
         @media(max-width:480px){ .ep-form-grid { grid-template-columns:1fr; } }
         .ep-field { display:flex; flex-direction:column; gap:5px; }
@@ -124,7 +116,7 @@ export default function EditProfileForm() {
           </p>
 
           <div className="ep-grid">
-            {/* Left column */}
+            {/* Sidebar column */}
             <div>
               <div className="ep-card ep-avatar-section">
                 <div className="ep-avatar-wrap">
@@ -165,11 +157,17 @@ export default function EditProfileForm() {
               </div>
             </div>
 
-            {/* Right column */}
+            {/* Form column */}
             <div className="ep-card">
-              {message && (
-                <div className={`ep-alert ${typeMessage}`}>
-                  {typeMessage === "success" ? "✓" : "✕"} {message}
+              {/* Success/Error Messaging via Hook state */}
+              {successMessage && (
+                <div className="ep-alert success">
+                  ✓ {successMessage}
+                </div>
+              )}
+              {error && (
+                <div className="ep-alert error">
+                  ✕ {error}
                 </div>
               )}
 
@@ -247,7 +245,7 @@ export default function EditProfileForm() {
 
                 <div className="ep-actions">
                   <button type="submit" className="ep-btn-primary" disabled={loading}>
-                    {loading ? <span className="ep-spinner" /> : null}
+                    {loading && <span className="ep-spinner" />}
                     {loading ? "Mise à jour..." : "Mettre à jour le profil"}
                   </button>
                   <button
