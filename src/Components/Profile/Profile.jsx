@@ -10,7 +10,9 @@ export default function Profile() {
     name: "", prenom: "", email: "",
     telephone: "", date_naissance: "", role: "", profileImageUrl: "",
   });
-
+  const handleLogout = () => {
+    logout(navigate);
+  };
   const user_id = localStorage.getItem("user_id");
 
   // --- NEW LOGIC USING useAction ---
@@ -107,8 +109,8 @@ export default function Profile() {
                 <h3 className="pf-name">{data.name} {data.prenom}</h3>
                 <p className="pf-role">{data.role === "PATIENT" ? "Patient" : "Médecin"}</p>
                 <hr className="pf-divider" />
-                <button className="pf-logout-btn" onClick={logout}>
-                  <LogOut size={14} /> Déconnexion
+                <button className="pf-logout-btn" onClick={handleLogout}>
+                Déconnexion
                 </button>
               </div>
 
