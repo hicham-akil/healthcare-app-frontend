@@ -21,76 +21,64 @@ export class ApiError extends Error {
         this.data = data;
     }
 }
-
 export async function apiFetch(endpoint, options = {}) {
-    throw new ApiError(ERROR_MESSAGES[500], 500);
     const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
 
-    const defaultHeaders = {
-        "Content-Type": "application/json",
-    };
-
     const isFormData = options.body instanceof FormData;
+
+    // 1. Prepare Headers
     const headers = isFormData
         ? options.headers || {}
-        : { ...defaultHeaders, ...(options.headers || {}) };
+        : { "Content-Type": "application/json", ...(options.headers || {}) };
 
-    let response;
+    // 2. Prepare Body (STRINGIFY HERE)
+    let body = options.body;
+    if (body && !isFormData && typeof body === "object") {
+        body = JSON.stringify(body);
+    }
 
     try {
-        response = await fetch(url, {
-            credentials: "include",
+        const response = await fetch(url, {
             ...options,
+            credentials: "include",
             headers,
+            body, // Use the stringified body
         });
-    } catch (networkError) {
-        throw new ApiError(
-            "Impossible de joindre le serveur. Vérifiez votre connexion.",
-            0
-        );
-    }
 
-    // --- UPDATED 401 LOGIC ---
-    if (response.status === 401) {
-        // localStorage.removeItem("user_id");
-        // localStorage.removeItem("role");
-        // We removed window.location.href here so it doesn't redirect.
-        // It now throws the error so useFetch can catch it and display it.
-        throw new ApiError(ERROR_MESSAGES[401], 401);
-    }
+        // ... (rest of your existing logic for 401 and error handling)
 
-    let data = null;
-    const contentType = response.headers.get("content-type") || "";
-    if (contentType.includes("application/json")) {
-        try {
-            data = await response.json();
-        } catch {
-            data = null;
+        // --- Keep the rest of the code exactly the same ---
+        if (response.status === 401) {
+            throw new ApiError(ERROR_MESSAGES[401], 401);
         }
-    }
 
-    if (!response.ok) {
-        const serverMessage = data?.message || data?.error || data?.detail || null;
-        const fallbackMessage = ERROR_MESSAGES[response.status] || `Erreur (${response.status})`;
-        throw new ApiError(serverMessage || fallbackMessage, response.status, data);
-    }
+        let data = null;
+        const contentType = response.headers.get("content-type") || "";
+        if (contentType.includes("application/json")) {
+            try { data = await response.json(); } catch { data = null; }
+        }
 
-    return data;
+        if (!response.ok) {
+          
+            const serverMessage = data?.message || data?.error || data?.detail;
+
+     
+            const fallbackMessage = ERROR_MESSAGES[response.status] || `Erreur (${response.status})`;
+
+            
+            throw new ApiError(serverMessage || fallbackMessage, response.status, data);
+        }
+        return data;
+    } catch (err) {
+        if (err instanceof ApiError) throw err;
+        throw new ApiError("Impossible de joindre le serveur.", 0);
+    }
 }
 
+// Clean up the helpers at the bottom so they don't double-stringify
 export const api = {
     get: (endpoint, options = {}) => apiFetch(endpoint, { ...options, method: "GET" }),
-    post: (endpoint, body, options = {}) =>
-        apiFetch(endpoint, {
-            ...options,
-            method: "POST",
-            body: body instanceof FormData ? body : JSON.stringify(body),
-        }),
-    put: (endpoint, body, options = {}) =>
-        apiFetch(endpoint, {
-            ...options,
-            method: "PUT",
-            body: body instanceof FormData ? body : JSON.stringify(body),
-        }),
+    post: (endpoint, body, options = {}) => apiFetch(endpoint, { ...options, method: "POST", body }),
+    put: (endpoint, body, options = {}) => apiFetch(endpoint, { ...options, method: "PUT", body }),
     delete: (endpoint, options = {}) => apiFetch(endpoint, { ...options, method: "DELETE" }),
 };
