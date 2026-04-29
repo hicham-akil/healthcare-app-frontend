@@ -1,13 +1,12 @@
 import React from "react";
 import UpdateStatusModal from "./UpdateStatus";
 import { useFetch, useAction } from "../../hooks/useFetch";
-import { ApiError, ERROR_MESSAGES } from "@/utils/apiFetch";
 
 const statusConfig = {
   EN_ATTENTE: { label: "En attente", color: "#92400e", bg: "#fef9c3", dot: "#ca8a04", ring: "#fde68a" },
   EN_COURS: { label: "En cours", color: "#065f46", bg: "#dcfce7", dot: "#16a34a", ring: "#bbf7d0" },
   COMPLETED: { label: "Terminé", color: "#1e40af", bg: "#dbeafe", dot: "#2563eb", ring: "#bfdbfe" },
-  ANNULE: { label: "Annulé", color: "#991b1b", bg: "#fee2e2", dot: "#dc2626", ring: "#fca5a5" },
+  ANNULE: { label: "Annulé", color: "#1e40af", bg: "#dbeafe", dot: "#2563eb", ring: "#bfdbfe" },
 };
 const getStatus = (status) =>
   statusConfig[status?.toUpperCase()] || {
@@ -15,8 +14,6 @@ const getStatus = (status) =>
   };
 
 const MyRendezVous = () => {
- 
-
   const role = localStorage.getItem("role");
   const isMedecin = role === "MEDECIN";
   const userId = localStorage.getItem("user_id");
@@ -32,10 +29,17 @@ const MyRendezVous = () => {
     : null;
 
   const { execute: callNext, loading: nextLoading, error: nextError, reset: resetNextError } = useAction();
+  const { execute: cancelRdv, loading: cancelLoading } = useAction();
 
   const handleNextPatient = async () => {
     resetNextError();
     await callNext(`/api/rendezvous/medecin/${userId}/next`, { method: "POST" });
+    refetch();
+  };
+
+  const handleCancel = async (rdvId) => {
+    if (!window.confirm("Voulez-vous vraiment annuler ce rendez-vous ?")) return;
+    await cancelRdv(`/api/rendezvous/${rdvId}/cancel`, { method: "PUT" });
     refetch();
   };
 
@@ -125,6 +129,9 @@ const MyRendezVous = () => {
         .rv-status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid transparent; }
         .rv-status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
         .rv-action-cell { white-space: nowrap; }
+        .rv-cancel-btn { background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 10px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; transition: background 0.15s; }
+        .rv-cancel-btn:hover:not(:disabled) { background: #fee2e2; }
+        .rv-cancel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
 
       <div className="rv-root">
@@ -232,92 +239,104 @@ const MyRendezVous = () => {
                         <th>{isMedecin ? "Patient" : "Médecin"}</th>
                         <th>Spécialité</th>
                         <th>Statut</th>
-                        {isMedecin && <th>Action</th>}
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {(() => {
-                        const sorted = [...rendezVous].sort((a, b) => {
-                          const aCompleted = a.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
-                          const bCompleted = b.status?.toUpperCase() === "COMPLETED" ? 1 : 0;
-                          if (aCompleted !== bCompleted) return aCompleted - bCompleted;
-                          return (a.queueNumber ?? 99) - (b.queueNumber ?? 99);
-                        });
+                            {(() => {
+                              const sorted = [...rendezVous].sort((a, b) => {
+                                const aDone = ["COMPLETED", "ANNULE"].includes(a.status?.toUpperCase()) ? 1 : 0;
+                                const bDone = ["COMPLETED", "ANNULE"].includes(b.status?.toUpperCase()) ? 1 : 0;
+                                if (aDone !== bDone) return aDone - bDone;
+                                return (a.queueNumber ?? 99) - (b.queueNumber ?? 99);
+                              });
 
-                        const activeRows = sorted.filter(r => r.status?.toUpperCase() !== "COMPLETED");
-                        const completedRows = sorted.filter(r => r.status?.toUpperCase() === "COMPLETED");
+                              const activeRows = sorted.filter(r => !["COMPLETED", "ANNULE"].includes(r.status?.toUpperCase()));
+                              const completedRows = sorted.filter(r => ["COMPLETED", "ANNULE"].includes(r.status?.toUpperCase()));
 
-                        const renderRow = (rdv) => {
-                          const st = getStatus(rdv.status);
-                          const isActive = rdv.status?.toUpperCase() === "EN_COURS";
-                          const isDone = rdv.status?.toUpperCase() === "COMPLETED";
-                          const personName = isMedecin
-                            ? (rdv.patientnom || rdv.patientNom || "—")
-                            : (rdv.medecinNom?.nom || rdv.medecinNom || "—");
-                          const initials = personName !== "—"
-                            ? personName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
-                            : (isMedecin ? "PT" : "DR");
-                          const specialiteName = rdv.specialite?.nomspecialite || rdv.specialite || "—";
+                              const renderRow = (rdv) => {
+                                const st = getStatus(rdv.status);
+                                const isActive = rdv.status?.toUpperCase() === "EN_COURS";
+                                const isDone = ["COMPLETED", "ANNULE"].includes(rdv.status?.toUpperCase());
+                                const personName = isMedecin
+                                  ? (rdv.patientnom || rdv.patientNom || "—")
+                                  : (rdv.medecinNom?.nom || rdv.medecinNom || "—");
+                                const initials = personName !== "—"
+                                  ? personName.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()
+                                  : (isMedecin ? "PT" : "DR");
+                                const specialiteName = rdv.specialite?.nomspecialite || rdv.specialite || "—";
 
-                          return (
-                            <tr key={rdv.id}
-                              className={isActive ? "rv-row-active" : isDone ? "rv-row-completed" : ""}>
-                              <td>
-                                <span className={`rv-queue-block${isActive ? " active" : isDone ? " done" : ""}`}>
-                                  {rdv.queueNumber ?? "—"}
-                                </span>
-                              </td>
-                              <td>
-                                <div className="rv-date-main">
-                                  {new Date(rdv.rendezvousdate).toLocaleDateString("fr-FR", {
-                                    weekday: "short", day: "numeric", month: "short", year: "numeric"
-                                  })}
-                                </div>
-                                {isActive && (
-                                  <div className="rv-date-sub" style={{ color: "#10b981" }}>
-                                    🟢 En consultation
-                                  </div>
-                                )}
-                              </td>
-                              <td>
-                                <div className="rv-person">
-                                  <div className="rv-avatar">{initials}</div>
-                                  <span className="rv-person-name">{personName}</span>
-                                </div>
-                              </td>
-                              <td><span className="rv-badge">{specialiteName}</span></td>
-                              <td>
-                                <span className="rv-status"
-                                  style={{ background: st.bg, color: st.color, borderColor: st.ring }}>
-                                  <span className="rv-status-dot" style={{ background: st.dot }} />
-                                  {st.label}
-                                </span>
-                              </td>
-                              {isMedecin && (
-                                <td className="rv-action-cell">
-                                  <UpdateStatusModal
-                                    rendezVousId={rdv.id}
-                                    currentStatus={rdv.status}
-                                    onUpdate={() => refetch()}
-                                  />
-                                </td>
-                              )}
-                            </tr>
-                          );
-                        };
+                                return (
+                                  <tr key={rdv.id}
+                                    className={isActive ? "rv-row-active" : isDone ? "rv-row-completed" : ""}>
+                                    <td>
+                                      <span className={`rv-queue-block${isActive ? " active" : isDone ? " done" : ""}`}>
+                                        {rdv.queueNumber ?? "—"}
+                                      </span>
+                                    </td>
+                                    <td>
+                                      <div className="rv-date-main">
+                                        {new Date(rdv.rendezvousdate).toLocaleDateString("fr-FR", {
+                                          weekday: "short", day: "numeric", month: "short", year: "numeric"
+                                        })}
+                                      </div>
+                                      {isActive && (
+                                        <div className="rv-date-sub" style={{ color: "#10b981" }}>
+                                          🟢 En consultation
+                                        </div>
+                                      )}
+                                    </td>
+                                    <td>
+                                      <div className="rv-person">
+                                        <div className="rv-avatar">{initials}</div>
+                                        <span className="rv-person-name">{personName}</span>
+                                      </div>
+                                    </td>
+                                    <td><span className="rv-badge">{specialiteName}</span></td>
+                                    <td>
+                                      <span className="rv-status"
+                                        style={{ background: st.bg, color: st.color, borderColor: st.ring }}>
+                                        <span className="rv-status-dot" style={{ background: st.dot }} />
+                                        {st.label}
+                                      </span>
+                                    </td>
+                                    {isMedecin ? (
+                                      <td className="rv-action-cell">
+                                        <UpdateStatusModal
+                                          rendezVousId={rdv.id}
+                                          currentStatus={rdv.status}
+                                          onUpdate={() => refetch()}
+                                        />
+                                      </td>
+                                    ) : (
+                                      <td className="rv-action-cell">
+                                        {rdv.status?.toUpperCase() === "EN_ATTENTE" && (
+                                          <button
+                                            className="rv-cancel-btn"
+                                            onClick={() => handleCancel(rdv.id)}
+                                            disabled={cancelLoading}
+                                          >
+                                            {cancelLoading ? "..." : "✕ Annuler"}
+                                          </button>
+                                        )}
+                                      </td>
+                                    )}
+                                  </tr>
+                                );
+                              };
 
-                        return (
-                          <>
-                            {activeRows.map(renderRow)}
-                            {activeRows.length > 0 && completedRows.length > 0 && (
-                              <tr className="rv-divider">
-                                <td colSpan={isMedecin ? 6 : 5}>✔ Consultations terminées</td>
-                              </tr>
-                            )}
-                            {completedRows.map(renderRow)}
-                          </>
-                        );
-                      })()}
+                              return (
+                                <>
+                                  {activeRows.map(renderRow)}
+                                  {activeRows.length > 0 && completedRows.length > 0 && (
+                                    <tr className="rv-divider">
+                                      <td colSpan={6}>✔ Consultations terminées / Annulées</td>
+                                    </tr>
+                                  )}
+                                  {completedRows.map(renderRow)}
+                                </>
+                              );
+                            })()}
                     </tbody>
                   </table>
                 </div>
