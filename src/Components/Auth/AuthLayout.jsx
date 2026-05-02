@@ -123,7 +123,6 @@ export default function AuthLayout() {
           </button>
         </div>
 
-        {/* Child form */}
         <div className="al-content">
           {mode === "signin" ? <Signin /> : <Signup />}
         </div>
