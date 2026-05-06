@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import BASE_URL from "../../utils/api.js";
 
 export default function SignIn() {
+    const { user, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [typemessage, settypeMessage] = useState("");
@@ -33,6 +34,7 @@ export default function SignIn() {
       }
 
       setUserFromLogin(data); 
+      console.log("Login response:", data);
       setMessage("Login successful!");
       settypeMessage("success");
       setTimeout(() => { window.location.href = "/"; }, 1500);

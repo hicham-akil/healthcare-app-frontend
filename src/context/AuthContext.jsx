@@ -4,14 +4,21 @@ import { apiFetch } from "../utils/apiFetch";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);  // { username, role, user_id }
+    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // ✅ ONLY FIX: normalize ID here
+    const normalizeUser = (u) => ({
+        ...u,
+        id: u.id ?? u.user_id, // 🔥 FIX: unify ID
+    });
 
     const fetchMe = useCallback(async () => {
         try {
             const data = await apiFetch("/api/auth/sec/me");
+
             if (data?.authenticated && data?.user) {
-                setUser(data.user);
+                setUser(normalizeUser(data.user)); // 🔥 FIX APPLIED HERE
             } else {
                 setUser(null);
             }
@@ -22,7 +29,9 @@ export function AuthProvider({ children }) {
         }
     }, []);
 
-    useEffect(() => { fetchMe(); }, [fetchMe]);
+    useEffect(() => {
+        fetchMe();
+    }, [fetchMe]);
 
     const logout = useCallback(async () => {
         try {
@@ -34,11 +43,14 @@ export function AuthProvider({ children }) {
         }
     }, []);
 
+    // ✅ KEEP login setter but FIX ID ONLY
     const setUserFromLogin = useCallback((loginResponse) => {
         setUser({
-            username: loginResponse.nom,
+            id: loginResponse.id ?? loginResponse.user_id, // 🔥 FIX
             role: loginResponse.role,
-            user_id: loginResponse.id,
+            nom: loginResponse.nom,
+            prenom: loginResponse.prenom,
+            email: loginResponse.email,
         });
     }, []);
 

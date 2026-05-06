@@ -2,7 +2,7 @@ import React from "react";
 import UpdateStatusModal from "./UpdateStatus";
 import { useFetch, useAction } from "../../hooks/useFetch";
 import { useQueueSocket } from "../../hooks/useQueueSocket";
-
+import { useAuth } from "../../context/AuthContext";
 const statusConfig = {
   EN_ATTENTE: { label: "En attente", color: "#92400e", bg: "#fef9c3", dot: "#ca8a04", ring: "#fde68a" },
   EN_COURS: { label: "En cours", color: "#065f46", bg: "#dcfce7", dot: "#16a34a", ring: "#bbf7d0" },
@@ -15,9 +15,6 @@ const getStatus = (status) =>
     label: status || "—", color: "#374151", bg: "#f3f4f6", dot: "#9ca3af", ring: "#e5e7eb",
   };
 
-// ─────────────────────────────────────────────
-// Patient queue banner — driven purely by WebSocket
-// ─────────────────────────────────────────────
 const PatientQueueBanner = ({ patientId, medecinId }) => {
   const { position, calledNow, waitMinutes, message, connected, loading } =
     useQueueSocket(patientId, medecinId);
@@ -123,10 +120,13 @@ const PatientQueueBanner = ({ patientId, medecinId }) => {
 // Main component
 // ─────────────────────────────────────────────
 const MyRendezVous = () => {
-  const role = localStorage.getItem("role");
-  const isMedecin = role === "MEDECIN";
-  const userId = localStorage.getItem("user_id");
+  const { user, loading: authLoading } = useAuth();
 
+  const isMedecin = user?.role === "MEDECIN";
+  const userId = user?.id;
+  console.log("User ID:", userId, "Role:", user?.role);
+   
+ 
   const endpoint = isMedecin
     ? `/api/rendezvous/medecin/${userId}`
     : `/api/rendezvous/patient/${userId}`;
