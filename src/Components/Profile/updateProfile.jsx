@@ -2,9 +2,12 @@ import { Mail, Phone, Calendar, User, Upload, X, LogOut, ArrowLeft } from "lucid
 import { useState, useEffect } from "react";
 import { logout } from "../../utils/logout";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAction } from "../../hooks/useFetch"; // Use your standardized hook
+import { useAction } from "../../hooks/useFetch";
+import { useAuth } from "../../context/AuthContext";
 
 export default function EditProfileForm() {
+  const { user, loading: authLoading } = useAuth();
+  
   const location = useLocation();
   const navigate = useNavigate();
   const userData = location.state?.user_data;
@@ -20,7 +23,7 @@ export default function EditProfileForm() {
   // Use the action hook for the PUT request
   const { execute: updateProfile, loading, error, reset: resetStatus } = useAction();
 
-  const user_id = localStorage.getItem("user_id");
+  const user_id = user?.id;
 
   useEffect(() => {
     if (userData) setData(userData);
@@ -29,10 +32,10 @@ export default function EditProfileForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage("");
-    resetStatus(); // Clear any previous errors
+    resetStatus(); 
 
     const formData = new FormData();
-    // Wrap data in a Blob to match your backend's expected application/json part
+   
     const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
     formData.append("data", jsonBlob);
 
@@ -40,10 +43,10 @@ export default function EditProfileForm() {
       formData.append("image", imageFile);
     }
 
-    // execute() automatically handles the fetch, credentials, and error extraction
+   
     const result = await updateProfile(`/api/users/${user_id}`, {
       method: "PUT",
-      body: formData, // Passing FormData directly; browser sets the correct Boundary
+      body: formData, 
     });
 
     if (result) {

@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { logout } from "../../utils/logout";
 import { useNavigate } from "react-router-dom";
 import { useAction } from "../../hooks/useFetch"; // Standardized Hook
+import { useAuth } from "../../context/AuthContext";
 
 export default function Profile() {
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [data, setData] = useState({
     name: "", prenom: "", email: "",
@@ -13,9 +15,8 @@ export default function Profile() {
   const handleLogout = () => {
     logout(navigate);
   };
-  const user_id = localStorage.getItem("user_id");
+  const user_id = user?.id;
 
-  // --- NEW LOGIC USING useAction ---
   const { execute: getProfile, loading, error } = useAction();
 
   useEffect(() => {

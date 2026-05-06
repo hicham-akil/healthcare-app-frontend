@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAction } from "../../hooks/useFetch"; // Standardized Hook
+import { useAuth } from "../../context/AuthContext";
 
 const STATUS_OPTIONS = [
   {
@@ -45,13 +46,15 @@ const STATUS_OPTIONS = [
 ];
 
 const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
+  const { user, loading: authLoading } = useAuth();
+  
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(currentStatus?.toUpperCase() || "EN_ATTENTE");
 
   // NEW: Use the standardized action hook
   const { execute: updateStatus, loading, error, reset: resetError } = useAction();
 
-  const role = localStorage.getItem("role");
+  const role = user?.role;
   const isMedecin = role === "MEDECIN";
 
   if (!isMedecin) return null;
@@ -68,19 +71,16 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
   };
 
   const handleSubmit = async () => {
-    // If no change, just close
     if (selected === currentStatus?.toUpperCase()) {
       handleClose();
       return;
     }
 
-    // execute() handles the PUT request and uses your new apiFetch logic
     const result = await updateStatus(`/api/rendezvous/${rendezVousId}/status`, {
       method: "PUT",
-      body: { status: selected }, // Object passed directly; apiFetch handles stringify
+      body: { status: selected }, 
     });
 
-    // Only update UI if the request was successful
     if (result) {
       onUpdate && onUpdate(selected);
       handleClose();

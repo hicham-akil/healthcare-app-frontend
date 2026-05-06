@@ -1,6 +1,7 @@
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import { Calendar, Users, ArrowRight, Stethoscope, AlertCircle } from "lucide-react";
 import { useFetch } from "../../hooks/useFetch";
+import { useAuth } from "../../context/AuthContext";
 
 const TakeAppointment = () => {
   const { id } = useParams();
@@ -14,12 +15,13 @@ const TakeAppointment = () => {
 
   // Logic: Filter active slots
   const schedule = Array.isArray(data) ? data.filter((h) => h.status === "ACTIVE") : [];
+  const { user, loading: authLoading } = useAuth();
 
   const handleSelectSlot = (horaire) => {
     navigate(`/confirm-appointment/${horaire.idHoraire}`, {
       state: {
         horaire,
-        patientId: parseInt(localStorage.getItem("user_id")),
+        patientId: parseInt(user?.id),
         doctorid: parseInt(id),
         specialite,
         specialiteId: parseInt(specialiteId),

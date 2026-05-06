@@ -9,15 +9,11 @@ import BASE_URL from "../utils/api.js";
 
 
 const ShowMedecin = () => {
-
+  
   const [specialites, setSpecialites] = useState([]);
-
   const [selectedSpecialite, setSelectedSpecialite] = useState("");
-
   const [selectedSpecialiteLabel, setSelectedSpecialiteLabel] = useState("");
-
-  const [searchTerm, setSearchTerm] = useState(""); // 1. Added state for search input
-
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [message, setmessage] = useState("");
 
   const [medecins, setMedecins] = useState([]);
@@ -104,7 +100,6 @@ const ShowMedecin = () => {
 
 
 
-  // 2. Filter logic: This filters the doctors list based on the name typed
 
   const filteredMedecins = useMemo(() => {
 

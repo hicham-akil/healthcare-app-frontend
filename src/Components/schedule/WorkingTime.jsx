@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Clock, Calendar, Save, CheckCircle, AlertCircle } from "lucide-react";
 import { useAction } from "../../hooks/useFetch"; // Standardized hook
+import { useAuth } from "../../context/AuthContext";
 
 const daysOfWeek = [
   "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday",
 ];
 
 const getNextDateForDay = (dayName) => {
+  const { user, loading: authLoading } = useAuth();
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const target = days.indexOf(dayName);
   const today = new Date();
@@ -26,7 +28,7 @@ const formatDisplayDate = (dateStr) => {
 };
 
 const WorkingHours = () => {
-  const medecinId = Number(localStorage.getItem("user_id"));
+  const medecinId = Number(parseInt(user?.id)); 
 
   // Hook for API calls
   const { execute: apiCall, loading, error, reset } = useAction();
@@ -102,7 +104,7 @@ const WorkingHours = () => {
 
     if (result) {
       setSuccess(true);
-      fetchSchedule(); // Refresh IDs from DB
+      fetchSchedule(); 
     }
   };
 
