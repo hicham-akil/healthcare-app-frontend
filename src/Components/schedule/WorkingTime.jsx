@@ -8,14 +8,21 @@ const daysOfWeek = [
 ];
 
 const getNextDateForDay = (dayName) => {
-  const { user, loading: authLoading } = useAuth();
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
   const target = days.indexOf(dayName);
+  if (target === -1) return null;
+
   const today = new Date();
   const current = today.getDay();
-  const diff = (target - current + 7) % 7;
+
+  let diff = (target - current + 7) % 7;
+
+  if (diff === 0) diff = 7;
+
   const result = new Date(today);
-  result.setDate(today.getDate() + (diff === 0 ? 0 : diff));
+  result.setDate(today.getDate() + diff);
+
   return result.toISOString().split("T")[0];
 };
 
@@ -28,6 +35,8 @@ const formatDisplayDate = (dateStr) => {
 };
 
 const WorkingHours = () => {
+  const { user, loading: authLoading } = useAuth();
+
   const medecinId = Number(parseInt(user?.id)); 
 
   // Hook for API calls

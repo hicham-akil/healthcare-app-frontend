@@ -1,8 +1,9 @@
 import { useState } from "react";
-
+import { useAuth } from "../../context/AuthContext";
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const role = localStorage.getItem("role");
+  const { user } = useAuth();
+  const role = user?.role;
 
   const navLinks = [
     { label: "Accueil", href: "/" },
