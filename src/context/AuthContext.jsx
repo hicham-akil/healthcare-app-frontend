@@ -1,37 +1,31 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../utils/apiFetch";
 
+const normalizeUser = (u) => ({
+    ...u,
+    id: u.id ?? u.user_id,
+});
+
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    // ✅ ONLY FIX: normalize ID here
-    const normalizeUser = (u) => ({
-        ...u,
-        id: u.id ?? u.user_id, // 🔥 FIX: unify ID
-    });
-
-    const fetchMe = useCallback(async () => {
-        try {
-            const data = await apiFetch("/api/auth/sec/me");
-
-            if (data?.authenticated && data?.user) {
-                setUser(normalizeUser(data.user)); // 🔥 FIX APPLIED HERE
-            } else {
-                setUser(null);
-            }
-        } catch {
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+export function AuthProvider({ children, onLogout }) {
+    const [user, setUser] = useState(undefined); 
 
     useEffect(() => {
+        const fetchMe = async () => {
+            try {
+                const data = await apiFetch("/api/auth/sec/me");
+                setUser(data?.authenticated && data?.user
+                    ? normalizeUser(data.user)
+                    : null
+                );
+            } catch {
+                setUser(null);
+            }
+        };
+
         fetchMe();
-    }, [fetchMe]);
+    }, []); 
 
     const logout = useCallback(async () => {
         try {
@@ -39,23 +33,16 @@ export function AuthProvider({ children }) {
         } finally {
             setUser(null);
             localStorage.clear();
-            window.location.href = "/auth";
+            onLogout?.();
         }
-    }, []);
+    }, [onLogout]);
 
-    // ✅ KEEP login setter but FIX ID ONLY
-    const setUserFromLogin = useCallback((loginResponse) => {
-        setUser({
-            id: loginResponse.id ?? loginResponse.user_id, // 🔥 FIX
-            role: loginResponse.role,
-            nom: loginResponse.nom,
-            prenom: loginResponse.prenom,
-            email: loginResponse.email,
-        });
+    const setUserFromLogin = useCallback((res) => {
+        setUser(normalizeUser(res)); 
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, fetchMe, setUserFromLogin }}>
+        <AuthContext.Provider value={{ user, logout, setUserFromLogin }}>
             {children}
         </AuthContext.Provider>
     );

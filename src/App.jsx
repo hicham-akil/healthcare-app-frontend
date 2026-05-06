@@ -11,8 +11,11 @@ import Takeapointement from "./components/Apointement/Takeapointement";
 import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
 import MyRendezVous from "./components/Apointement/MyRendezVous";
 import ProtectedRoute from "./components/Security/protectedRoute";
+import { useNavigate } from "react-router-dom";
 function App() {
+  const navigate = useNavigate();
   return(
+    <AuthProvider onLogout={() => navigate("/auth", { replace: true })}>
     <Router>
       <Navbar />
       <Routes>
@@ -31,6 +34,7 @@ function App() {
         </Route>
       </Routes>
     </Router>
+    </AuthProvider>
   )
 }
 
