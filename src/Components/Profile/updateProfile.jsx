@@ -119,7 +119,6 @@ export default function EditProfileForm() {
           </p>
 
           <div className="ep-grid">
-            {/* Sidebar column */}
             <div>
               <div className="ep-card ep-avatar-section">
                 <div className="ep-avatar-wrap">
@@ -161,7 +160,6 @@ export default function EditProfileForm() {
             </div>
 
             <div className="ep-card">
-              {/* Success/Error Messaging via Hook state */}
               {successMessage && (
                 <div className="ep-alert success">
                   ✓ {successMessage}
@@ -184,8 +182,8 @@ export default function EditProfileForm() {
                         className="ep-input"
                         type="text"
                         placeholder="Votre prénom"
-                        value={data.name || ""}
-                        onChange={(e) => setData({ ...data, name: e.target.value })}
+                        value={data.prenom || ""}
+                        onChange={(e) => setData({ ...data, prenom: e.target.value })}
                         required
                       />
                     </div>
@@ -198,8 +196,8 @@ export default function EditProfileForm() {
                         className="ep-input"
                         type="text"
                         placeholder="Votre nom"
-                        value={data.prenom || ""}
-                        onChange={(e) => setData({ ...data, prenom: e.target.value })}
+                        value={data.name || ""}
+                        onChange={(e) => setData({ ...data, name: e.target.value })}
                         required
                       />
                     </div>
