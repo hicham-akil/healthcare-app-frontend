@@ -108,7 +108,7 @@ const WorkingHours = () => {
 
     const result = await apiCall("/api/horaires", {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: payload,
     });
 
     if (result) {

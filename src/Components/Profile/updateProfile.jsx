@@ -20,7 +20,6 @@ export default function EditProfileForm() {
   const [imageFile, setImageFile] = useState(null);
   const [successMessage, setSuccessMessage] = useState("");
 
-  // Use the action hook for the PUT request
   const { execute: updateProfile, loading, error, reset: resetStatus } = useAction();
 
   const user_id = user?.id;
@@ -153,7 +152,7 @@ export default function EditProfileForm() {
                 </h3>
                 <p className="ep-user-sub">Compte healthMax</p>
                 <hr className="ep-divider" />
-                <button className="ep-logout-btn" onClick={logout}>
+                <button className="ep-logout-btn" onClick={() => logout(navigate)}>
                   <LogOut size={14} /> Déconnexion
                 </button>
               </div>
