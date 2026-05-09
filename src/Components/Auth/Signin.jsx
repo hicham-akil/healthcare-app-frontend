@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Mail, Lock, ArrowRight, Shield } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import BASE_URL from "../../utils/api.js";
+import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
     const { user, loading: authLoading } = useAuth();
@@ -9,7 +10,7 @@ export default function SignIn() {
   const [message, setMessage] = useState("");
   const [typemessage, settypeMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
+ const navigation = useNavigate();
   const { setUserFromLogin } = useAuth();
 
   const handleChange = (e) => {
@@ -37,7 +38,7 @@ export default function SignIn() {
       console.log("Login response:", data);
       setMessage("Login successful!");
       settypeMessage("success");
-      setTimeout(() => { window.location.href = "/"; }, 1500);
+      navigation("/");
     } catch {
       setMessage("Login failed. Please try again.");
       settypeMessage("error");
