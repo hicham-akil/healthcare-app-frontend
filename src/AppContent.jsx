@@ -24,14 +24,23 @@ function AppContent() {
                 <Route path="/auth" element={<AuthLayout />} />
                 <Route path="/" element={<HomePage />} />
 
+                {/* Routes accessibles à tout utilisateur connecté */}
                 <Route element={<ProtectedRoute />}>
+                    <Route path="/myapoin" element={<MyRendezVous />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/edit-profile" element={<EditProfileForm />} />
+                </Route>
+
+                {/* Routes PATIENT uniquement */}
+                <Route element={<ProtectedRoute allowedRoles={["PATIENT"]} />}>
                     <Route path="/ShowMed" element={<ShowMedecin />} />
                     <Route path="/Takeapointement/:id" element={<Takeapointement />} />
                     <Route path="/confirm-appointment/:idHoraire" element={<ConfirmAppointment />} />
-                    <Route path="/myapoin" element={<MyRendezVous />} />
+                </Route>
+
+                {/* Routes MEDECIN uniquement */}
+                <Route element={<ProtectedRoute allowedRoles={["MEDECIN"]} />}>
                     <Route path="/workinghours" element={<WorkingHours />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/edit-profile" element={<EditProfileForm />} />
                 </Route>
             </Routes>
         </AuthProvider>
