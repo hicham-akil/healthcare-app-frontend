@@ -1,47 +1,62 @@
-import { Mail, Phone, Calendar, User, Shield, Bell, LogOut } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Calendar,
+  User,
+  Shield,
+  Bell,
+  LogOut,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { logout } from "../../utils/logout";
 import { useNavigate } from "react-router-dom";
-import { useAction } from "../../hooks/useFetch"; // Standardized Hook
+import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Profile() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
+
   const [data, setData] = useState({
-    name: "", prenom: "", email: "",
-    telephone: "", date_naissance: "", role: "", profileImageUrl: "",
+    name: "",
+    prenom: "",
+    email: "",
+    telephone: "",
+    date_naissance: "",
+    role: "",
+    profileImageUrl: "",
   });
+
   const handleLogout = () => {
     logout(navigate);
   };
+
   const user_id = user?.id;
 
-  const { execute: getProfile, loading, error } = useAction();
+  // ✅ useFetch for GET requests
+  const {
+    data: profileData,
+    loading,
+    error,
+    refetch,
+  } = useFetch(user_id ? `/api/users/${user_id}` : null);
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      const userData = await getProfile(`/api/users/${user_id}`, {
-        method: "GET",
+    if (profileData) {
+      setData({
+        name: profileData.nom,
+        prenom: profileData.prenom,
+        email: profileData.email,
+        telephone: profileData.telephone,
+        date_naissance: profileData.dateNaissance,
+        role: profileData.role,
+        profileImageUrl: profileData.profileImageUrl || "",
       });
+    }
+  }, [profileData]);
 
-      if (userData) {
-        setData({
-          name: userData.nom,
-          prenom: userData.prenom,
-          email: userData.email,
-          telephone: userData.telephone,
-          date_naissance: userData.dateNaissance,
-          role: userData.role,
-          profileImageUrl: userData.profileImageUrl || "",
-        });
-      }
-    };
-
-    if (user_id) fetchProfileData();
-  }, [user_id]);
-
-  const initials = `${data.name?.[0] || ""}${data.prenom?.[0] || ""}`.toUpperCase();
+  const initials = `${data.name?.[0] || ""}${data.prenom?.[0] || ""
+    }`.toUpperCase();
 
   return (
     <>
@@ -92,8 +107,10 @@ export default function Profile() {
       <div className="pf-root">
         <div className="pf-main">
           <h1 className="pf-page-title">Mon Profil</h1>
+
           <p className="pf-page-sub">
-            Consultez vos informations personnelles et gérez votre compte healthMax.
+            Consultez vos informations personnelles et gérez votre compte
+            healthMax.
           </p>
 
           <div className="pf-grid">
@@ -102,16 +119,33 @@ export default function Profile() {
               <div className="pf-card pf-avatar-section">
                 <div className="pf-avatar">
                   {data.profileImageUrl ? (
-                    <img src={data.profileImageUrl} alt={`${data.name} ${data.prenom}`} />
+                    <img
+                      src={data.profileImageUrl}
+                      alt={`${data.name} ${data.prenom}`}
+                    />
                   ) : (
-                    <div className="pf-avatar-placeholder">{initials || "?"}</div>
+                    <div className="pf-avatar-placeholder">
+                      {initials || "?"}
+                    </div>
                   )}
                 </div>
-                <h3 className="pf-name">{data.name} {data.prenom}</h3>
-                <p className="pf-role">{data.role === "PATIENT" ? "Patient" : "Médecin"}</p>
+
+                <h3 className="pf-name">
+                  {data.name} {data.prenom}
+                </h3>
+
+                <p className="pf-role">
+                  {data.role === "PATIENT" ? "Patient" : "Médecin"}
+                </p>
+
                 <hr className="pf-divider" />
-                <button className="pf-logout-btn" onClick={handleLogout}>
-                Déconnexion
+
+                <button
+                  className="pf-logout-btn"
+                  onClick={handleLogout}
+                >
+                  <LogOut size={14} />
+                  Déconnexion
                 </button>
               </div>
 
@@ -119,10 +153,15 @@ export default function Profile() {
                 <div className="pf-verified-icon">
                   <Shield size={14} color="#fff" />
                 </div>
+
                 <div>
-                  <p className="pf-verified-title">Compte Vérifié</p>
+                  <p className="pf-verified-title">
+                    Compte Vérifié
+                  </p>
+
                   <p className="pf-verified-text">
-                    Vos données sont chiffrées et stockées en toute sécurité.
+                    Vos données sont chiffrées et stockées en toute
+                    sécurité.
                   </p>
                 </div>
               </div>
@@ -130,41 +169,90 @@ export default function Profile() {
 
             {/* Right column */}
             <div className="pf-card">
-              {/* Show error if fetch fails */}
-              {error && <div className="pf-error-msg">✕ {error}</div>}
+              {error && (
+                <div className="pf-error-msg">
+                  ✕ {error}
+                </div>
+              )}
 
-              {/* Show loading state */}
-              {loading && <div className="pf-loading-overlay">Chargement...</div>}
+              {loading && (
+                <div className="pf-loading-overlay">
+                  Chargement...
+                </div>
+              )}
 
-              <div className="pf-form-grid" style={{ marginTop: "50px" }}>
+              <div
+                className="pf-form-grid"
+                style={{ marginTop: "50px" }}
+              >
                 <div className="pf-field">
                   <label>Nom Complet</label>
+
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon"><User size={13} /></span>
-                    <input className="pf-input" type="text" value={`${data.name} ${data.prenom}`} readOnly />
+                    <span className="pf-input-icon">
+                      <User size={13} />
+                    </span>
+
+                    <input
+                      className="pf-input"
+                      type="text"
+                      value={`${data.name} ${data.prenom}`}
+                      readOnly
+                    />
                   </div>
                 </div>
+
                 <div className="pf-field">
                   <label>Adresse Email</label>
+
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon"><Mail size={13} /></span>
-                    <input className="pf-input" type="email" value={data.email} readOnly />
+                    <span className="pf-input-icon">
+                      <Mail size={13} />
+                    </span>
+
+                    <input
+                      className="pf-input"
+                      type="email"
+                      value={data.email}
+                      readOnly
+                    />
                   </div>
                 </div>
+
                 <div className="pf-field">
                   <label>Téléphone</label>
+
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon"><Phone size={13} /></span>
-                    <input className="pf-input" type="tel" value={data.telephone || ""} readOnly />
+                    <span className="pf-input-icon">
+                      <Phone size={13} />
+                    </span>
+
+                    <input
+                      className="pf-input"
+                      type="tel"
+                      value={data.telephone || ""}
+                      readOnly
+                    />
                   </div>
                 </div>
+
                 <div className="pf-field">
                   <label>Date de Naissance</label>
+
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon"><Calendar size={13} /></span>
-                    <input className="pf-input" type="text" value={data.date_naissance || ""} readOnly />
+                    <span className="pf-input-icon">
+                      <Calendar size={13} />
+                    </span>
+
+                    <input
+                      className="pf-input"
+                      type="text"
+                      value={data.date_naissance || ""}
+                      readOnly
+                    />
                   </div>
                 </div>
+
                 <div style={{ height: "80px" }}></div>
               </div>
 
@@ -172,11 +260,21 @@ export default function Profile() {
                 <button
                   className="pf-btn-primary"
                   disabled={loading}
-                  onClick={() => navigate("/edit-profile", { state: { user_data: data } })}
+                  onClick={() =>
+                    navigate("/edit-profile", {
+                      state: { user_data: data },
+                    })
+                  }
                 >
                   Mettre à jour le profil
                 </button>
-                <button className="pf-btn-secondary" onClick={() => navigate(-1)}>Annuler</button>
+
+                <button
+                  className="pf-btn-secondary"
+                  onClick={() => navigate(-1)}
+                >
+                  Annuler
+                </button>
               </div>
             </div>
           </div>
@@ -187,17 +285,33 @@ export default function Profile() {
               <div className="pf-info-icon">
                 <Shield size={15} color="#064e3b" />
               </div>
+
               <p className="pf-info-title">Sécurité</p>
-              <p className="pf-info-text">Double authentification activée pour votre protection.</p>
-              <button className="pf-info-link">Modifier les accès</button>
+
+              <p className="pf-info-text">
+                Double authentification activée pour votre
+                protection.
+              </p>
+
+              <button className="pf-info-link">
+                Modifier les accès
+              </button>
             </div>
+
             <div className="pf-info-card">
               <div className="pf-info-icon">
                 <Bell size={15} color="#064e3b" />
               </div>
+
               <p className="pf-info-title">Notifications</p>
-              <p className="pf-info-text">Recevez vos rappels par SMS et Email.</p>
-              <button className="pf-info-link">Gérer les alertes</button>
+
+              <p className="pf-info-text">
+                Recevez vos rappels par SMS et Email.
+              </p>
+
+              <button className="pf-info-link">
+                Gérer les alertes
+              </button>
             </div>
           </div>
         </div>

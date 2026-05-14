@@ -1,20 +1,10 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const role = user?.role;
-
-  const navLinks = [
-    { label: "Accueil", href: "/" },
-    { label: "À propos", href: "#" },
-    { label: "Services", href: "#" },
-    { label: "Connexion", href: "/auth" },
-    { label: "Mes Rendez-vous", href: "/myapoin" },
-    ...(role === "PATIENT" ? [{ label: "Médecins", href: "/ShowMed" }] : []),
-    { label: "Profil", href: "/profile" },
-    ...(role === "MEDECIN" ? [{ label: "Horaires", href: "/workinghours" }] : []),
-  ];
 
   return (
     <>
@@ -41,7 +31,6 @@ export default function Navbar() {
           justify-content: space-between;
         }
 
-        /* Logo */
         .nav-logo {
           display: flex;
           align-items: center;
@@ -65,11 +54,8 @@ export default function Navbar() {
           letter-spacing: -0.3px;
         }
 
-        .nav-logo-text span {
-          color: #10b981;
-        }
+        .nav-logo-text span { color: #10b981; }
 
-        /* Desktop links */
         .nav-links {
           display: flex;
           align-items: center;
@@ -78,9 +64,7 @@ export default function Navbar() {
           margin: 0; padding: 0;
         }
 
-        @media (max-width: 768px) {
-          .nav-links { display: none; }
-        }
+        @media (max-width: 768px) { .nav-links { display: none; } }
 
         .nav-links a {
           text-decoration: none;
@@ -93,17 +77,9 @@ export default function Navbar() {
           white-space: nowrap;
         }
 
-        .nav-links a:hover {
-          background: #ecfdf5;
-          color: #065f46;
-        }
+        .nav-links a:hover { background: #ecfdf5; color: #065f46; }
+        .nav-links a.active { background: #d1fae5; color: #065f46; }
 
-        .nav-links a.active {
-          background: #d1fae5;
-          color: #065f46;
-        }
-
-        /* CTA link (Auth/Connexion) */
         .nav-links a.nav-cta {
           background: #065f46;
           color: #ffffff;
@@ -113,12 +89,28 @@ export default function Navbar() {
           font-weight: 600;
         }
 
-        .nav-links a.nav-cta:hover {
-          background: #047857;
-          color: #ffffff;
+        .nav-links a.nav-cta:hover { background: #047857; color: #ffffff; }
+
+        .nav-logout-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: #dc2626;
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          padding: 6px 13px;
+          border-radius: 20px;
+          margin-left: 6px;
+          cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          transition: background 0.15s, border-color 0.15s;
+          white-space: nowrap;
         }
 
-        /* Role badge */
+        .nav-logout-btn:hover { background: #fee2e2; border-color: #fca5a5; }
+
         .nav-role {
           display: inline-flex;
           align-items: center;
@@ -135,7 +127,6 @@ export default function Navbar() {
           margin-left: 8px;
         }
 
-        /* Hamburger */
         .nav-hamburger {
           display: none;
           background: none;
@@ -149,15 +140,10 @@ export default function Navbar() {
           transition: background 0.15s;
         }
 
-        .nav-hamburger:hover {
-          background: #ecfdf5;
-        }
+        .nav-hamburger:hover { background: #ecfdf5; }
 
-        @media (max-width: 768px) {
-          .nav-hamburger { display: flex; }
-        }
+        @media (max-width: 768px) { .nav-hamburger { display: flex; } }
 
-        /* Mobile drawer */
         .nav-mobile {
           display: none;
           flex-direction: column;
@@ -167,9 +153,7 @@ export default function Navbar() {
           gap: 2px;
         }
 
-        .nav-mobile.open {
-          display: flex;
-        }
+        .nav-mobile.open { display: flex; }
 
         .nav-mobile a {
           text-decoration: none;
@@ -184,10 +168,7 @@ export default function Navbar() {
           gap: 8px;
         }
 
-        .nav-mobile a:hover {
-          background: #ecfdf5;
-          color: #065f46;
-        }
+        .nav-mobile a:hover { background: #ecfdf5; color: #065f46; }
 
         .nav-mobile a.nav-cta-mobile {
           background: #065f46;
@@ -198,9 +179,28 @@ export default function Navbar() {
           border-radius: 12px;
         }
 
-        .nav-mobile a.nav-cta-mobile:hover {
-          background: #047857;
+        .nav-mobile a.nav-cta-mobile:hover { background: #047857; }
+
+        .nav-mobile-logout {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          color: #dc2626;
+          background: #fef2f2;
+          border: 1px solid #fecaca;
+          padding: 11px 14px;
+          border-radius: 10px;
+          margin-top: 8px;
+          cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          transition: background 0.15s;
+          width: 100%;
+          text-align: left;
         }
+
+        .nav-mobile-logout:hover { background: #fee2e2; }
 
         .nav-divider {
           height: 1px;
@@ -211,7 +211,6 @@ export default function Navbar() {
 
       <nav className="nav-root">
         <div className="nav-inner">
-          {/* Logo */}
           <a href="/" className="nav-logo">
             <div className="nav-logo-icon">✚</div>
             <span className="nav-logo-text">health<span>Max</span></span>
@@ -226,7 +225,19 @@ export default function Navbar() {
             {role === "PATIENT" && <li><a href="/ShowMed">Médecins</a></li>}
             {role === "MEDECIN" && <li><a href="/workinghours">Horaires</a></li>}
             <li><a href="/profile">Profil</a></li>
-            <li><a href="/auth" className="nav-cta">Connexion</a></li>
+
+            {!user && (
+              <li><a href="/auth" className="nav-cta">Connexion</a></li>
+            )}
+
+            {user && (
+              <li>
+                <button className="nav-logout-btn" onClick={logout}>
+                  ⎋ Déconnexion
+                </button>
+              </li>
+            )}
+
             {role && (
               <li>
                 <span className="nav-role">
@@ -236,7 +247,6 @@ export default function Navbar() {
             )}
           </ul>
 
-          {/* Hamburger */}
           <button
             className="nav-hamburger"
             onClick={() => setIsOpen(!isOpen)}
@@ -246,7 +256,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+
         <div className={`nav-mobile ${isOpen ? "open" : ""}`}>
           <a href="/">🏠 Accueil</a>
           <a href="#">ℹ️ À propos</a>
@@ -256,7 +266,16 @@ export default function Navbar() {
           {role === "MEDECIN" && <a href="/workinghours">🕐 Horaires</a>}
           <div className="nav-divider" />
           <a href="/profile">👤 Profil</a>
-          <a href="/auth" className="nav-cta-mobile">Connexion →</a>
+
+          {!user && (
+            <a href="/auth" className="nav-cta-mobile">Connexion →</a>
+          )}
+
+          {user && (
+            <button className="nav-mobile-logout" onClick={logout}>
+              ⎋ Déconnexion
+            </button>
+          )}
         </div>
       </nav>
     </>
