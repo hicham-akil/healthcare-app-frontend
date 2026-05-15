@@ -12,6 +12,8 @@ import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
 import MyRendezVous from "./components/Apointement/MyRendezVous";
 import ProtectedRoute from "./components/Security/protectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import ForgotPassword from "./components/Auth/Forgotpassword";
+import ResetPassword from "./components/Auth/ResetPassword";
 
 function AppContent() {
     const navigate = useNavigate();
@@ -23,6 +25,8 @@ function AppContent() {
             <Routes>
                 <Route path="/auth" element={<AuthLayout />} />
                 <Route path="/" element={<HomePage />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
 
                 {/* Routes accessibles à tout utilisateur connecté */}
                 <Route element={<ProtectedRoute />}>
