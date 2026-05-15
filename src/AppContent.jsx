@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/Security/protectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import ForgotPassword from "./components/Auth/Forgotpassword";
 import ResetPassword from "./components/Auth/ResetPassword";
+import NotFound from "./Pages/Notfound";
 
 function AppContent() {
     const navigate = useNavigate();
@@ -46,6 +47,8 @@ function AppContent() {
                 <Route element={<ProtectedRoute allowedRoles={["MEDECIN"]} />}>
                     <Route path="/workinghours" element={<WorkingHours />} />
                 </Route>
+                {/* 404 Not Found */}
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </AuthProvider>
     );
