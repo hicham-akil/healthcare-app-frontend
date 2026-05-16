@@ -222,6 +222,7 @@ export default function Navbar() {
             <li><a href="#">À propos</a></li>
             <li><a href="#">Services</a></li>
             <li><a href="/myapoin">Mes Rendez-vous</a></li>
+            <li><a href="/history">Historique</a></li>
             {role === "PATIENT" && <li><a href="/ShowMed">Médecins</a></li>}
             {role === "MEDECIN" && <li><a href="/workinghours">Horaires</a></li>}
             <li><a href="/profile">Profil</a></li>
@@ -262,6 +263,7 @@ export default function Navbar() {
           <a href="#">ℹ️ À propos</a>
           <a href="#">⚕️ Services</a>
           <a href="/myapoin">📅 Mes Rendez-vous</a>
+          <a href="/history">📜 Historique</a>
           {role === "PATIENT" && <a href="/ShowMed">👨‍⚕️ Médecins</a>}
           {role === "MEDECIN" && <a href="/workinghours">🕐 Horaires</a>}
           <div className="nav-divider" />

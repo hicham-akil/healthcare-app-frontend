@@ -10,6 +10,7 @@ import ShowMedecin from "./Pages/ShowMedecin";
 import Takeapointement from "./components/Apointement/Takeapointement";
 import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
 import MyRendezVous from "./components/Apointement/MyRendezVous";
+import RendezVousHistory from "./components/Apointement/RendezVousHistory";
 import ProtectedRoute from "./components/Security/protectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import ForgotPassword from "./components/Auth/Forgotpassword";
@@ -32,6 +33,7 @@ function AppContent() {
                 {/* Routes accessibles à tout utilisateur connecté */}
                 <Route element={<ProtectedRoute />}>
                     <Route path="/myapoin" element={<MyRendezVous />} />
+                    <Route path="/history" element={<RendezVousHistory />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/edit-profile" element={<EditProfileForm />} />
                 </Route>
