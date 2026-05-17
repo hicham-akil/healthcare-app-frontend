@@ -5,16 +5,27 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAction } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
 
+// Strips time part from ISO strings like "2006-05-06T00:00:00.000Z" → "2006-05-06"
+const toDateInput = (val) => {
+  if (!val) return "";
+  return val.toString().substring(0, 10);
+};
+
 export default function EditProfileForm() {
-  const { user, loading: authLoading } = useAuth();
-  
+  const { user } = useAuth();
+
   const location = useLocation();
   const navigate = useNavigate();
   const userData = location.state?.user_data;
 
   const [data, setData] = useState({
-    name: "", prenom: "", email: "",
-    telephone: "", date_naissance: "", profileImageUrl: "",
+    name: "",
+    prenom: "",
+    email: "",
+    telephone: "",
+    date_naissance: "",
+    adresse: "",
+    profileImageUrl: "",
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -25,31 +36,47 @@ export default function EditProfileForm() {
   const user_id = user?.id;
 
   useEffect(() => {
-    if (userData) setData(userData);
+    if (userData) {
+      setData({
+        ...userData,
+        // Normalize date so <input type="date"> receives "yyyy-MM-dd"
+        date_naissance: toDateInput(userData.date_naissance),
+      });
+    }
   }, [userData]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccessMessage("");
-    resetStatus(); 
+    resetStatus();
 
     const formData = new FormData();
-   
-    const jsonBlob = new Blob([JSON.stringify(data)], { type: "application/json" });
+
+    // Map frontend field names → backend field names
+    const payload = {
+      nom: data.name,
+      prenom: data.prenom,
+      email: data.email,
+      telephone: data.telephone,
+      adresse: data.adresse || "",
+      // Always send plain "yyyy-MM-dd" to backend
+      dateNaissance: data.date_naissance ? data.date_naissance.substring(0, 10) : null,
+    };
+
+    const jsonBlob = new Blob([JSON.stringify(payload)], { type: "application/json" });
     formData.append("data", jsonBlob);
 
     if (imageFile) {
       formData.append("image", imageFile);
     }
 
-   
     const result = await updateProfile(`/api/users/${user_id}`, {
       method: "PUT",
-      body: formData, 
+      body: formData,
     });
 
     if (result) {
-      setSuccessMessage(result.message || "Profil mis à jour avec succès !");
+      setSuccessMessage("Profil mis à jour avec succès !");
     }
   };
 
@@ -72,7 +99,6 @@ export default function EditProfileForm() {
         .ep-grid { display:grid; grid-template-columns:260px 1fr; gap:20px; }
         @media(max-width:640px){ .ep-grid { grid-template-columns:1fr; } }
         .ep-card { background:#fff; border:1px solid #d1fae5; border-radius:16px; padding:24px; }
-
         .ep-avatar-section { display:flex; flex-direction:column; align-items:center; text-align:center; }
         .ep-avatar-wrap { position:relative; margin-bottom:14px; }
         .ep-avatar { width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid #d1fae5; }
@@ -85,11 +111,9 @@ export default function EditProfileForm() {
         .ep-user-sub { font-size:12px; color:#6b7280; margin:0 0 18px; }
         .ep-divider { border:none; border-top:1px solid #d1fae5; margin:0 0 18px; width:100%; }
         .ep-logout-btn { display:flex; align-items:center; gap:8px; font-size:13px; color:#dc2626; background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; }
-
         .ep-alert { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:10px; font-size:13px; font-weight:500; margin-bottom:20px; }
         .ep-alert.success { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
         .ep-alert.error { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
-
         .ep-form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
         @media(max-width:480px){ .ep-form-grid { grid-template-columns:1fr; } }
         .ep-field { display:flex; flex-direction:column; gap:5px; }
@@ -109,24 +133,25 @@ export default function EditProfileForm() {
 
       <div className="ep-root">
         <div className="ep-main">
+
           <button className="ep-back-btn" onClick={() => navigate("/profile")}>
             <ArrowLeft size={14} /> Retour au profil
           </button>
+
           <h1 className="ep-page-title">Modifier mon Profil</h1>
-          <p className="ep-page-sub">
-            Mettez à jour vos informations personnelles ci-dessous.
-          </p>
+          <p className="ep-page-sub">Mettez à jour vos informations personnelles ci-dessous.</p>
 
           <div className="ep-grid">
+
+            {/* ── Left: Avatar ── */}
             <div>
               <div className="ep-card ep-avatar-section">
                 <div className="ep-avatar-wrap">
                   <div className="ep-avatar">
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="preview" />
-                    ) : (
-                      <div className="ep-avatar-placeholder">{initials || "?"}</div>
-                    )}
+                    {previewUrl
+                      ? <img src={previewUrl} alt="preview" />
+                      : <div className="ep-avatar-placeholder">{initials || "?"}</div>
+                    }
                   </div>
                   <label className="ep-upload-btn" htmlFor="ep-file-input">
                     <Upload size={13} color="#fff" />
@@ -145,6 +170,7 @@ export default function EditProfileForm() {
                     <X size={12} /> Supprimer
                   </button>
                 )}
+
                 <p className="ep-file-hint">JPG, PNG — max 5 MB</p>
 
                 <h3 className="ep-user-name" style={{ marginTop: "12px" }}>
@@ -158,21 +184,20 @@ export default function EditProfileForm() {
               </div>
             </div>
 
+            {/* ── Right: Form ── */}
             <div className="ep-card">
               {successMessage && (
-                <div className="ep-alert success">
-                  ✓ {successMessage}
-                </div>
+                <div className="ep-alert success">✓ {successMessage}</div>
               )}
               {error && (
-                <div className="ep-alert error">
-                  ✕ {error}
-                </div>
+                <div className="ep-alert error">✕ {error}</div>
               )}
 
               <form onSubmit={handleSubmit}>
                 <p className="ep-section-label">Informations personnelles</p>
+
                 <div className="ep-form-grid">
+
                   <div className="ep-field">
                     <label>Prénom</label>
                     <div className="ep-input-wrap">
@@ -187,6 +212,7 @@ export default function EditProfileForm() {
                       />
                     </div>
                   </div>
+
                   <div className="ep-field">
                     <label>Nom</label>
                     <div className="ep-input-wrap">
@@ -201,6 +227,7 @@ export default function EditProfileForm() {
                       />
                     </div>
                   </div>
+
                   <div className="ep-field">
                     <label>Adresse Email</label>
                     <div className="ep-input-wrap">
@@ -215,6 +242,7 @@ export default function EditProfileForm() {
                       />
                     </div>
                   </div>
+
                   <div className="ep-field">
                     <label>Téléphone</label>
                     <div className="ep-input-wrap">
@@ -228,6 +256,7 @@ export default function EditProfileForm() {
                       />
                     </div>
                   </div>
+
                   <div className="ep-field" style={{ gridColumn: "span 2" }}>
                     <label>Date de Naissance</label>
                     <div className="ep-input-wrap">
@@ -240,6 +269,7 @@ export default function EditProfileForm() {
                       />
                     </div>
                   </div>
+
                 </div>
 
                 <div className="ep-actions">
@@ -257,6 +287,7 @@ export default function EditProfileForm() {
                 </div>
               </form>
             </div>
+
           </div>
         </div>
       </div>

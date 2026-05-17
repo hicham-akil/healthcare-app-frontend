@@ -33,7 +33,6 @@ export default function Profile() {
 
   const user_id = user?.id;
 
-  // ✅ useFetch for GET requests
   const {
     data: profileData,
     loading,
@@ -247,7 +246,7 @@ export default function Profile() {
                     <input
                       className="pf-input"
                       type="text"
-                      value={data.date_naissance || ""}
+                      value={data.date_naissance ? new Date(data.date_naissance).toLocaleDateString() : ""}
                       readOnly
                     />
                   </div>
