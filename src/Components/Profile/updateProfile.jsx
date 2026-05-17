@@ -1,4 +1,4 @@
-import { Mail, Phone, Calendar, User, Upload, X, LogOut, ArrowLeft } from "lucide-react";
+import { Mail, Phone, Calendar, User, Upload, X, LogOut, ArrowLeft, Map } from "lucide-react";
 import { useState, useEffect } from "react";
 import { logout } from "../../utils/logout";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,7 +24,7 @@ export default function EditProfileForm() {
     email: "",
     telephone: "",
     date_naissance: "",
-    adresse: "",
+    address: "",
     profileImageUrl: "",
   });
 
@@ -39,10 +39,10 @@ export default function EditProfileForm() {
     if (userData) {
       setData({
         ...userData,
-        // Normalize date so <input type="date"> receives "yyyy-MM-dd"
         date_naissance: toDateInput(userData.date_naissance),
       });
     }
+    console.log("Loaded user data for editing:", userData);
   }, [userData]);
 
   const handleSubmit = async (e) => {
@@ -58,8 +58,7 @@ export default function EditProfileForm() {
       prenom: data.prenom,
       email: data.email,
       telephone: data.telephone,
-      adresse: data.adresse || "",
-      // Always send plain "yyyy-MM-dd" to backend
+      address: data.address || "",
       dateNaissance: data.date_naissance ? data.date_naissance.substring(0, 10) : null,
     };
 
@@ -266,6 +265,20 @@ export default function EditProfileForm() {
                         type="date"
                         value={data.date_naissance || ""}
                         onChange={(e) => setData({ ...data, date_naissance: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="ep-field" style={{ gridColumn: "span 2" }}>
+                    <label>Adresse</label>
+                    <div className="ep-input-wrap">
+                      <span className="ep-input-icon">
+                        <Map size={13} />
+                      </span>
+                      <input
+                        className="ep-input"
+                        type="text"
+                        value={data.address || ""}
+                        onChange={(e) => setData({ ...data, adresse: e.target.value })}
                       />
                     </div>
                   </div>

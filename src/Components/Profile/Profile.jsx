@@ -6,6 +6,7 @@ import {
   Shield,
   Bell,
   LogOut,
+  MapPin,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { logout } from "../../utils/logout";
@@ -22,6 +23,7 @@ export default function Profile() {
     prenom: "",
     email: "",
     telephone: "",
+    address: "",
     date_naissance: "",
     role: "",
     profileImageUrl: "",
@@ -47,6 +49,7 @@ export default function Profile() {
         prenom: profileData.prenom,
         email: profileData.email,
         telephone: profileData.telephone,
+        address: profileData.adresse || "",
         date_naissance: profileData.dateNaissance,
         role: profileData.role,
         profileImageUrl: profileData.profileImageUrl || "",
@@ -233,6 +236,22 @@ export default function Profile() {
                       readOnly
                     />
                   </div>
+                    <div className="pf-field">
+                      <label>Adresse</label>
+
+                      <div className="pf-input-wrap">
+                        <span className="pf-input-icon">
+                        <MapPin size={13} />
+                        </span>
+
+                        <input
+                          className="pf-input"
+                          type="text"
+                          value={data.address || ""}
+                          readOnly
+                        />
+                      </div>
+                      </div>
                 </div>
 
                 <div className="pf-field">
