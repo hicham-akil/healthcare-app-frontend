@@ -232,7 +232,16 @@ const MyRendezVous = () => {
 
   const handleNextPatient = async () => {
     resetNextError?.();
-    await callNext(`/api/rendezvous/medecin/${userId}/next`, { method: "POST" });
+
+    const result = await callNext(
+      `/api/rendezvous/medecin/${userId}/next`,
+      { method: "POST" }
+    );
+
+    if (result?.message === "No patient left") {
+      alert("Aucun patient restant.");
+    }
+
     refetch();
   };
   const handleHoldAndNext = async () => {
