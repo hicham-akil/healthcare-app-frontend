@@ -9,13 +9,12 @@ import {
   MapPin,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { logout } from "../../utils/logout";
 import { useNavigate } from "react-router-dom";
 import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Profile() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [data, setData] = useState({
@@ -28,10 +27,6 @@ export default function Profile() {
     role: "",
     profileImageUrl: "",
   });
-
-  const handleLogout = () => {
-    logout(navigate);
-  };
 
   const user_id = user?.id;
 
@@ -144,7 +139,7 @@ export default function Profile() {
 
                 <button
                   className="pf-logout-btn"
-                  onClick={handleLogout}
+                  onClick={logout}
                 >
                   <LogOut size={14} />
                   Déconnexion

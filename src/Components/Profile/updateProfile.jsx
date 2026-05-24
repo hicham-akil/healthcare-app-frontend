@@ -1,6 +1,5 @@
 import { Mail, Phone, Calendar, User, Upload, X, LogOut, ArrowLeft, Map } from "lucide-react";
 import { useState, useEffect } from "react";
-import { logout } from "../../utils/logout";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAction } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
@@ -12,7 +11,7 @@ const toDateInput = (val) => {
 };
 
 export default function EditProfileForm() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -177,7 +176,7 @@ export default function EditProfileForm() {
                 </h3>
                 <p className="ep-user-sub">Compte healthMax</p>
                 <hr className="ep-divider" />
-                <button className="ep-logout-btn" onClick={() => logout(navigate)}>
+                <button className="ep-logout-btn" onClick={logout}>
                   <LogOut size={14} /> Déconnexion
                 </button>
               </div>

@@ -33,6 +33,7 @@ export function AuthProvider({ children, onLogout }) {
         } finally {
             setUser(null);
             localStorage.clear();
+            sessionStorage.clear();
             onLogout?.();
         }
     }, [onLogout]);
