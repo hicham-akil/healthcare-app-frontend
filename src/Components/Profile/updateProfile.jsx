@@ -57,7 +57,7 @@ export default function EditProfileForm() {
       prenom: data.prenom,
       email: data.email,
       telephone: data.telephone,
-      address: data.address || "",
+      adresse: data.address || "",
       dateNaissance: data.date_naissance ? data.date_naissance.substring(0, 10) : null,
     };
 
@@ -277,7 +277,7 @@ export default function EditProfileForm() {
                         className="ep-input"
                         type="text"
                         value={data.address || ""}
-                        onChange={(e) => setData({ ...data, adresse: e.target.value })}
+                        onChange={(e) => setData({ ...data, address: e.target.value })}
                       />
                     </div>
                   </div>
