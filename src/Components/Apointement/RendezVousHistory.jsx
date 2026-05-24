@@ -27,7 +27,7 @@ const RendezVousHistory = () => {
   const history = Array.isArray(data) 
     ? data.filter(r => ["COMPLETED", "ANNULE"].includes(r.status?.toUpperCase())) 
     : [];
-
+  console.log("Rendez-vous history data:", history);
   return (
     <>
       <style>{`
@@ -88,7 +88,7 @@ const RendezVousHistory = () => {
                       return (
                         <tr key={rdv.id}>
                           <td>{rdv.rendezvousdate ? new Date(rdv.rendezvousdate).toLocaleDateString() : "—"}</td>
-                          <td>{isMedecin ? rdv.patientNom : rdv.medecinNom}</td>
+                          <td>{isMedecin ? rdv.patientnom : rdv.medecinNom}</td>
                           <td>{rdv.specialite}</td>
                           <td>
                             <span className="hist-status" style={{ background: st.bg, color: st.color, borderColor: st.ring }}>

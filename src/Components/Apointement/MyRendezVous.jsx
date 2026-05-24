@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateStatusModal from "./UpdateStatus";
 import { useFetch, useAction } from "../../hooks/useFetch";
 import { useQueueSocket } from "../../hooks/useQueueSocket";
@@ -51,6 +51,32 @@ const initials = (name) =>
     .map((w) => w[0]?.toUpperCase() || "")
     .join("");
 
+const firstText = (...values) =>
+  values.find((value) => typeof value === "string" && value.trim())?.trim() || "";
+
+const getPatientName = (rdv) =>
+  firstText(
+    rdv?.patientNom,
+    rdv?.patientnom,
+    rdv?.patientName,
+    rdv?.patient?.nomComplet,
+    rdv?.patient?.fullName,
+    [rdv?.patient?.prenom, rdv?.patient?.nom].filter(Boolean).join(" ")
+  );
+
+const getMedecinName = (rdv) =>
+  firstText(
+    rdv?.medecinNom,
+    rdv?.medecinnom,
+    rdv?.medecinName,
+    rdv?.medecin?.nomComplet,
+    rdv?.medecin?.fullName,
+    [rdv?.medecin?.prenom, rdv?.medecin?.nom].filter(Boolean).join(" ")
+  );
+
+const getDisplayName = (rdv, isMedecin) =>
+  isMedecin ? getPatientName(rdv) : getMedecinName(rdv);
+
 /* ─── Queue Banner (patient) ──────────────────────────────── */
 const PatientQueueBanner = ({ patientId, medecinId }) => {
   const { position, calledNow, waitMinutes, message, connected, loading } =
@@ -92,7 +118,7 @@ const RdvCard = ({ rdv, isMedecin, isToday: today, onRecall, onCancel, onUpdate,
   const isActive = rdv.status?.toUpperCase() === "EN_COURS";
   const isHold = rdv.status?.toUpperCase() === "ON_HOLD";
   const canCancel = !isMedecin && rdv.status?.toUpperCase() === "EN_ATTENTE";
-  const personName = isMedecin ? rdv.patientNom : rdv.medecinNom;
+  const personName = getDisplayName(rdv, isMedecin);
   const time = fmtTime(rdv.rendezvousdate);
 
   return (
@@ -193,6 +219,35 @@ const MyRendezVous = () => {
   const { data, loading, error, refetch } = useFetch(userId ? endpoint : null);
   const allRdv = Array.isArray(data) ? data : [];
 
+  useEffect(() => {
+    if (!Array.isArray(data)) return;
+
+    const rendezVous = data;
+    const missingNames = rendezVous.filter((rdv) => !getDisplayName(rdv, isMedecin));
+    console.debug("[MyRendezVous] rendez-vous loaded", {
+      role: user?.role,
+      endpoint,
+      count: rendezVous.length,
+      sample: rendezVous[0],
+    });
+
+    if (missingNames.length > 0) {
+      console.warn(
+        "[MyRendezVous] Missing display name for rendez-vous. Check backend field names.",
+        missingNames.map((rdv) => ({
+          id: rdv.id,
+          patientNom: rdv.patientNom,
+          patientnom: rdv.patientnom,
+          patientName: rdv.patientName,
+          patient: rdv.patient,
+          medecinNom: rdv.medecinNom,
+          medecinnom: rdv.medecinnom,
+          medecinName: rdv.medecinName,
+          medecin: rdv.medecin,
+        }))
+      );
+    }
+  }, [data, endpoint, isMedecin, user?.role]);
   /* ── Sort: today first (active→waiting→hold→done→cancel), then others desc ── */
   const todayRdv = allRdv
     .filter((r) => isToday(r.rendezvousdate))
@@ -205,7 +260,7 @@ const MyRendezVous = () => {
   const otherRdv = allRdv
     .filter((r) => !isToday(r.rendezvousdate))
     .sort((a, b) => new Date(b.rendezvousdate) - new Date(a.rendezvousdate));
-
+   
   const applyFilter = (list) =>
     filter === "ALL" ? list : list.filter((r) => r.status?.toUpperCase() === filter);
 
@@ -216,7 +271,7 @@ const MyRendezVous = () => {
   const currentPatient = isMedecin
     ? allRdv.find((r) => r.status?.toUpperCase() === "EN_COURS") || null
     : null;
-
+  const currentPatientName = currentPatient ? getPatientName(currentPatient) : "";
   /* ── Patient: active rdv ── */
   const activeRdv = !isMedecin
     ? allRdv.find((r) =>
@@ -688,10 +743,10 @@ const MyRendezVous = () => {
                   <div className="rv-ctrl__inner">
                     {currentPatient ? (
                       <div className="rv-ctrl__patient">
-                        <div className="rv-ctrl__avatar">{initials(currentPatient.patientNom)}</div>
+                        <div className="rv-ctrl__avatar">{initials(currentPatientName)}</div>
                         <div>
                           <p className="rv-ctrl__meta-label">Patient en cours</p>
-                          <p className="rv-ctrl__name">{currentPatient.patientNom}</p>
+                              <p className="rv-ctrl__name">{currentPatientName || "—"}</p>
                           <p className="rv-ctrl__qnum">#{currentPatient.queueNumber}</p>
                         </div>
                       </div>
