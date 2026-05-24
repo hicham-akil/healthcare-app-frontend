@@ -218,13 +218,18 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <ul className="nav-links">
-            <li><a href="/">Accueil</a></li>
-            <li><a href="#">À propos</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="/myapoin">Mes Rendez-vous</a></li>
-            <li><a href="/history">Historique</a></li>
+            {role !== "ADMIN" && (
+              <>
+                <li><a href="/">Accueil</a></li>
+                <li><a href="#">À propos</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="/myapoin">Mes Rendez-vous</a></li>
+                <li><a href="/history">Historique</a></li>
+              </>
+            )}
             {role === "PATIENT" && <li><a href="/ShowMed">Médecins</a></li>}
             {role === "MEDECIN" && <li><a href="/workinghours">Horaires</a></li>}
+            {role === "ADMIN" && <li><a href="/admin">Admin</a></li>}
             <li><a href="/profile">Profil</a></li>
 
             {!user && (
@@ -266,6 +271,7 @@ export default function Navbar() {
           <a href="/history">📜 Historique</a>
           {role === "PATIENT" && <a href="/ShowMed">👨‍⚕️ Médecins</a>}
           {role === "MEDECIN" && <a href="/workinghours">🕐 Horaires</a>}
+          {role === "ADMIN" && <a href="/admin">Admin</a>}
           <div className="nav-divider" />
           <a href="/profile">👤 Profil</a>
 

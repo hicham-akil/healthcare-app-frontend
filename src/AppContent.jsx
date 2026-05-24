@@ -11,6 +11,7 @@ import Takeapointement from "./components/Apointement/Takeapointement";
 import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
 import MyRendezVous from "./components/Apointement/MyRendezVous";
 import RendezVousHistory from "./components/Apointement/RendezVousHistory";
+import AdminDashboard from "./components/Admin/AdminDashboard";
 import ProtectedRoute from "./components/Security/protectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import ForgotPassword from "./components/Auth/Forgotpassword";
@@ -49,6 +50,12 @@ function AppContent() {
                 <Route element={<ProtectedRoute allowedRoles={["MEDECIN"]} />}>
                     <Route path="/workinghours" element={<WorkingHours />} />
                 </Route>
+
+                {/* Routes ADMIN uniquement */}
+                <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+                    <Route path="/admin" element={<AdminDashboard />} />
+                </Route>
+
                 {/* 404 Not Found */}
                 <Route path="*" element={<NotFound />} />
             </Routes>
