@@ -221,8 +221,7 @@ export default function Navbar() {
             {role !== "ADMIN" && (
               <>
                 <li><a href="/">Accueil</a></li>
-                <li><a href="#">À propos</a></li>
-                <li><a href="#">Services</a></li>
+        
                 <li><a href="/myapoin">Mes Rendez-vous</a></li>
                 <li><a href="/history">Historique</a></li>
               </>
