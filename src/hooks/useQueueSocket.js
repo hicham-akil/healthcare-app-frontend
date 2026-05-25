@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-const WS_BASE = import.meta.env.VITE_WS_URL || "ws://localhost:8080";
+const WS_BASE = import.meta.env.VITE_WS_URL;
 const RECONNECT_DELAYS = [1000, 2000, 5000, 10000, 30000];
 const HEARTBEAT_INTERVAL = 25000;
 const MAX_RECONNECT_ATTEMPTS = 10;
