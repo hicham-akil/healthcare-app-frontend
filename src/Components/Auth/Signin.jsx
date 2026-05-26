@@ -5,13 +5,12 @@ import BASE_URL from "../../utils/api.js";
 import { useNavigate } from "react-router-dom";
 
 export default function SignIn() {
-    const { user, loading: authLoading } = useAuth();
+  const { setUserFromLogin } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
   const [typemessage, settypeMessage] = useState("");
   const [loading, setLoading] = useState(false);
  const navigation = useNavigate();
-  const { setUserFromLogin } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

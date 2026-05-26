@@ -86,7 +86,7 @@ const ShowMedecin = () => {
 
       }
 
-    } catch (err) {
+    } catch {
 
       setmessage("Erreur lors du chargement des médecins");
 

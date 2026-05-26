@@ -34,7 +34,6 @@ export default function Profile() {
     data: profileData,
     loading,
     error,
-    refetch,
   } = useFetch(user_id ? `/api/users/${user_id}` : null);
 
   useEffect(() => {

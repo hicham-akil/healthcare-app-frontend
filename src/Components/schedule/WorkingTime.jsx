@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Clock, Calendar, Save, CheckCircle, AlertCircle } from "lucide-react";
 import { useAction } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
@@ -38,7 +38,7 @@ const formatDisplayDate = (dateStr) => {
 };
 
 const WorkingHours = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const medecinId = Number(parseInt(user?.id));
   const { execute: apiCall, loading, error, reset } = useAction();
   const [success, setSuccess] = useState(false);
@@ -60,7 +60,9 @@ const WorkingHours = () => {
     })
   );
 
-  const fetchSchedule = async () => {
+  const fetchSchedule = useCallback(async () => {
+    if (!medecinId) return;
+
     const data = await apiCall(`/api/horaires/medecin/${medecinId}`, {
       method: "GET",
     });
@@ -84,11 +86,11 @@ const WorkingHours = () => {
       });
       setSchedule(updated);
     }
-  };
+  }, [apiCall, medecinId, todayName]);
 
   useEffect(() => {
     fetchSchedule();
-  }, []);
+  }, [fetchSchedule]);
 
   const handleChange = (index, field, value) => {
     const updated = [...schedule];

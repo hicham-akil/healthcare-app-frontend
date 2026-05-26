@@ -1,5 +1,5 @@
 import React from "react";
-import AuthLayout from "./Components/Auth/AuthLayout";
+import AuthLayout from "./components/Auth/AuthLayout";
 import Navbar from "./components/reusable/Navbar";
 import HomePage from "./Pages/Home";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
@@ -12,10 +12,10 @@ import ConfirmAppointment from "./components/Apointement/ConfirmAppointment";
 import MyRendezVous from "./components/Apointement/MyRendezVous";
 import RendezVousHistory from "./components/Apointement/RendezVousHistory";
 import AdminDashboard from "./components/Admin/AdminDashboard";
-import ProtectedRoute from "./components/Security/protectedRoute";
+import ProtectedRoute from "./components/Security/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
-import ForgotPassword from "./Components/Auth/Forgotpassword";
-import ResetPassword from "./Components/Auth/ResetPassword";
+import ForgotPassword from "./components/Auth/Forgotpassword";
+import ResetPassword from "./components/Auth/ResetPassword";
 import NotFound from "./Pages/Notfound";
 
 function AppContent() {

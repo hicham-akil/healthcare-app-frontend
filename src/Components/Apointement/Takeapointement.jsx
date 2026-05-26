@@ -15,7 +15,7 @@ const TakeAppointment = () => {
 
   // Logic: Filter active slots
   const schedule = Array.isArray(data) ? data.filter((h) => h.status === "ACTIVE") : [];
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
   const handleSelectSlot = (horaire) => {
     navigate(`/confirm-appointment/${horaire.idHoraire}`, {

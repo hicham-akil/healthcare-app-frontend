@@ -40,7 +40,7 @@ export default function ForgotPassword() {
             );
             navigation("/reset-password");
             settypeMessage("success");
-        } catch (error) {
+        } catch {
             setMessage("Something went wrong. Please try again.");
             settypeMessage("error");
         } finally {

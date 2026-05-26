@@ -46,7 +46,7 @@ const STATUS_OPTIONS = [
 ];
 
 const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(currentStatus?.toUpperCase() || "EN_ATTENTE");

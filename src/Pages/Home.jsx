@@ -1,5 +1,5 @@
 import { Calendar, User, Stethoscope, Clock, ArrowRight, Shield, Star } from "lucide-react";
-import Navbar from "../Components/reusable/Navbar";
+import Navbar from "../components/reusable/Navbar";
 
 export default function HomePage() {
   return (
