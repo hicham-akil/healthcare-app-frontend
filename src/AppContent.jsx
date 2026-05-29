@@ -1,5 +1,4 @@
 import React from "react";
-import AuthLayout from "./components/Auth/AuthLayout";
 import Navbar from "./components/reusable/Navbar";
 import HomePage from "./Pages/Home";
 import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
@@ -17,6 +16,7 @@ import { AuthProvider } from "./context/AuthContext";
 import ForgotPassword from "./components/Auth/Forgotpassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import NotFound from "./Pages/Notfound";
+import AuthLayout from "./components/Auth/AuthLayout";
 
 function AppContent() {
     const navigate = useNavigate();
