@@ -31,7 +31,8 @@ export function AuthProvider({ children, onLogout }) {
     const logout = useCallback(async () => {
         try {
             await apiFetch("/api/auth/logout", { method: "POST" });
-        } finally {
+             } catch {
+   } finally {
             setUser(null);
             localStorage.clear();
             sessionStorage.clear();
