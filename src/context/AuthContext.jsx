@@ -31,8 +31,10 @@ export function AuthProvider({ children, onLogout }) {
     const logout = useCallback(async () => {
         try {
             await apiFetch("/api/auth/logout", { method: "POST" });
-             } catch {
-   } finally {
+        } catch (err) {
+            // If server logout fails, still clear local auth state
+            console.warn("Logout request failed:", err);
+        } finally {
             setUser(null);
             localStorage.clear();
             sessionStorage.clear();
