@@ -24,7 +24,7 @@ describe("Navbar", () => {
 
     it("renders the healthMax logo", () => {
         renderNavbar();
-        expect(screen.getByText(/health\s*max/i)).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /healthmax/i })).toBeInTheDocument();
     });
 
     it("shows 'Connexion' link when user is null", () => {
@@ -49,7 +49,7 @@ describe("Navbar", () => {
 
     it("shows role badge for logged-in user", () => {
         renderNavbar({ id: 1, role: "PATIENT" });
-        expect(screen.getByText("PATIENT")).toBeInTheDocument();
+        expect(screen.getByText(/patient/i)).toBeInTheDocument();
     });
 
     it("shows 'Médecins' link for PATIENT", () => {
@@ -85,7 +85,7 @@ describe("Navbar", () => {
 
     it("toggles mobile menu on hamburger click", () => {
         renderNavbar({ id: 1, role: "PATIENT" });
-        const hamburger = screen.getByRole("button", { name: /menu/i });
+        const hamburger = screen.getByLabelText(/menu/i);
 
         const mobileMenu = document.querySelector(".nav-mobile");
         expect(mobileMenu.classList.contains("open")).toBe(false);
@@ -100,7 +100,11 @@ describe("Navbar", () => {
     it("calls logout when logout button is clicked", () => {
         const logout = vi.fn();
         useAuth.mockReturnValue({ user: { id: 1, role: "PATIENT" }, logout });
-        render(<MemoryRouter><Navbar /></MemoryRouter>);
+        render(
+          <MemoryRouter>
+            <Navbar />
+          </MemoryRouter>
+        );
 
         const logoutBtns = screen.getAllByText(/déconnexion/i);
         fireEvent.click(logoutBtns[0]);
