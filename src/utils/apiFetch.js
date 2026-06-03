@@ -26,12 +26,10 @@ export async function apiFetch(endpoint, options = {}) {
 
     const isFormData = options.body instanceof FormData;
 
-    // 1. Prepare Headers
     const headers = isFormData
         ? options.headers || {}
         : { "Content-Type": "application/json", ...(options.headers || {}) };
 
-    // 2. Prepare Body (STRINGIFY HERE)
     let body = options.body;
     if (body && !isFormData && typeof body === "object") {
         body = JSON.stringify(body);
@@ -42,12 +40,10 @@ export async function apiFetch(endpoint, options = {}) {
             ...options,
             credentials: "include",
             headers,
-            body, // Use the stringified body
+            body, 
         });
 
-        // ... (rest of your existing logic for 401 and error handling)
 
-        // --- Keep the rest of the code exactly the same ---
         if (response.status === 401) {
             throw new ApiError(ERROR_MESSAGES[401], 401);
         }
@@ -75,7 +71,6 @@ export async function apiFetch(endpoint, options = {}) {
     }
 }
 
-// Clean up the helpers at the bottom so they don't double-stringify
 export const api = {
     get: (endpoint, options = {}) => apiFetch(endpoint, { ...options, method: "GET" }),
     post: (endpoint, body, options = {}) => apiFetch(endpoint, { ...options, method: "POST", body }),

@@ -92,12 +92,10 @@ describe("Navbar", () => {
         expect(desktopNav.querySelector('a[href="/"]')).toBeNull();
     });
 
-    // ── Mobile hamburger ───────────────────────────────────
     it("toggles mobile menu on hamburger click", () => {
         renderNavbar({ id: 1, role: "PATIENT" });
         const hamburger = screen.getByRole("button", { name: /menu/i });
 
-        // Initially closed
         const mobileMenu = document.querySelector(".nav-mobile");
         expect(mobileMenu.classList.contains("open")).toBe(false);
 
@@ -113,7 +111,6 @@ describe("Navbar", () => {
         useAuth.mockReturnValue({ user: { id: 1, role: "PATIENT" }, logout });
         render(<MemoryRouter><Navbar /></MemoryRouter>);
 
-        // Click desktop logout
         const logoutBtns = screen.getAllByText(/déconnexion/i);
         fireEvent.click(logoutBtns[0]);
         expect(logout).toHaveBeenCalledTimes(1);
