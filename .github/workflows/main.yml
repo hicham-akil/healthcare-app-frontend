@@ -103,15 +103,13 @@ jobs:
             type=ref,event=tag
             type=sha,prefix=sha-
 
-      # FIX 6: push is always true here (job already excluded for PRs above)
-      - name: Build and push image
+      
+      - name: Build and optionally push image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
-          build-args: |
-            VITE_API_URL=${{ vars.VITE_API_URL }}
-            VITE_WS_URL=${{ vars.VITE_WS_URL }}
+          file: backend.Dockerfile    
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
