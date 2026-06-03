@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import Navbar from "../components/reusable/Navbar";
 vi.mock("../../context/AuthContext", () => ({
     useAuth: vi.fn(),
