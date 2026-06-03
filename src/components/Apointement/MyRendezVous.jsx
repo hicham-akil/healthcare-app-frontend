@@ -7,13 +7,9 @@ import { useAuth } from "../../context/AuthContext";
 /* ─── Helpers ─────────────────────────────────────────────── */
 const isToday = (dateStr) => {
   if (!dateStr) return false;
-  const d = new Date(dateStr);
-  const t = new Date();
-  return (
-    d.getFullYear() === t.getFullYear() &&
-    d.getMonth() === t.getMonth() &&
-    d.getDate() === t.getDate()
-  );
+  const dateOnly = dateStr.toString().substring(0, 10); // "2026-05-29"
+  const today = new Date().toLocaleDateString("en-CA"); // "2026-05-29" (ISO format)
+  return dateOnly === today;
 };
 
 const fmtDate = (dateStr) => {
@@ -28,9 +24,7 @@ const fmtDate = (dateStr) => {
 const fmtTime = (dateStr) => {
   if (!dateStr) return "";
   const d = new Date(dateStr);
-  const h = d.getHours();
-  const m = d.getMinutes();
-  if (h === 0 && m === 0) return "";
+  if (d.getUTCHours() === 0 && d.getUTCMinutes() === 0) return "";
   return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 };
 
