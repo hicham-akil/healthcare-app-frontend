@@ -1,9 +1,10 @@
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import NotFound from "./Notfound";
+// FIX: NotFound lives in src/Pages/, not src/tests/
+import NotFound from "../Pages/Notfound";
 import AuthLayout from "../components/Auth/AuthLayout";
 
-// ── Mock child auth components ─────────────────────────────
 vi.mock("../components/Auth/Signin", () => ({
     default: () => <div data-testid="signin-form">Signin Form</div>,
 }));
@@ -11,7 +12,6 @@ vi.mock("../components/Auth/Signup", () => ({
     default: () => <div data-testid="signup-form">Signup Form</div>,
 }));
 
-// ── NotFound ───────────────────────────────────────────────
 describe("NotFound", () => {
     it("renders 404 message", () => {
         render(<NotFound />);
@@ -26,7 +26,6 @@ describe("NotFound", () => {
     });
 });
 
-// ── AuthLayout ─────────────────────────────────────────────
 describe("AuthLayout", () => {
     it("renders the 'Se connecter' tab", () => {
         render(<AuthLayout />);
@@ -53,11 +52,9 @@ describe("AuthLayout", () => {
 
     it("switches back to Signin form when 'Se connecter' tab is clicked", () => {
         render(<AuthLayout />);
-        // Go to signup first
         fireEvent.click(screen.getByRole("button", { name: /créer un compte/i }));
         expect(screen.getByTestId("signup-form")).toBeInTheDocument();
 
-        // Back to signin
         fireEvent.click(screen.getByRole("button", { name: /se connecter/i }));
         expect(screen.getByTestId("signin-form")).toBeInTheDocument();
     });

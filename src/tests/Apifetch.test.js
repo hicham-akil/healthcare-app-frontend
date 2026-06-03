@@ -128,12 +128,14 @@ describe("apiFetch", () => {
 
     // ── Error cases ────────────────────────────────────────────
     it("throws ApiError with 401 message on 401", async () => {
-        fetch.mockResolvedValueOnce({
+        // FIX: two awaited assertions each consume one mock response — queue two
+        const make401 = () => ({
             ok: false,
             status: 401,
             headers: { get: () => "application/json" },
             json: async () => ({}),
         });
+        fetch.mockResolvedValueOnce(make401()).mockResolvedValueOnce(make401());
 
         await expect(apiFetch("/api/secure")).rejects.toThrow(ApiError);
         await expect(apiFetch("/api/secure")).rejects.toMatchObject({

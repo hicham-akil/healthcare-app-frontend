@@ -1,18 +1,20 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+// FIX: path is one level up from src/tests/, not two
+import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/reusable/Navbar";
-vi.mock("../../context/AuthContext", () => ({
+
+vi.mock("../context/AuthContext", () => ({
     useAuth: vi.fn(),
 }));
-
 
 function renderNavbar(user = null) {
     useAuth.mockReturnValue({ user, logout: vi.fn() });
     return render(
         <MemoryRouter>
-            <Navbar/>
+            <Navbar />
         </MemoryRouter>
     );
 }
@@ -20,13 +22,11 @@ function renderNavbar(user = null) {
 describe("Navbar", () => {
     beforeEach(() => vi.clearAllMocks());
 
-    // ── Brand ──────────────────────────────────────────────
     it("renders the healthMax logo", () => {
         renderNavbar();
         expect(screen.getAllByText(/healthMax/i).length).toBeGreaterThan(0);
     });
 
-    // ── Guest (not logged in) ──────────────────────────────
     it("shows 'Connexion' link when user is null", () => {
         renderNavbar(null);
         expect(screen.getByRole("link", { name: /connexion/i })).toBeInTheDocument();
@@ -37,10 +37,8 @@ describe("Navbar", () => {
         expect(screen.queryByRole("button", { name: /déconnexion/i })).not.toBeInTheDocument();
     });
 
-    // ── Logged-in (any role) ───────────────────────────────
     it("shows logout button when user is logged in", () => {
         renderNavbar({ id: 1, role: "PATIENT" });
-        // There are two (desktop + mobile), just confirm at least one
         expect(screen.getAllByText(/déconnexion/i).length).toBeGreaterThan(0);
     });
 
@@ -54,7 +52,6 @@ describe("Navbar", () => {
         expect(screen.getByText("PATIENT")).toBeInTheDocument();
     });
 
-    // ── PATIENT links ──────────────────────────────────────
     it("shows 'Médecins' link for PATIENT", () => {
         renderNavbar({ id: 1, role: "PATIENT" });
         expect(screen.getByRole("link", { name: /médecins/i })).toBeInTheDocument();
@@ -65,7 +62,6 @@ describe("Navbar", () => {
         expect(screen.queryByRole("link", { name: /horaires/i })).not.toBeInTheDocument();
     });
 
-    // ── MEDECIN links ──────────────────────────────────────
     it("shows 'Horaires' link for MEDECIN", () => {
         renderNavbar({ id: 2, role: "MEDECIN" });
         expect(screen.getByRole("link", { name: /horaires/i })).toBeInTheDocument();
@@ -76,7 +72,6 @@ describe("Navbar", () => {
         expect(screen.queryByRole("link", { name: /médecins/i })).not.toBeInTheDocument();
     });
 
-    // ── ADMIN links ────────────────────────────────────────
     it("shows 'Admin' link for ADMIN", () => {
         renderNavbar({ id: 99, role: "ADMIN" });
         expect(screen.getByRole("link", { name: /admin/i })).toBeInTheDocument();
@@ -84,7 +79,7 @@ describe("Navbar", () => {
 
     it("does NOT show 'Accueil' / 'Mes Rendez-vous' in desktop nav for ADMIN", () => {
         renderNavbar({ id: 99, role: "ADMIN" });
-                const desktopNav = document.querySelector(".nav-links");
+        const desktopNav = document.querySelector(".nav-links");
         expect(desktopNav.querySelector('a[href="/"]')).toBeNull();
     });
 

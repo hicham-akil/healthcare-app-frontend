@@ -1,3 +1,4 @@
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -37,7 +38,6 @@ describe("AuthContext", () => {
     });
 
     it("starts with user=undefined (loading state)", () => {
-        // Keep apiFetch pending so we can observe the initial state
         apiFetch.mockReturnValueOnce(new Promise(() => { }));
         renderWithAuth();
         expect(screen.getByTestId("user").textContent).toBe("loading");
@@ -76,12 +76,10 @@ describe("AuthContext", () => {
     });
 
     it("logout calls /api/auth/logout and sets user to null", async () => {
-        // 1. initial /me succeeds
         apiFetch.mockResolvedValueOnce({
             authenticated: true,
             user: { id: 1, role: "PATIENT" },
         });
-        // 2. logout POST
         apiFetch.mockResolvedValueOnce({});
 
         const onLogout = vi.fn();
@@ -134,7 +132,6 @@ describe("AuthContext", () => {
     });
 
     it("throws if useAuth is used outside AuthProvider", () => {
-        // Silence the expected console.error from React
         const spy = vi.spyOn(console, "error").mockImplementation(() => { });
         expect(() => render(<AuthConsumer />)).toThrow(
             "useAuth must be used inside <AuthProvider>"
