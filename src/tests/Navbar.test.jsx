@@ -85,10 +85,7 @@ describe("Navbar", () => {
 
     it("does NOT show 'Accueil' / 'Mes Rendez-vous' in desktop nav for ADMIN", () => {
         renderNavbar({ id: 99, role: "ADMIN" });
-        const desktopLinks = screen.queryAllByRole("link", { name: /accueil/i });
-        // Desktop nav hides these for ADMIN; mobile still has them
-        // We check the desktop nav list specifically
-        const desktopNav = document.querySelector(".nav-links");
+                const desktopNav = document.querySelector(".nav-links");
         expect(desktopNav.querySelector('a[href="/"]')).toBeNull();
     });
 
