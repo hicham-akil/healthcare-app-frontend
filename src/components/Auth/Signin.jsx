@@ -1,3 +1,4 @@
+import React from "react"; 
 import { useState } from "react";
 import { Mail, Lock, ArrowRight, Shield } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";

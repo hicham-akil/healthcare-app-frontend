@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Mail, ArrowRight, Shield, ArrowLeft } from "lucide-react";
 import BASE_URL from "../../utils/api.js";

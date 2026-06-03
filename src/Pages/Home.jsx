@@ -1,3 +1,4 @@
+import React from "react";
 import { Calendar, User, Stethoscope, Clock, ArrowRight, Shield, Star } from "lucide-react";
 import Navbar from "../components/reusable/Navbar";
 
