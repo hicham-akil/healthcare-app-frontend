@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
-import { useFetch, useAction } from "./useFetch";
+import { useFetch, useAction } from "../hooks/useFetch";
 import { ApiError } from "../utils/apiFetch";
 
 // ── Mock apiFetch ──────────────────────────────────────────
