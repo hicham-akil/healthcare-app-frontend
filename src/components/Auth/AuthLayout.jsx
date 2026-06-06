@@ -87,6 +87,19 @@ export default function AuthLayout() {
           z-index: 1;
         }
 
+        .al-offers-link {
+          margin-top: 14px;
+          font-size: 13px;
+          color: #4b8070;
+          text-align: center;
+        }
+
+        .al-offers-link a {
+          color: #047857;
+          font-weight: 700;
+          text-decoration: none;
+        }
+
         /* strip the inner page shells from Signin / Signup
            since AuthLayout provides the background */
         .al-content .si-page,
@@ -126,6 +139,9 @@ export default function AuthLayout() {
 
         <div className="al-content">
           {mode === "signin" ? <Signin /> : <Signup />}
+          <p className="al-offers-link">
+            Vous voulez comparer les abonnements ? <a href="/offres">Voir les offres</a>
+          </p>
         </div>
       </div>
     </>

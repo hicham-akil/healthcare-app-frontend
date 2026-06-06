@@ -16,6 +16,7 @@ import WorkingHours from "./components/schedule/WorkingTime";
 import { AuthProvider } from "./context/AuthContext";
 import ShowMedecin from "./Pages/ShowMedecin";
 import HomePage from "./Pages/Home";
+import OffersPage from "./Pages/OffersPage";
 import NotFound from "./Pages/Notfound";
 import EditProfileForm from "./components/Profile/updateProfile";
 
@@ -29,6 +30,7 @@ function AppContent() {
       <Routes>
         <Route path="/auth" element={<AuthLayout />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/offres" element={<OffersPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
