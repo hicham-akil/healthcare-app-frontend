@@ -1,10 +1,19 @@
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+
+const roleBadgeLabel = {
+  PATIENT: "PATIENT",
+  MEDECIN: "MEDECIN",
+  ADMIN: "ADMIN",
+  CLINIQUE: "CLINIQUE",
+  CLINIQUE_ADMIN: "CLINIQUE ADMIN",
+};
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
   const role = user?.role;
+  const isClinicRole = role === "CLINIQUE" || role === "CLINIQUE_ADMIN";
 
   return (
     <>
@@ -39,10 +48,13 @@ export default function Navbar() {
         }
 
         .nav-logo-icon {
-          width: 36px; height: 36px;
+          width: 36px;
+          height: 36px;
           background: linear-gradient(135deg, #065f46, #10b981);
           border-radius: 10px;
-          display: flex; align-items: center; justify-content: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           font-size: 18px;
           box-shadow: 0 2px 8px rgba(16,185,129,0.3);
         }
@@ -61,7 +73,8 @@ export default function Navbar() {
           align-items: center;
           gap: 2px;
           list-style: none;
-          margin: 0; padding: 0;
+          margin: 0;
+          padding: 0;
         }
 
         @media (max-width: 768px) { .nav-links { display: none; } }
@@ -78,7 +91,6 @@ export default function Navbar() {
         }
 
         .nav-links a:hover { background: #ecfdf5; color: #065f46; }
-        .nav-links a.active { background: #d1fae5; color: #065f46; }
 
         .nav-links a.nav-cta {
           background: #065f46;
@@ -132,8 +144,10 @@ export default function Navbar() {
           background: none;
           border: 1px solid #d1fae5;
           border-radius: 8px;
-          width: 40px; height: 40px;
-          align-items: center; justify-content: center;
+          width: 40px;
+          height: 40px;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
           color: #065f46;
           font-size: 18px;
@@ -212,24 +226,24 @@ export default function Navbar() {
       <nav className="nav-root">
         <div className="nav-inner">
           <a href="/" className="nav-logo">
-            <div className="nav-logo-icon">✚</div>
+            <div className="nav-logo-icon">+</div>
             <span className="nav-logo-text">health<span>Max</span></span>
           </a>
 
-          {/* Desktop Nav */}
           <ul className="nav-links">
-            {role !== "ADMIN" && (
+            {role !== "ADMIN" && !isClinicRole && (
               <>
                 <li><a href="/">Accueil</a></li>
-        
                 <li><a href="/myapoin">Mes Rendez-vous</a></li>
                 <li><a href="/history">Historique</a></li>
               </>
             )}
-            {role === "PATIENT" && <li><a href="/ShowMed">Médecins</a></li>}
+
+            {role === "PATIENT" && <li><a href="/ShowMed">Medecins</a></li>}
             {role === "MEDECIN" && <li><a href="/workinghours">Horaires</a></li>}
             {role === "ADMIN" && <li><a href="/admin">Admin</a></li>}
-            <li><a href="/profile">Profil</a></li>
+            {isClinicRole && <li><a href="/clinique">Clinique</a></li>}
+            {user && <li><a href="/profile">Profil</a></li>}
 
             {!user && (
               <li><a href="/auth" className="nav-cta">Connexion</a></li>
@@ -238,49 +252,55 @@ export default function Navbar() {
             {user && (
               <li>
                 <button className="nav-logout-btn" onClick={logout}>
-                  ⎋ Déconnexion
+                  Logout
                 </button>
               </li>
             )}
 
             {role && (
               <li>
-                <span className="nav-role">
-                  {role === "MEDECIN" ? "🩺" : "👤"} {role}
-                </span>
+                <span className="nav-role">{roleBadgeLabel[role] || role}</span>
               </li>
             )}
           </ul>
 
           <button
             className="nav-hamburger"
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={() => setIsOpen((value) => !value)}
             aria-label="Menu"
           >
-            {isOpen ? "✕" : "☰"}
+            {isOpen ? "X" : "="}
           </button>
         </div>
 
-
         <div className={`nav-mobile ${isOpen ? "open" : ""}`}>
-          <a href="/">🏠 Accueil</a>
-          <a href="#">ℹ️ À propos</a>
-          <a href="#">⚕️ Services</a>
-          <a href="/myapoin">📅 Mes Rendez-vous</a>
-          <a href="/history">📜 Historique</a>
-          {role === "PATIENT" && <a href="/ShowMed">👨‍⚕️ Médecins</a>}
-          {role === "MEDECIN" && <a href="/workinghours">🕐 Horaires</a>}
+          {!user && <a href="/">Accueil</a>}
+          {user && !isClinicRole && role !== "ADMIN" && (
+            <>
+              <a href="/">Accueil</a>
+              <a href="/myapoin">Mes Rendez-vous</a>
+              <a href="/history">Historique</a>
+            </>
+          )}
+          {role === "PATIENT" && <a href="/ShowMed">Medecins</a>}
+          {role === "MEDECIN" && <a href="/workinghours">Horaires</a>}
           {role === "ADMIN" && <a href="/admin">Admin</a>}
-          <div className="nav-divider" />
-          <a href="/profile">👤 Profil</a>
+          {isClinicRole && <a href="/clinique">Clinique</a>}
+
+          {user && (
+            <>
+              <div className="nav-divider" />
+              <a href="/profile">Profil</a>
+            </>
+          )}
 
           {!user && (
-            <a href="/auth" className="nav-cta-mobile">Connexion →</a>
+            <a href="/auth" className="nav-cta-mobile">Connexion</a>
           )}
 
           {user && (
             <button className="nav-mobile-logout" onClick={logout}>
-              ⎋ Déconnexion
+              Logout
             </button>
           )}
         </div>

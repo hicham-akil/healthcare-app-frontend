@@ -1,60 +1,72 @@
-
-import React from "react"; 
+import React, { useEffect, useState } from "react";
 import {
-  Mail,
-  Phone,
-  Calendar,
-  User,
-  Shield,
   Bell,
+  Building2,
+  Calendar,
+  FileText,
   LogOut,
+  Mail,
   MapPin,
+  Phone,
+  Shield,
+  User,
 } from "lucide-react";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useFetch } from "../../hooks/useFetch";
 import { useAuth } from "../../context/AuthContext";
+import { useFetch } from "../../hooks/useFetch";
+
+const roleLabels = {
+  PATIENT: "Patient",
+  MEDECIN: "Medecin",
+  ADMIN: "Admin",
+  CLINIQUE: "Clinique",
+  CLINIQUE_ADMIN: "Admin clinique",
+};
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const userId = user?.id;
 
   const [data, setData] = useState({
     name: "",
     prenom: "",
+    nomClinique: "",
     email: "",
     telephone: "",
     address: "",
-    date_naissance: "",
+    dateNaissance: "",
     role: "",
+    description: "",
     profileImageUrl: "",
   });
 
-  const user_id = user?.id;
-
-  const {
-    data: profileData,
-    loading,
-    error,
-  } = useFetch(user_id ? `/api/users/${user_id}` : null);
+  const { data: profileData, loading, error } = useFetch(userId ? `/api/users/${userId}` : null);
 
   useEffect(() => {
-    if (profileData) {
-      setData({
-        name: profileData.nom,
-        prenom: profileData.prenom,
-        email: profileData.email,
-        telephone: profileData.telephone,
-        address: profileData.adresse || "",
-        date_naissance: profileData.dateNaissance,
-        role: profileData.role,
-        profileImageUrl: profileData.profileImageUrl || "",
-      });
-    }
+    if (!profileData) return;
+
+    setData({
+      name: profileData.nom || "",
+      prenom: profileData.prenom || "",
+      nomClinique: profileData.nomClinique || "",
+      email: profileData.email || "",
+      telephone: profileData.telephone || "",
+      address: profileData.adresse || "",
+      dateNaissance: profileData.dateNaissance || "",
+      role: profileData.role || "",
+      description: profileData.description || "",
+      profileImageUrl: profileData.profileImageUrl || "",
+    });
   }, [profileData]);
 
-  const initials = `${data.name?.[0] || ""}${data.prenom?.[0] || ""
-    }`.toUpperCase();
+  const isClinicRole = data.role === "CLINIQUE" || data.role === "CLINIQUE_ADMIN";
+  const displayName = isClinicRole
+    ? data.nomClinique || [data.name, data.prenom].filter(Boolean).join(" ")
+    : [data.name, data.prenom].filter(Boolean).join(" ");
+  const initials = isClinicRole
+    ? (data.nomClinique || data.email || "?").slice(0, 2).toUpperCase()
+    : `${data.name?.[0] || ""}${data.prenom?.[0] || ""}`.toUpperCase() || "?";
 
   return (
     <>
@@ -63,12 +75,12 @@ export default function Profile() {
         .pf-root { font-family:'DM Sans',sans-serif; background:#f0faf4; min-height:100vh; padding:40px 24px; }
         .pf-main { max-width:1000px; margin:0 auto; }
         .pf-page-title { font-family:'Playfair Display',serif; font-size:32px; color:#064e3b; margin:0 0 8px; }
-        .pf-page-sub { font-size:14px; color:#6b7280; font-weight:300; margin:0 0 32px; max-width:400px; line-height:1.6; }
+        .pf-page-sub { font-size:14px; color:#6b7280; font-weight:300; margin:0 0 32px; max-width:460px; line-height:1.6; }
         .pf-grid { display:grid; grid-template-columns:260px 1fr; gap:20px; }
         @media(max-width:640px){ .pf-grid { grid-template-columns:1fr; } }
         .pf-card { background:#fff; border:1px solid #d1fae5; border-radius:16px; padding:24px; position: relative; min-height: 400px; }
-        .pf-avatar-section { display:flex; flex-direction:column; align-items:center; text-align:center; min-height: auto; }
-        .pf-avatar { width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid #d1fae5; margin-bottom:14px; position:relative; }
+        .pf-avatar-section { display:flex; flex-direction:column; align-items:center; text-align:center; min-height:auto; }
+        .pf-avatar { width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid #d1fae5; margin-bottom:14px; }
         .pf-avatar img { width:100%; height:100%; object-fit:cover; }
         .pf-avatar-placeholder { width:100%; height:100%; background:#ecfdf5; display:flex; align-items:center; justify-content:center; color:#064e3b; font-size:28px; font-weight:500; }
         .pf-name { font-family:'Playfair Display',serif; font-size:18px; color:#064e3b; margin:0 0 4px; }
@@ -97,7 +109,6 @@ export default function Profile() {
         .pf-info-title { font-size:14px; font-weight:500; color:#064e3b; margin:0 0 4px; }
         .pf-info-text { font-size:12px; color:#6b7280; margin:0 0 12px; line-height:1.5; }
         .pf-info-link { font-size:11px; font-weight:600; color:#064e3b; text-transform:uppercase; letter-spacing:0.8px; text-decoration:none; cursor:pointer; background:none; border:none; font-family:'DM Sans',sans-serif; }
-        
         .pf-loading-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; z-index: 10; border-radius: 16px; }
         .pf-error-msg { color: #dc2626; background: #fef2f2; padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; border: 1px solid #fecaca; }
       `}</style>
@@ -105,45 +116,26 @@ export default function Profile() {
       <div className="pf-root">
         <div className="pf-main">
           <h1 className="pf-page-title">Mon Profil</h1>
-
-          <p className="pf-page-sub">
-            Consultez vos informations personnelles et gérez votre compte
-            healthMax.
-          </p>
+          <p className="pf-page-sub">Consultez vos informations personnelles et gerez votre compte healthMax.</p>
 
           <div className="pf-grid">
-            {/* Left column */}
             <div>
               <div className="pf-card pf-avatar-section">
                 <div className="pf-avatar">
                   {data.profileImageUrl ? (
-                    <img
-                      src={data.profileImageUrl}
-                      alt={`${data.name} ${data.prenom}`}
-                    />
+                    <img src={data.profileImageUrl} alt={displayName} />
                   ) : (
-                    <div className="pf-avatar-placeholder">
-                      {initials || "?"}
-                    </div>
+                    <div className="pf-avatar-placeholder">{initials}</div>
                   )}
                 </div>
 
-                <h3 className="pf-name">
-                  {data.name} {data.prenom}
-                </h3>
-
-                <p className="pf-role">
-                  {data.role === "PATIENT" ? "Patient" : "Médecin"}
-                </p>
-
+                <h3 className="pf-name">{displayName || "Utilisateur"}</h3>
+                <p className="pf-role">{roleLabels[data.role] || data.role || "-"}</p>
                 <hr className="pf-divider" />
 
-                <button
-                  className="pf-logout-btn"
-                  onClick={logout}
-                >
+                <button className="pf-logout-btn" onClick={logout}>
                   <LogOut size={14} />
-                  Déconnexion
+                  Logout
                 </button>
               </div>
 
@@ -151,181 +143,119 @@ export default function Profile() {
                 <div className="pf-verified-icon">
                   <Shield size={14} color="#fff" />
                 </div>
-
                 <div>
-                  <p className="pf-verified-title">
-                    Compte Vérifié
-                  </p>
-
-                  <p className="pf-verified-text">
-                    Vos données sont chiffrées et stockées en toute
-                    sécurité.
-                  </p>
+                  <p className="pf-verified-title">Compte verifie</p>
+                  <p className="pf-verified-text">Vos donnees sont chiffrees et stockees en toute securite.</p>
                 </div>
               </div>
             </div>
 
-            {/* Right column */}
             <div className="pf-card">
-              {error && (
-                <div className="pf-error-msg">
-                  ✕ {error}
-                </div>
-              )}
+              {error && <div className="pf-error-msg">{error}</div>}
+              {loading && <div className="pf-loading-overlay">Chargement...</div>}
 
-              {loading && (
-                <div className="pf-loading-overlay">
-                  Chargement...
-                </div>
-              )}
-
-              <div
-                className="pf-form-grid"
-                style={{ marginTop: "50px" }}
-              >
+              <div className="pf-form-grid" style={{ marginTop: "50px" }}>
                 <div className="pf-field">
-                  <label>Nom Complet</label>
-
+                  <label>{isClinicRole ? "Clinique" : "Nom complet"}</label>
                   <div className="pf-input-wrap">
                     <span className="pf-input-icon">
-                      <User size={13} />
+                      {isClinicRole ? <Building2 size={13} /> : <User size={13} />}
                     </span>
-
-                    <input
-                      className="pf-input"
-                      type="text"
-                      value={`${data.name} ${data.prenom}`}
-                      readOnly
-                    />
+                    <input className="pf-input" type="text" value={displayName} readOnly />
                   </div>
                 </div>
 
                 <div className="pf-field">
-                  <label>Adresse Email</label>
-
+                  <label>Adresse email</label>
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon">
-                      <Mail size={13} />
-                    </span>
-
-                    <input
-                      className="pf-input"
-                      type="email"
-                      value={data.email}
-                      readOnly
-                    />
+                    <span className="pf-input-icon"><Mail size={13} /></span>
+                    <input className="pf-input" type="email" value={data.email} readOnly />
                   </div>
                 </div>
 
                 <div className="pf-field">
-                  <label>Téléphone</label>
-
+                  <label>Telephone</label>
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon">
-                      <Phone size={13} />
-                    </span>
-
-                    <input
-                      className="pf-input"
-                      type="tel"
-                      value={data.telephone || ""}
-                      readOnly
-                    />
+                    <span className="pf-input-icon"><Phone size={13} /></span>
+                    <input className="pf-input" type="tel" value={data.telephone || ""} readOnly />
                   </div>
-                    <div className="pf-field">
-                      <label>Adresse</label>
-
-                      <div className="pf-input-wrap">
-                        <span className="pf-input-icon">
-                        <MapPin size={13} />
-                        </span>
-
-                        <input
-                          className="pf-input"
-                          type="text"
-                          value={data.address || ""}
-                          readOnly
-                        />
-                      </div>
-                      </div>
                 </div>
 
                 <div className="pf-field">
-                  <label>Date de Naissance</label>
-
+                  <label>Adresse</label>
                   <div className="pf-input-wrap">
-                    <span className="pf-input-icon">
-                      <Calendar size={13} />
-                    </span>
-
-                    <input
-                      className="pf-input"
-                      type="text"
-                      value={data.date_naissance ? new Date(data.date_naissance).toLocaleDateString() : ""}
-                      readOnly
-                    />
+                    <span className="pf-input-icon"><MapPin size={13} /></span>
+                    <input className="pf-input" type="text" value={data.address || ""} readOnly />
                   </div>
                 </div>
 
-                <div style={{ height: "80px" }}></div>
+                {!isClinicRole && (
+                  <div className="pf-field">
+                    <label>Date de naissance</label>
+                    <div className="pf-input-wrap">
+                      <span className="pf-input-icon"><Calendar size={13} /></span>
+                      <input
+                        className="pf-input"
+                        type="text"
+                        value={data.dateNaissance ? new Date(data.dateNaissance).toLocaleDateString() : ""}
+                        readOnly
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {isClinicRole && (
+                  <div className="pf-field">
+                    <label>Description</label>
+                    <div className="pf-input-wrap">
+                      <span className="pf-input-icon"><FileText size={13} /></span>
+                      <input className="pf-input" type="text" value={data.description || ""} readOnly />
+                    </div>
+                  </div>
+                )}
+
+                <div className="pf-field">
+                  <label>Role</label>
+                  <div className="pf-input-wrap">
+                    <span className="pf-input-icon"><Shield size={13} /></span>
+                    <input className="pf-input" type="text" value={roleLabels[data.role] || data.role || ""} readOnly />
+                  </div>
+                </div>
               </div>
 
               <div className="pf-actions">
                 <button
                   className="pf-btn-primary"
                   disabled={loading}
-                  onClick={() =>
-                    navigate("/edit-profile", {
-                      state: { user_data: data },
-                    })
-                  }
+                  onClick={() => navigate("/edit-profile", { state: { user_data: data } })}
                 >
-                  Mettre à jour le profil
+                  Mettre a jour le profil
                 </button>
 
-                <button
-                  className="pf-btn-secondary"
-                  onClick={() => navigate(-1)}
-                >
+                <button className="pf-btn-secondary" onClick={() => navigate(-1)}>
                   Annuler
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Bottom cards */}
           <div className="pf-bottom-grid">
             <div className="pf-info-card">
               <div className="pf-info-icon">
                 <Shield size={15} color="#064e3b" />
               </div>
-
-              <p className="pf-info-title">Sécurité</p>
-
-              <p className="pf-info-text">
-                Double authentification activée pour votre
-                protection.
-              </p>
-
-              <button className="pf-info-link">
-                Modifier les accès
-              </button>
+              <p className="pf-info-title">Securite</p>
+              <p className="pf-info-text">Double authentification activee pour votre protection.</p>
+              <button className="pf-info-link">Modifier les acces</button>
             </div>
 
             <div className="pf-info-card">
               <div className="pf-info-icon">
                 <Bell size={15} color="#064e3b" />
               </div>
-
               <p className="pf-info-title">Notifications</p>
-
-              <p className="pf-info-text">
-                Recevez vos rappels par SMS et Email.
-              </p>
-
-              <button className="pf-info-link">
-                Gérer les alertes
-              </button>
+              <p className="pf-info-text">Recevez vos rappels par SMS et email.</p>
+              <button className="pf-info-link">Gerer les alertes</button>
             </div>
           </div>
         </div>

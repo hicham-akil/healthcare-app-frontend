@@ -1,4 +1,4 @@
-import React from "react"; 
+import React from "react";
 import { useState } from "react";
 import { Mail, Lock, ArrowRight, Shield } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -11,7 +11,14 @@ export default function SignIn() {
   const [message, setMessage] = useState("");
   const [typemessage, settypeMessage] = useState("");
   const [loading, setLoading] = useState(false);
- const navigation = useNavigate();
+  const navigation = useNavigate();
+
+  const getRedirectPath = (loggedUser) => {
+    if (loggedUser?.role === "ADMIN") return "/admin";
+    if (loggedUser?.role === "MEDECIN") return "/workinghours";
+    if (loggedUser?.role === "CLINIQUE" || loggedUser?.role === "CLINIQUE_ADMIN") return "/clinique";
+    return "/";
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,11 +41,11 @@ export default function SignIn() {
         return;
       }
 
-      setUserFromLogin(data); 
+      setUserFromLogin(data);
       console.log("Login response:", data);
       setMessage("Login successful!");
       settypeMessage("success");
-      navigation("/");
+      navigation(getRedirectPath(data));
     } catch {
       setMessage("Login failed. Please try again.");
       settypeMessage("error");

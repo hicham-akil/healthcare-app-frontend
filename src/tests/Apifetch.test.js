@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { apiFetch, ApiError, ERROR_MESSAGES } from "../utils/apiFetch";
-vi.mock("./api", () => ({ default: "http://localhost:8080" }));
+vi.mock("../utils/api.js", () => ({ default: "http://localhost:8080" }));
 
 describe("apiFetch", () => {
     beforeEach(() => {
