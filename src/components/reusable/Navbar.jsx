@@ -231,7 +231,7 @@ export default function Navbar() {
           </a>
 
           <ul className="nav-links">
-            {role ==! "PATIENT" &&(
+            {role !== "PATIENT" && (
               <li><a href="/offres">Offres</a></li>
             )}
 
@@ -278,7 +278,7 @@ export default function Navbar() {
         </div>
 
         <div className={`nav-mobile ${isOpen ? "open" : ""}`}>
-          <a href="/offres">Offres</a>
+          {role !== "PATIENT" && <a href="/offres">Offres</a>}
           {!user && <a href="/">Accueil</a>}
           {user && !isClinicRole && role !== "ADMIN" && (
             <>
