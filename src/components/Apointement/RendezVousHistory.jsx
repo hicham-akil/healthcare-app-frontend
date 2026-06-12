@@ -32,21 +32,30 @@ const RendezVousHistory = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lora:wght@600;700&display=swap');
-        .hist-root { font-family: 'Outfit', sans-serif; background: #f8fffe; min-height: 100vh; padding: 36px 20px; color: #111827; }
-        .hist-card { max-width: 1040px; margin: 0 auto; background: #fff; border-radius: 24px; box-shadow: 0 12px 40px rgba(4,120,87,0.08); overflow: hidden; }
-        .hist-header { background: linear-gradient(130deg, #1e293b, #334155); padding: 32px 40px; color: white; position: relative; }
+        .hist-root { font-family: 'Outfit', sans-serif; background: linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%); min-height: 100vh; padding: 36px 20px; color: #111827; }
+        .hist-card { max-width: 1040px; margin: 0 auto; background: #fff; border: 1px solid #d1fae5; border-radius: 24px; box-shadow: 0 24px 60px rgba(4,120,87,0.10); overflow: hidden; }
+        .hist-header { background: linear-gradient(130deg, #064e3b, #047857); padding: 32px 40px; color: white; position: relative; overflow: hidden; }
+        .hist-header::after { content: ""; position: absolute; right: -60px; top: -80px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.08); pointer-events: none; }
         .hist-header-row { display: flex; align-items: center; gap: 16px; }
         .hist-header-icon { width: 48px; height: 48px; background: rgba(255,255,255,0.12); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
         .hist-title { font-family: 'Lora', serif; font-size: 24px; font-weight: 700; }
         .hist-body { padding: 28px 32px; }
-        .hist-table-wrap { border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .hist-table-wrap { border-radius: 16px; overflow: auto; border: 1px solid #d1fae5; }
         .hist-table { width: 100%; border-collapse: collapse; }
-        .hist-table th { background: #f8fafc; padding: 13px 18px; text-align: left; font-size: 11px; color: #64748b; text-transform: uppercase; }
-        .hist-table td { padding: 15px 18px; border-bottom: 1px solid #f1f5f9; }
+        .hist-table th { background: #ecfdf5; padding: 13px 18px; text-align: left; font-size: 11px; color: #065f46; text-transform: uppercase; letter-spacing: 0.06em; }
+        .hist-table td { padding: 15px 18px; border-bottom: 1px solid #ecfdf5; }
+        .hist-table tbody tr { transition: background 0.14s; }
+        .hist-table tbody tr:hover { background: #f8fffb; }
         .hist-status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1px solid transparent; }
         .hist-status-dot { width: 6px; height: 6px; border-radius: 50%; }
         .hist-empty { text-align: center; padding: 60px 20px; color: #64748b; }
         .hist-empty-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+        @media (max-width: 640px) {
+          .hist-root { padding: 28px 16px; }
+          .hist-header { padding: 28px 24px; }
+          .hist-body { padding: 20px 16px; }
+          .hist-table { min-width: 620px; }
+        }
       `}</style>
 
       <div className="hist-root">

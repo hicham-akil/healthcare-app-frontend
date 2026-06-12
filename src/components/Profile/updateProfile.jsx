@@ -90,7 +90,7 @@ export default function EditProfileForm() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@600;700&display=swap');
-        .ep-root { font-family:'DM Sans',sans-serif; background:#f0faf4; min-height:100vh; padding:40px 24px; }
+        .ep-root { font-family:'DM Sans',sans-serif; background:linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%); min-height:100vh; padding:40px 24px; }
         .ep-main { max-width:1000px; margin:0 auto; }
         .ep-back-btn { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#6b7280; background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; margin-bottom:20px; padding:0; }
         .ep-back-btn:hover { color:#064e3b; }
@@ -98,13 +98,13 @@ export default function EditProfileForm() {
         .ep-page-sub { font-size:14px; color:#6b7280; font-weight:300; margin:0 0 32px; line-height:1.6; }
         .ep-grid { display:grid; grid-template-columns:260px 1fr; gap:20px; }
         @media(max-width:640px){ .ep-grid { grid-template-columns:1fr; } }
-        .ep-card { background:#fff; border:1px solid #d1fae5; border-radius:16px; padding:24px; }
+        .ep-card { background:rgba(255,255,255,0.96); border:1px solid #d1fae5; border-radius:20px; padding:24px; box-shadow:0 18px 44px rgba(6,78,59,0.08); }
         .ep-avatar-section { display:flex; flex-direction:column; align-items:center; text-align:center; }
         .ep-avatar-wrap { position:relative; margin-bottom:14px; }
-        .ep-avatar { width:100px; height:100px; border-radius:50%; overflow:hidden; border:2px solid #d1fae5; }
+        .ep-avatar { width:104px; height:104px; border-radius:50%; overflow:hidden; border:3px solid #fff; box-shadow:0 0 0 1px #a7f3d0, 0 12px 28px rgba(6,78,59,0.12); }
         .ep-avatar img { width:100%; height:100%; object-fit:cover; }
         .ep-avatar-placeholder { width:100%; height:100%; background:#ecfdf5; display:flex; align-items:center; justify-content:center; color:#064e3b; font-size:28px; font-weight:500; }
-        .ep-upload-btn { position:absolute; bottom:4px; right:4px; width:28px; height:28px; background:#064e3b; border-radius:50%; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
+        .ep-upload-btn { position:absolute; bottom:4px; right:4px; width:30px; height:30px; background:#064e3b; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid #fff; cursor:pointer; box-shadow:0 8px 18px rgba(6,78,59,0.2); }
         .ep-remove-btn { display:flex; align-items:center; gap:5px; font-size:12px; color:#dc2626; background:none; border:none; cursor:pointer; font-family:'DM Sans',sans-serif; margin-top:8px; }
         .ep-file-hint { font-size:11px; color:#9ca3af; margin:6px 0 0; }
         .ep-user-name { font-family:'Playfair Display',serif; font-size:18px; color:#064e3b; margin:0 0 4px; }
@@ -124,11 +124,15 @@ export default function EditProfileForm() {
         .ep-input:focus { border-color:#10b981; box-shadow:0 0 0 3px rgba(16,185,129,.12); background:#fff; }
         .ep-section-label { font-size:11px; font-weight:700; color:#10b981; text-transform:uppercase; letter-spacing:1px; margin:20px 0 14px; }
         .ep-actions { display:flex; gap:12px; margin-top:24px; }
-        .ep-btn-primary { background:#064e3b; color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:500; padding:12px 28px; border-radius:10px; border:none; cursor:pointer; flex:1; display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity .2s; }
+        .ep-btn-primary { background:linear-gradient(135deg,#064e3b,#047857); color:#fff; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; padding:12px 28px; border-radius:12px; border:none; cursor:pointer; flex:1; display:flex; align-items:center; justify-content:center; gap:8px; transition:opacity .2s, transform .2s, box-shadow .2s; box-shadow:0 10px 22px rgba(6,78,59,0.16); }
+        .ep-btn-primary:hover:not(:disabled) { transform:translateY(-1px); box-shadow:0 14px 28px rgba(6,78,59,0.22); }
         .ep-btn-primary:disabled { opacity:.6; cursor:not-allowed; }
-        .ep-btn-secondary { background:#fff; color:#374151; font-family:'DM Sans',sans-serif; font-size:14px; padding:12px 24px; border-radius:10px; border:1px solid #d1fae5; cursor:pointer; }
+        .ep-btn-secondary { background:#fff; color:#374151; font-family:'DM Sans',sans-serif; font-size:14px; padding:12px 24px; border-radius:12px; border:1px solid #d1fae5; cursor:pointer; }
+        .ep-back-btn:focus-visible, .ep-upload-btn:focus-visible, .ep-remove-btn:focus-visible, .ep-logout-btn:focus-visible, .ep-btn-primary:focus-visible, .ep-btn-secondary:focus-visible { outline:3px solid rgba(16,185,129,0.28); outline-offset:3px; }
         .ep-spinner { width:14px; height:14px; border:2px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:ep-spin .7s linear infinite; }
         @keyframes ep-spin { to { transform:rotate(360deg); } }
+        @media(max-width:640px){ .ep-root { padding:28px 16px 56px; } .ep-actions { flex-direction:column; } }
+        @media(max-width:480px){ .ep-field[style] { grid-column:auto !important; } }
       `}</style>
 
       <div className="ep-root">

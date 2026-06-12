@@ -239,6 +239,12 @@ const CliniqueDashboard = () => {
           display: flex;
           align-items: center;
           gap: 14px;
+          transition: transform 0.16s, box-shadow 0.16s;
+        }
+
+        .cd-stat:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 22px 52px rgba(6, 78, 59, 0.1);
         }
 
         .cd-stat__icon {
@@ -336,6 +342,15 @@ const CliniqueDashboard = () => {
         .cd-btn:hover:not(:disabled),
         .cd-tab:hover {
           transform: translateY(-1px);
+        }
+
+        .cd-btn:focus-visible,
+        .cd-tab:focus-visible,
+        .cd-input:focus-visible,
+        .cd-select:focus-visible,
+        .cd-check:focus-within {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 3px;
         }
 
         .cd-btn:disabled {
@@ -469,6 +484,14 @@ const CliniqueDashboard = () => {
           color: #1f3d35;
         }
 
+        .cd-table tbody tr {
+          transition: background 0.14s;
+        }
+
+        .cd-table tbody tr:hover {
+          background: #f8fffb;
+        }
+
         .cd-name {
           font-weight: 700;
           color: #064e3b;
@@ -551,6 +574,19 @@ const CliniqueDashboard = () => {
           .cd-form--medecin,
           .cd-specialites__grid {
             grid-template-columns: 1fr;
+          }
+
+          .cd-tabs {
+            align-items: stretch;
+          }
+
+          .cd-tab-list,
+          .cd-btn--ghost {
+            width: 100%;
+          }
+
+          .cd-tab {
+            flex: 1;
           }
         }
       `}</style>

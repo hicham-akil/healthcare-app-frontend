@@ -25,19 +25,21 @@ export default function Navbar() {
           position: sticky;
           top: 0;
           z-index: 100;
-          background: #ffffff;
-          border-bottom: 1px solid #d1fae5;
-          box-shadow: 0 2px 16px rgba(16, 185, 129, 0.08);
+          background: rgba(255, 255, 255, 0.92);
+          border-bottom: 1px solid rgba(167, 243, 208, 0.82);
+          box-shadow: 0 10px 32px rgba(6, 78, 59, 0.08);
+          backdrop-filter: blur(16px);
         }
 
         .nav-inner {
           max-width: 1120px;
           margin: 0 auto;
           padding: 0 24px;
-          height: 64px;
+          min-height: 68px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          gap: 18px;
         }
 
         .nav-logo {
@@ -50,20 +52,21 @@ export default function Navbar() {
         .nav-logo-icon {
           width: 36px;
           height: 36px;
-          background: linear-gradient(135deg, #065f46, #10b981);
-          border-radius: 10px;
+          background: linear-gradient(135deg, #064e3b, #059669);
+          border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 18px;
-          box-shadow: 0 2px 8px rgba(16,185,129,0.3);
+          color: #ffffff;
+          box-shadow: 0 10px 24px rgba(6,78,59,0.22);
         }
 
         .nav-logo-text {
           font-family: 'Playfair Display', serif;
           font-size: 20px;
           color: #064e3b;
-          letter-spacing: -0.3px;
+          letter-spacing: 0;
         }
 
         .nav-logo-text span { color: #10b981; }
@@ -84,21 +87,31 @@ export default function Navbar() {
           font-size: 13.5px;
           font-weight: 500;
           color: #374151;
-          padding: 6px 13px;
-          border-radius: 8px;
-          transition: background 0.15s, color 0.15s;
+          padding: 8px 13px;
+          border-radius: 999px;
+          transition: background 0.15s, color 0.15s, box-shadow 0.15s;
           white-space: nowrap;
         }
 
-        .nav-links a:hover { background: #ecfdf5; color: #065f46; }
+        .nav-links a:hover { background: #ecfdf5; color: #065f46; box-shadow: inset 0 0 0 1px #d1fae5; }
+        .nav-links a:focus-visible,
+        .nav-logo:focus-visible,
+        .nav-mobile a:focus-visible,
+        .nav-logout-btn:focus-visible,
+        .nav-mobile-logout:focus-visible,
+        .nav-hamburger:focus-visible {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 3px;
+        }
 
         .nav-links a.nav-cta {
           background: #065f46;
           color: #ffffff;
-          padding: 7px 16px;
+          padding: 9px 17px;
           border-radius: 20px;
           margin-left: 6px;
           font-weight: 600;
+          box-shadow: 0 10px 22px rgba(6,78,59,0.18);
         }
 
         .nav-links a.nav-cta:hover { background: #047857; color: #ffffff; }
@@ -117,11 +130,11 @@ export default function Navbar() {
           margin-left: 6px;
           cursor: pointer;
           font-family: 'DM Sans', sans-serif;
-          transition: background 0.15s, border-color 0.15s;
+          transition: background 0.15s, border-color 0.15s, transform 0.15s;
           white-space: nowrap;
         }
 
-        .nav-logout-btn:hover { background: #fee2e2; border-color: #fca5a5; }
+        .nav-logout-btn:hover { background: #fee2e2; border-color: #fca5a5; transform: translateY(-1px); }
 
         .nav-role {
           display: inline-flex;
@@ -143,7 +156,7 @@ export default function Navbar() {
           display: none;
           background: none;
           border: 1px solid #d1fae5;
-          border-radius: 8px;
+          border-radius: 12px;
           width: 40px;
           height: 40px;
           align-items: center;
@@ -151,10 +164,10 @@ export default function Navbar() {
           cursor: pointer;
           color: #065f46;
           font-size: 18px;
-          transition: background 0.15s;
+          transition: background 0.15s, border-color 0.15s;
         }
 
-        .nav-hamburger:hover { background: #ecfdf5; }
+        .nav-hamburger:hover { background: #ecfdf5; border-color: #a7f3d0; }
 
         @media (max-width: 768px) { .nav-hamburger { display: flex; } }
 
@@ -164,7 +177,8 @@ export default function Navbar() {
           background: #ffffff;
           border-top: 1px solid #d1fae5;
           padding: 12px 16px 20px;
-          gap: 2px;
+          gap: 4px;
+          box-shadow: 0 18px 30px rgba(6,78,59,0.08);
         }
 
         .nav-mobile.open { display: flex; }
@@ -269,11 +283,13 @@ export default function Navbar() {
           </ul>
 
           <button
+            type="button"
             className="nav-hamburger"
             onClick={() => setIsOpen((value) => !value)}
             aria-label="Menu"
+            aria-expanded={isOpen}
           >
-            {isOpen ? "X" : "="}
+          {isOpen ? "X" : "="}
           </button>
         </div>
 

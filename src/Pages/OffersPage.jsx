@@ -221,6 +221,13 @@ export default function OffersPage() {
           display: flex;
           flex-direction: column;
           gap: 16px;
+          transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .of-plan:hover {
+          transform: translateY(-3px);
+          border-color: #a7f3d0;
+          box-shadow: 0 24px 58px rgba(6,78,59,0.12);
         }
 
         .of-plan--featured {
@@ -295,6 +302,19 @@ export default function OffersPage() {
           text-decoration: none;
           background: linear-gradient(135deg, #064e3b, #047857);
           color: #fff;
+          box-shadow: 0 10px 22px rgba(6,78,59,0.16);
+          transition: transform 0.18s, box-shadow 0.18s;
+        }
+
+        .of-cta:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 14px 28px rgba(6,78,59,0.22);
+        }
+
+        .of-toggle button:focus-visible,
+        .of-cta:focus-visible {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 3px;
         }
 
         .of-cta-disabled {

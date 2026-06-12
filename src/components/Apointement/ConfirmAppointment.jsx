@@ -51,8 +51,8 @@ const ConfirmAppointment = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=Playfair+Display:wght@600;700&display=swap');
-        .ca-root { font-family: 'DM Sans', sans-serif; background: #f0faf4; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
-        .ca-card { background: #ffffff; border: 1px solid #d1fae5; border-radius: 24px; overflow: hidden; width: 100%; max-width: 480px; box-shadow: 0 8px 40px rgba(16,185,129,0.1); }
+        .ca-root { font-family: 'DM Sans', sans-serif; background: linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 24px; }
+        .ca-card { background: rgba(255,255,255,0.96); border: 1px solid #d1fae5; border-radius: 24px; overflow: hidden; width: 100%; max-width: 500px; box-shadow: 0 24px 60px rgba(16,185,129,0.12); }
         .ca-header { background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); padding: 28px 32px; position: relative; overflow: hidden; }
         .ca-header::after { content: ''; position: absolute; top: -50px; right: -50px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none; }
         .ca-header-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6ee7b7; margin-bottom: 6px; }
@@ -66,6 +66,7 @@ const ConfirmAppointment = () => {
         .ca-info-value { font-size: 14px; font-weight: 500; color: #064e3b; }
         .ca-btn { width: 100%; background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); color: #ffffff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; padding: 14px; border-radius: 14px; border: none; cursor: pointer; margin-top: 24px; box-shadow: 0 4px 16px rgba(6,79,58,0.25); transition: transform 0.2s, box-shadow 0.2s; }
         .ca-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6,79,58,0.32); }
+        .ca-btn:focus-visible, .ca-home-btn:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
         .ca-btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .ca-error { display: flex; align-items: center; gap: 8px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 10px 14px; margin-top: 16px; font-size: 13px; color: #dc2626; }
         .ca-success { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 32px; text-align: center; }
@@ -78,6 +79,12 @@ const ConfirmAppointment = () => {
         .ca-queue-label strong { display: block; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #6ee7b7; margin-bottom: 2px; }
         .ca-home-btn { margin-top: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #10b981; background: none; border: 1px solid #d1fae5; border-radius: 12px; padding: 10px 24px; cursor: pointer; transition: background 0.15s; }
         .ca-home-btn:hover { background: #f0fdf4; }
+        @media (max-width: 520px) {
+          .ca-root { padding: 24px 16px; align-items: flex-start; }
+          .ca-header, .ca-body { padding: 24px 22px; }
+          .ca-success { padding: 34px 22px; }
+          .ca-queue-badge { width: 100%; justify-content: center; }
+        }
       `}</style>
 
       <div className="ca-root">

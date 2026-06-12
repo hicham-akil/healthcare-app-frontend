@@ -87,14 +87,16 @@ export default function ResetPassword() {
 
         .rp-page {
           font-family: 'DM Sans', sans-serif;
-          min-height: 100vh;
-          background: #f0faf4;
+          min-height: calc(100vh - 68px);
+          background:
+            radial-gradient(circle at top right, rgba(16,185,129,0.12), transparent 32%),
+            linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 24px;
           position: relative;
-          overflow: hidden;
+          overflow: hidden auto;
         }
 
         .rp-blob1 {
@@ -122,16 +124,17 @@ export default function ResetPassword() {
         }
 
         .rp-card {
-          background: #fff;
+          background: rgba(255,255,255,0.96);
           border: 1px solid #d1fae5;
-          border-radius: 28px;
+          border-radius: 24px;
           padding: 44px 40px;
           width: 100%;
           max-width: 440px;
-          box-shadow: 0 8px 40px rgba(6,78,59,0.08);
+          box-shadow: 0 24px 60px rgba(6,78,59,0.11);
           position: relative;
           overflow: hidden;
           z-index: 1;
+          backdrop-filter: blur(10px);
         }
 
         .rp-card::before {
@@ -179,7 +182,7 @@ export default function ResetPassword() {
         .rp-subtitle {
           text-align: center;
           font-size: 13px;
-          color: #9ca3af;
+          color: #667085;
           margin-bottom: 32px;
           line-height: 1.6;
         }
@@ -245,6 +248,18 @@ export default function ResetPassword() {
           border: none;
           cursor: pointer;
           margin-top: 8px;
+          box-shadow: 0 4px 20px rgba(6,78,59,0.22);
+          transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+        }
+
+        .rp-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 28px rgba(6,78,59,0.3);
+        }
+
+        .rp-btn:focus-visible {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 3px;
         }
 
         .rp-btn:disabled {
@@ -296,6 +311,9 @@ export default function ResetPassword() {
           margin-top: 28px;
           font-size: 12px;
           color: #9ca3af;
+        }
+        @media (max-width: 520px) {
+          .rp-card { padding: 36px 22px; border-radius: 22px; }
         }
       `}</style>
 

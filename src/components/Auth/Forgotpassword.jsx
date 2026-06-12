@@ -62,14 +62,16 @@ export default function ForgotPassword() {
 
         .fp-page {
           font-family: 'DM Sans', sans-serif;
-          min-height: 100vh;
-          background: #f0faf4;
+          min-height: calc(100vh - 68px);
+          background:
+            radial-gradient(circle at top right, rgba(16,185,129,0.12), transparent 32%),
+            linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 24px;
           position: relative;
-          overflow: hidden;
+          overflow: hidden auto;
         }
 
         .fp-blob1 {
@@ -99,15 +101,16 @@ export default function ForgotPassword() {
         }
 
         .fp-card {
-          background: #ffffff;
+          background: rgba(255,255,255,0.96);
           border: 1px solid #d1fae5;
-          border-radius: 28px;
+          border-radius: 24px;
           padding: 44px 40px;
           width: 100%;
           max-width: 440px;
-          box-shadow: 0 8px 40px rgba(6,78,59,0.08);
+          box-shadow: 0 24px 60px rgba(6,78,59,0.11);
           position: relative;
           overflow: hidden;
+          backdrop-filter: blur(10px);
         }
 
         .fp-card::before {
@@ -130,7 +133,11 @@ export default function ForgotPassword() {
           cursor: pointer;
           margin-bottom: 24px;
           width: fit-content;
+          border-radius: 10px;
+          padding: 4px 0;
         }
+        .fp-back:hover { color: #047857; }
+        .fp-back:focus-visible, .fp-btn:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
 
         .fp-logo-wrap {
           display: flex;
@@ -169,8 +176,8 @@ export default function ForgotPassword() {
         .fp-subtitle {
           text-align: center;
           font-size: 13.5px;
-          color: #9ca3af;
-          font-weight: 300;
+          color: #667085;
+          font-weight: 400;
           margin-bottom: 32px;
           line-height: 1.6;
         }
@@ -308,6 +315,9 @@ export default function ForgotPassword() {
 
         .fp-trust svg {
           color: #10b981;
+        }
+        @media (max-width: 520px) {
+          .fp-card { padding: 36px 22px; border-radius: 22px; }
         }
       `}</style>
 

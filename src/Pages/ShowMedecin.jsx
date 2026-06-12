@@ -152,23 +152,25 @@ const ShowMedecin = () => {
 
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
-        .page { background: #f8faf9; min-height: 100vh; font-family: 'Inter', sans-serif; padding-bottom: 50px; }
+        .page { background: linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%); min-height: 100vh; font-family: 'Inter', sans-serif; padding-bottom: 64px; }
 
         .container { max-width: 1100px; margin: auto; padding: 20px; }
 
-        .hero { background: #064232; border-radius: 40px; padding: 60px 50px; color: white; margin-top: 20px; margin-bottom: 40px; position: relative; overflow: hidden; }
+        .hero { background: linear-gradient(135deg, #064232, #065f46 58%, #047857); border-radius: 28px; padding: 60px 50px; color: white; margin-top: 24px; margin-bottom: 34px; position: relative; overflow: hidden; box-shadow: 0 24px 60px rgba(6,66,50,0.18); }
+        .hero::after { content: ""; position: absolute; width: 280px; height: 280px; right: -80px; top: -90px; border-radius: 50%; background: rgba(255,255,255,0.08); pointer-events: none; }
 
         .hero h1 { font-size: 42px; font-weight: 500; margin-bottom: 15px; letter-spacing: -0.5px; }
 
         .hero p { font-size: 16px; opacity: 0.7; max-width: 450px; line-height: 1.5; margin-bottom: 35px; }
 
-        .search-container { display: flex; gap: 12px; max-width: 600px; }
+        .search-container { display: flex; gap: 12px; max-width: 660px; position: relative; z-index: 1; }
 
         .input-group { position: relative; flex: 1; }
 
         .search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #888; }
 
-        .search-input, .select-input { width: 100%; padding: 16px 16px 16px 45px; border-radius: 12px; border: none; font-size: 14px; background: #e9eeeb; color: #333; outline: none; }
+        .search-input, .select-input { width: 100%; padding: 16px 16px 16px 45px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.18); font-size: 14px; background: rgba(255,255,255,0.92); color: #12372d; outline: none; transition: box-shadow 0.2s, border-color 0.2s, background 0.2s; }
+        .search-input:focus, .select-input:focus { background: #fff; border-color: #6ee7b7; box-shadow: 0 0 0 4px rgba(110,231,183,0.22); }
 
         .select-input { padding-left: 45px; appearance: none; cursor: pointer; }
 
@@ -178,19 +180,21 @@ const ShowMedecin = () => {
 
         .view-options { display: flex; gap: 10px; }
 
-        .view-btn { padding: 8px; border-radius: 8px; border: 1px solid #eee; background: white; color: #666; cursor: pointer; }
+        .view-btn { padding: 8px; border-radius: 10px; border: 1px solid #d1fae5; background: white; color: #166534; cursor: pointer; transition: background 0.16s, transform 0.16s; }
+        .view-btn:hover { background: #ecfdf5; transform: translateY(-1px); }
+        .view-btn:focus-visible, .book-btn:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
 
-        .card { background: white; border-radius: 24px; padding: 24px; border: 1px solid #f0f0f0; position: relative; transition: all 0.3s ease; }
+        .card { background: rgba(255,255,255,0.96); border-radius: 22px; padding: 24px; border: 1px solid #d1fae5; position: relative; transition: all 0.25s ease; box-shadow: 0 12px 34px rgba(6,78,59,0.06); }
 
-        .card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.04); }
+        .card:hover { box-shadow: 0 18px 44px rgba(6,78,59,0.1); transform: translateY(-3px); border-color: #a7f3d0; }
 
         .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
 
         .avatar-wrapper { position: relative; }
 
-        .avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
+        .avatar { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 1px #d1fae5; }
 
         .status-dot { width: 12px; height: 12px; background: #4ade80; border: 2px solid white; border-radius: 50%; position: absolute; bottom: 5px; right: 2px; }
 
@@ -204,13 +208,21 @@ const ShowMedecin = () => {
 
         .info-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #666; }
 
-        .book-btn { width: 100%; background: #064232; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s; }
+        .book-btn { width: 100%; background: linear-gradient(135deg, #064232, #047857); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; box-shadow: 0 10px 22px rgba(6,66,50,0.18); }
 
-        .book-btn:hover { background: #085a44; }
+        .book-btn:hover { background: #085a44; transform: translateY(-1px); box-shadow: 0 14px 28px rgba(6,66,50,0.24); }
 
         .help-card { background: #f0f7f4; border: 2px dashed #d1e2da; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; }
 
         .help-icon { background: white; padding: 12px; border-radius: 12px; margin-bottom: 15px; color: #064232; }
+        @media (max-width: 760px) {
+          .container { padding: 16px; }
+          .hero { padding: 42px 24px; border-radius: 22px; }
+          .hero h1 { font-size: 32px; }
+          .search-container, .results-header { flex-direction: column; align-items: stretch; }
+          .grid { grid-template-columns: 1fr; }
+          .view-options { display: none; }
+        }
 
       `}</style>
 

@@ -40,14 +40,14 @@ const TakeAppointment = () => {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Playfair+Display:wght@600;700&display=swap');
-        .ta-root { font-family: 'DM Sans', sans-serif; background: #f0faf4; min-height: 100vh; padding: 48px 24px; }
+        .ta-root { font-family: 'DM Sans', sans-serif; background: linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%); min-height: 100vh; padding: 48px 24px; }
         .ta-container { max-width: 680px; margin: 0 auto; }
         .ta-page-label { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #10b981; margin-bottom: 10px; }
         .ta-page-title { font-family: 'Playfair Display', serif; font-size: clamp(24px, 4vw, 32px); color: #064e3b; letter-spacing: -0.3px; margin-bottom: 6px; }
         .ta-page-sub { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: #6b7280; font-weight: 300; margin-bottom: 32px; }
         .ta-spec-pill { display: inline-flex; align-items: center; gap: 7px; background: #ffffff; border: 1px solid #d1fae5; border-radius: 12px; padding: 8px 16px; font-size: 13px; font-weight: 500; color: #065f46; margin-bottom: 28px; }
-        .ta-card { background: #ffffff; border: 1px solid #d1fae5; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(16,185,129,0.07); transition: box-shadow 0.25s; }
-        .ta-card:hover { box-shadow: 0 8px 40px rgba(16,185,129,0.13); }
+        .ta-card { background: rgba(255,255,255,0.96); border: 1px solid #d1fae5; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 46px rgba(16,185,129,0.09); transition: box-shadow 0.25s, transform 0.25s; }
+        .ta-card:hover { box-shadow: 0 24px 56px rgba(16,185,129,0.13); transform: translateY(-2px); }
         .ta-card-top { background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); padding: 20px 28px; display: flex; align-items: center; justify-content: space-between; position: relative; overflow: hidden; }
         .ta-card-top::after { content: ''; position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; border-radius: 50%; background: rgba(255,255,255,0.05); pointer-events: none; }
         .ta-card-top-left { display: flex; align-items: center; gap: 12px; }
@@ -70,6 +70,7 @@ const TakeAppointment = () => {
         .ta-queue-info { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #6b7280; font-weight: 400; }
         .ta-book-btn { display: inline-flex; align-items: center; gap: 7px; background: linear-gradient(145deg, #064e3b 0%, #065f46 45%, #047857 100%); color: #ffffff; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; padding: 10px 18px; border-radius: 12px; border: none; cursor: pointer; box-shadow: 0 4px 16px rgba(6,79,58,0.25); transition: transform 0.2s, box-shadow 0.2s; white-space: nowrap; flex-shrink: 0; }
         .ta-book-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(6,79,58,0.32); }
+        .ta-book-btn:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
         .ta-book-btn:active { transform: translateY(0); }
         .ta-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 56px 24px; color: #9ca3af; }
         .ta-empty-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #ecfdf5, #d1fae5); display: flex; align-items: center; justify-content: center; }
@@ -81,6 +82,12 @@ const TakeAppointment = () => {
         .ta-state-text { font-size: 14px; color: #6b7280; font-weight: 400; }
         .ta-error-icon { width: 44px; height: 44px; border-radius: 50%; background: #fef2f2; border: 1px solid #fecaca; display: flex; align-items: center; justify-content: center; }
         .ta-error-text { font-size: 14px; color: #dc2626; font-weight: 400; }
+        @media (max-width: 640px) {
+          .ta-root { padding: 34px 16px; }
+          .ta-card-top { align-items: flex-start; flex-direction: column; gap: 14px; padding: 20px; }
+          .ta-slot { align-items: flex-start; flex-wrap: wrap; padding: 16px 20px; }
+          .ta-book-btn { width: 100%; justify-content: center; }
+        }
       `}</style>
 
       {loading && (

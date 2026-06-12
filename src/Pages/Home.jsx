@@ -12,7 +12,7 @@ export default function HomePage() {
 
         .hp-root {
           font-family: 'DM Sans', sans-serif;
-          background: #f0faf4;
+          background: linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           min-height: 100vh;
           overflow-x: hidden;
         }
@@ -60,7 +60,7 @@ export default function HomePage() {
           letter-spacing: 0.8px;
           text-transform: uppercase;
           padding: 6px 16px;
-          border-radius: 20px;
+          border-radius: 18px;
           margin-bottom: 28px;
           backdrop-filter: blur(4px);
         }
@@ -237,6 +237,7 @@ export default function HomePage() {
           transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
           position: relative;
           overflow: hidden;
+          box-shadow: 0 12px 34px rgba(6,78,59,0.06);
         }
 
         .hp-card::before {
@@ -358,6 +359,19 @@ export default function HomePage() {
         }
 
         .hp-footer span { color: #10b981; }
+
+        .hp-btn-primary:focus-visible,
+        .hp-btn-outline:focus-visible {
+          outline: 3px solid rgba(110,231,183,0.45);
+          outline-offset: 3px;
+        }
+
+        @media (max-width: 640px) {
+          .hp-hero { padding: 70px 18px 78px; }
+          .hp-stats-inner { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+          .hp-stat-item { border-right: none; border: 1px solid #d1fae5; border-radius: 14px; background: #fff; }
+          .hp-cta { margin-left: 16px; margin-right: 16px; padding: 42px 22px; border-radius: 20px; }
+        }
       `}</style>
 
       <div className="hp-root">

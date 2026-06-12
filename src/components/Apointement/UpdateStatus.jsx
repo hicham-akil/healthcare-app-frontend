@@ -126,6 +126,7 @@ const UpdateStatusModal = ({ rendezVousId, currentStatus, onUpdate }) => {
         .usm-btn-cancel:hover { background: #f9fafb; }
         .usm-btn-confirm { flex: 2; padding: 11px; border-radius: 10px; border: none; background: linear-gradient(135deg, #065f46, #047857); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: #fff; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(16,185,129,0.25); }
         .usm-btn-confirm:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,0.35); }
+        .usm-trigger-btn:focus-visible, .usm-close-btn:focus-visible, .usm-option:focus-visible, .usm-btn-cancel:focus-visible, .usm-btn-confirm:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
         .usm-btn-confirm:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
         .usm-spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: usm-spin 0.7s linear infinite; }
         @keyframes usm-spin { to { transform: rotate(360deg); } }

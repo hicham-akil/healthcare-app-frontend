@@ -342,10 +342,12 @@ const MyRendezVous = () => {
 
         .rv-root {
           font-family: 'DM Sans', sans-serif;
-          background: #f4f3ef;
+          background:
+            radial-gradient(circle at top right, rgba(16,185,129,0.10), transparent 30%),
+            linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           min-height: 100vh;
           padding: 36px 20px 72px;
-          color: #19191a;
+          color: #193d34;
         }
 
         .rv-shell { max-width: 980px; margin: 0 auto; }
@@ -364,7 +366,7 @@ const MyRendezVous = () => {
           font-size: 38px;
           font-weight: 400;
           line-height: 1.1;
-          color: #19191a;
+          color: #064e3b;
         }
         .rv-page-sub {
           font-size: 14px;
@@ -373,8 +375,8 @@ const MyRendezVous = () => {
           line-height: 1.5;
         }
         .rv-role-pill {
-          background: #19191a;
-          color: #f4f3ef;
+          background: #064e3b;
+          color: #f4fdf8;
           padding: 7px 18px;
           border-radius: 100px;
           font-size: 11px;
@@ -398,7 +400,8 @@ const MyRendezVous = () => {
           background: #fff;
           border-radius: 14px;
           padding: 18px 20px 16px;
-          border: 1px solid #e6e5e0;
+          border: 1px solid #d1fae5;
+          box-shadow: 0 12px 32px rgba(6,78,59,0.06);
           position: relative;
           overflow: hidden;
         }
@@ -409,7 +412,7 @@ const MyRendezVous = () => {
           height: 3px;
           border-radius: 14px 14px 0 0;
         }
-        .stat-total::after { background: #19191a; }
+        .stat-total::after { background: #064e3b; }
         .stat-today::after { background: #2b6b4e; }
         .stat-wait::after  { background: #c2601d; }
         .stat-done::after  { background: #3a70bb; }
@@ -431,7 +434,8 @@ const MyRendezVous = () => {
         .rv-ctrl {
           background: #fff;
           border-radius: 16px;
-          border: 1px solid #e6e5e0;
+          border: 1px solid #d1fae5;
+          box-shadow: 0 12px 32px rgba(6,78,59,0.06);
           margin-bottom: 16px;
           overflow: hidden;
           transition: border-color 0.2s;
@@ -462,7 +466,8 @@ const MyRendezVous = () => {
         .queue-banner {
           background: #fff;
           border-radius: 16px;
-          border: 1px solid #e6e5e0;
+          border: 1px solid #d1fae5;
+          box-shadow: 0 12px 32px rgba(6,78,59,0.06);
           margin-bottom: 16px;
           padding: 16px 22px;
           display: flex;
@@ -510,8 +515,9 @@ const MyRendezVous = () => {
           transition: all 0.14s;
           line-height: 1.4;
         }
-        .rv-fpill:hover         { border-color: #19191a; color: #19191a; }
-        .rv-fpill--on           { background: #19191a; color: #f4f3ef; border-color: #19191a; }
+        .rv-fpill:hover         { border-color: #047857; color: #064e3b; background: #ecfdf5; }
+        .rv-fpill--on           { background: #064e3b; color: #f4fdf8; border-color: #064e3b; }
+        .rv-fpill:focus-visible, .btn:focus-visible { outline: 3px solid rgba(16,185,129,0.28); outline-offset: 3px; }
 
         /* ── Section divider ── */
         .rv-section {
@@ -546,7 +552,7 @@ const MyRendezVous = () => {
           overflow: hidden;
           transition: box-shadow 0.15s, border-color 0.15s;
         }
-        .rdv-card:hover            { box-shadow: 0 3px 14px rgba(0,0,0,0.06); }
+        .rdv-card:hover            { box-shadow: 0 12px 30px rgba(6,78,59,0.08); border-color: #a7f3d0; }
         .rdv-card--active          { border: 1.5px solid #2b6b4e; background: #f8fdfb; }
         .rdv-card--today:not(.rdv-card--active) { border-color: #c8dfd3; }
 
@@ -662,8 +668,8 @@ const MyRendezVous = () => {
         }
         .btn:disabled { opacity: 0.45; cursor: not-allowed; }
         .btn:active:not(:disabled) { transform: scale(0.97); }
-        .btn-primary { background: #19191a; color: #f4f3ef; border-color: #19191a; }
-        .btn-primary:hover:not(:disabled) { background: #2f2f30; }
+        .btn-primary { background: #064e3b; color: #f4fdf8; border-color: #064e3b; }
+        .btn-primary:hover:not(:disabled) { background: #047857; }
         .btn-success { background: #e5f5ed; color: #2b6b4e; border-color: #aad4be; }
         .btn-success:hover:not(:disabled) { background: #d0ece0; }
         .btn-warning { background: #fef0e6; color: #b84d14; border-color: #f5c598; }
@@ -690,6 +696,7 @@ const MyRendezVous = () => {
           .rdv-card__mid  { display: none; }
           .rv-page-title  { font-size: 28px; }
           .rv-ctrl__inner { flex-direction: column; align-items: flex-start; }
+          .queue-banner { align-items: flex-start; flex-wrap: wrap; }
         }
         @media (max-width: 480px) {
           .rdv-card       { flex-wrap: wrap; }

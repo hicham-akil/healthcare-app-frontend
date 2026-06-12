@@ -15,15 +15,17 @@ export default function AuthLayout() {
 
         .al-page {
           font-family: 'DM Sans', sans-serif;
-          min-height: 100vh;
-          background: #f0faf4;
+          min-height: calc(100vh - 68px);
+          background:
+            radial-gradient(circle at 10% 10%, rgba(16,185,129,0.12), transparent 30%),
+            linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 40px 24px;
+          padding: 48px 24px;
           position: relative;
-          overflow: hidden;
+          overflow: hidden auto;
         }
 
         .al-blob1 {
@@ -45,11 +47,11 @@ export default function AuthLayout() {
           display: flex;
           background: #ffffff;
           border: 1px solid #d1fae5;
-          border-radius: 16px;
+          border-radius: 18px;
           padding: 5px;
           gap: 4px;
-          margin-bottom: 20px;
-          box-shadow: 0 4px 16px rgba(6,78,59,0.07);
+          margin-bottom: 22px;
+          box-shadow: 0 14px 34px rgba(6,78,59,0.09);
           position: relative;
           z-index: 1;
         }
@@ -63,7 +65,7 @@ export default function AuthLayout() {
           border: none;
           cursor: pointer;
           transition: all 0.22s;
-          color: #9ca3af;
+          color: #64748b;
           background: transparent;
           letter-spacing: 0.1px;
         }
@@ -77,6 +79,11 @@ export default function AuthLayout() {
         .al-tab:not(.active):hover {
           color: #065f46;
           background: #ecfdf5;
+        }
+
+        .al-tab:focus-visible {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 2px;
         }
 
         /* ── Content wrapper ── */
@@ -100,6 +107,11 @@ export default function AuthLayout() {
           text-decoration: none;
         }
 
+        .al-offers-link a:hover {
+          color: #065f46;
+          text-decoration: underline;
+        }
+
         /* strip the inner page shells from Signin / Signup
            since AuthLayout provides the background */
         .al-content .si-page,
@@ -115,6 +127,12 @@ export default function AuthLayout() {
         .al-content .rf-blob1,
         .al-content .rf-blob2 {
           display: none !important;
+        }
+
+        @media (max-width: 560px) {
+          .al-page { padding: 32px 16px; justify-content: flex-start; }
+          .al-tabs { width: 100%; max-width: 420px; }
+          .al-tab { flex: 1; padding: 10px 12px; }
         }
       `}</style>
 

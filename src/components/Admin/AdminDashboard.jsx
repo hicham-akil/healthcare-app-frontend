@@ -124,7 +124,9 @@ const AdminDashboard = () => {
 
         .ad-root {
           font-family: 'DM Sans', sans-serif;
-          background: #f0faf4;
+          background:
+            radial-gradient(circle at top right, rgba(16,185,129,0.12), transparent 30%),
+            linear-gradient(180deg, #f6fdf8 0%, #edf9f2 100%);
           color: #064e3b;
           min-height: 100vh;
           padding: 40px 24px 72px;
@@ -188,6 +190,12 @@ const AdminDashboard = () => {
           align-items: center;
           gap: 14px;
           box-shadow: 0 14px 35px rgba(6, 78, 59, 0.06);
+          transition: transform 0.16s, box-shadow 0.16s;
+        }
+
+        .ad-stat:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 18px 42px rgba(6, 78, 59, 0.09);
         }
 
         .ad-stat__icon {
@@ -221,7 +229,7 @@ const AdminDashboard = () => {
           background: #ffffff;
           border: 1px solid #d1fae5;
           border-radius: 24px;
-          box-shadow: 0 18px 45px rgba(6, 78, 59, 0.07);
+          box-shadow: 0 22px 55px rgba(6, 78, 59, 0.08);
           overflow: hidden;
         }
 
@@ -259,6 +267,13 @@ const AdminDashboard = () => {
         }
 
         .ad-tab:hover { transform: translateY(-1px); }
+
+        .ad-tab:focus-visible,
+        .ad-btn:focus-visible,
+        .ad-input:focus-visible {
+          outline: 3px solid rgba(16,185,129,0.28);
+          outline-offset: 3px;
+        }
 
         .ad-tab--active {
           background: linear-gradient(135deg, #064e3b, #047857);
@@ -354,6 +369,14 @@ const AdminDashboard = () => {
           color: #1f3d35;
           font-size: 13px;
           vertical-align: middle;
+        }
+
+        .ad-table tbody tr {
+          transition: background 0.14s;
+        }
+
+        .ad-table tbody tr:hover {
+          background: #f8fffb;
         }
 
         .ad-name {
@@ -470,6 +493,9 @@ const AdminDashboard = () => {
           .ad-btn { width: 100%; }
           .ad-filters { width: 100%; }
           .ad-input { width: 100%; }
+          .ad-tabs { align-items: stretch; }
+          .ad-tab-list { width: 100%; }
+          .ad-tab { flex: 1; }
         }
       `}</style>
 
