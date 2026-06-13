@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { Calendar, User, Stethoscope, CheckCircle, AlertCircle } from "lucide-react";
+import { Calendar, User, Stethoscope, CheckCircle, AlertCircle, CreditCard } from "lucide-react";
 import { useAction } from "../../hooks/useFetch";
 
 const ConfirmAppointment = () => {
@@ -12,6 +12,7 @@ const ConfirmAppointment = () => {
 
   const { execute: confirmBooking, loading, error, reset: resetError } = useAction();
   const [queueNumber, setQueueNumber] = useState(null);
+  const [checkoutError, setCheckoutError] = useState(null);
 
   if (!horaire || !patientId || !doctorid) {
     return (
@@ -27,6 +28,7 @@ const ConfirmAppointment = () => {
 
   const handleConfirm = async () => {
     resetError();
+    setCheckoutError(null);
 
     const payload = {
       horaireId: parseInt(idHoraire),
@@ -43,7 +45,16 @@ const ConfirmAppointment = () => {
     });
 
     if (result) {
-      setQueueNumber(result.queueNumber);
+      const payment = await confirmBooking(`/api/payments/rendezvous/${result.id}/checkout`, {
+        method: "POST",
+      });
+
+      if (payment?.checkoutUrl) {
+        window.location.href = payment.checkoutUrl;
+        return;
+      }
+
+      setCheckoutError("Unable to start payment checkout. Please try again.");
     }
   };
 
@@ -91,8 +102,8 @@ const ConfirmAppointment = () => {
         <div className="ca-card">
           <div className="ca-header">
             <p className="ca-header-label">Almost there</p>
-            <h2 className="ca-header-title">Confirm Appointment</h2>
-            <p className="ca-header-sub">Review your details and join the queue</p>
+            <h2 className="ca-header-title">Confirm and Pay</h2>
+            <p className="ca-header-sub">Review your details, then continue to secure checkout</p>
           </div>
 
           {queueNumber ? (
@@ -133,19 +144,26 @@ const ConfirmAppointment = () => {
                 <div className="ca-info-icon"><User size={16} color="#10b981" /></div>
                 <div>
                   <p className="ca-info-label">How it works</p>
-                  <p className="ca-info-value">You'll receive a queue number. The doctor calls patients in order.</p>
+                  <p className="ca-info-value">After payment, your appointment is marked paid and added to the queue.</p>
+                </div>
+              </div>
+              <div className="ca-info-row">
+                <div className="ca-info-icon"><CreditCard size={16} color="#10b981" /></div>
+                <div>
+                  <p className="ca-info-label">Payment</p>
+                  <p className="ca-info-value">You'll be redirected to Stripe Checkout to pay securely.</p>
                 </div>
               </div>
 
-              {error && (
+              {(error || checkoutError) && (
                 <div className="ca-error">
                   <AlertCircle size={16} />
-                  {error}
+                  {error || checkoutError}
                 </div>
               )}
 
               <button className="ca-btn" onClick={handleConfirm} disabled={loading}>
-                {loading ? "Booking…" : "Confirm & Join Queue"}
+                {loading ? "Preparing checkout..." : "Pay & Join Queue"}
               </button>
             </div>
           )}

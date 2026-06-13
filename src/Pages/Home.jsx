@@ -1,8 +1,11 @@
 import React from "react";
 import { Calendar, User, Stethoscope, Clock, ArrowRight, Shield, Star } from "lucide-react";
 import Navbar from "../components/reusable/Navbar";
+import { useAuth } from "@/context/AuthContext";
 
 export default function HomePage() {
+const { user, logout } = useAuth();
+  const role = user?.role;
   return (
     <>
       <style>{`
@@ -398,34 +401,16 @@ export default function HomePage() {
               <Calendar size={16} />
               Mes rendez-vous
             </a>
-            <a href="/ShowMed" className="hp-btn-outline">
-              Voir les médecins
-              <ArrowRight size={15} />
-            </a>
+            {role === "patient" && (
+              <a href="/ShowMed" className="hp-btn-outline">
+                Voir les médecins
+                <Calendar size={16} />
+              </a>
+            )}
           </div>
         </section>
 
-        {/* Stats */}
-        <div className="hp-stats">
-          <div className="hp-stats-inner">
-            <div className="hp-stat-item">
-              <div className="hp-stat-num">1 200+</div>
-              <div className="hp-stat-label">Médecins</div>
-            </div>
-            <div className="hp-stat-item">
-              <div className="hp-stat-num">48 000+</div>
-              <div className="hp-stat-label">Patients</div>
-            </div>
-            <div className="hp-stat-item">
-              <div className="hp-stat-num">98%</div>
-              <div className="hp-stat-label">Satisfaction</div>
-            </div>
-            <div className="hp-stat-item">
-              <div className="hp-stat-num">24/7</div>
-              <div className="hp-stat-label">Disponible</div>
-            </div>
-          </div>
-        </div>
+        
 
         {/* Feature Cards */}
         <section className="hp-features">
@@ -471,10 +456,7 @@ export default function HomePage() {
         <section className="hp-cta">
           <h2>Prêt à prendre soin de votre santé ?</h2>
           <p>Rejoignez des milliers de patients qui font confiance à healthMax.</p>
-          <a href="/auth" className="hp-btn-primary">
-            Commencer maintenant
-            <ArrowRight size={15} />
-          </a>
+         
 
           <div className="hp-trust">
             <div className="hp-trust-item">

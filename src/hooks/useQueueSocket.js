@@ -29,7 +29,7 @@ const computeMessage = (data) => {
     if (status === "ON_HOLD") {
         return "⏸ Vous êtes en pause. Attendez d'être rappelé.";
     }
-    if (status === "EN_ATTENTE") {
+    if (status === "PAID" || status === "EN_ATTENTE") {
         if (position === 0) {
             return "⏳ Vous êtes le prochain dans la file.";
         }

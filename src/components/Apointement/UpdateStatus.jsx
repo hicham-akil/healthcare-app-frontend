@@ -4,6 +4,16 @@ import { useAuth } from "../../context/AuthContext";
 
 const STATUS_OPTIONS = [
   {
+    value: "PAID",
+    label: "Paye",
+    icon: "OK",
+    color: "#065f46",
+    bg: "#d1fae5",
+    border: "#6ee7b7",
+    dot: "#10b981",
+    desc: "Paiement confirme, patient dans la file",
+  },
+  {
     value: "EN_ATTENTE",
     label: "En attente",
     icon: "⏳",

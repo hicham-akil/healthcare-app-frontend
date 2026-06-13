@@ -29,13 +29,15 @@ const fmtTime = (dateStr) => {
 };
 
 const STATUS_MAP = {
+  PAYMENT_PENDING: { label: "Paiement en attente", cls: "s-pending" },
+  PAID: { label: "Paye", cls: "s-paid" },
   EN_ATTENTE: { label: "En attente", cls: "s-wait" },
   EN_COURS: { label: "En cours", cls: "s-active" },
   ON_HOLD: { label: "En pause", cls: "s-hold" },
   COMPLETED: { label: "Terminé", cls: "s-done" },
   ANNULE: { label: "Annulé", cls: "s-cancel" },
 };
-const STATUS_ORDER = { EN_COURS: 0, EN_ATTENTE: 1, ON_HOLD: 2, COMPLETED: 3, ANNULE: 4 };
+const STATUS_ORDER = { EN_COURS: 0, PAID: 1, EN_ATTENTE: 2, PAYMENT_PENDING: 3, ON_HOLD: 4, COMPLETED: 5, ANNULE: 6 };
 const getStatus = (s) =>
   STATUS_MAP[s?.toUpperCase()] || { label: s || "—", cls: "s-default" };
 const initials = (name) =>
@@ -111,7 +113,7 @@ const RdvCard = ({ rdv, isMedecin, isToday: today, onRecall, onCancel, onUpdate,
   const st = getStatus(rdv.status);
   const isActive = rdv.status?.toUpperCase() === "EN_COURS";
   const isHold = rdv.status?.toUpperCase() === "ON_HOLD";
-  const canCancel = !isMedecin && rdv.status?.toUpperCase() === "EN_ATTENTE";
+  const canCancel = !isMedecin && ["PAYMENT_PENDING", "EN_ATTENTE"].includes(rdv.status?.toUpperCase());
   const personName = getDisplayName(rdv, isMedecin);
   const time = fmtTime(rdv.rendezvousdate);
 
@@ -269,7 +271,7 @@ const MyRendezVous = () => {
   /* ── Patient: active rdv ── */
   const activeRdv = !isMedecin
     ? allRdv.find((r) =>
-      ["EN_ATTENTE", "EN_COURS", "ON_HOLD"].includes(r.status?.toUpperCase())
+      ["PAID", "EN_ATTENTE", "EN_COURS", "ON_HOLD"].includes(r.status?.toUpperCase())
     )
     : null;
 
@@ -313,12 +315,14 @@ const MyRendezVous = () => {
   const stats = [
     { num: allRdv.length, label: "Total RDV", cls: "stat-total" },
     { num: todayTotal, label: "Aujourd'hui", cls: "stat-today" },
-    { num: allRdv.filter((r) => r.status?.toUpperCase() === "EN_ATTENTE").length, label: "En attente", cls: "stat-wait" },
+    { num: allRdv.filter((r) => ["PAID", "EN_ATTENTE"].includes(r.status?.toUpperCase())).length, label: "En attente", cls: "stat-wait" },
     { num: allRdv.filter((r) => r.status?.toUpperCase() === "COMPLETED").length, label: "Terminés", cls: "stat-done" },
   ];
 
   const filterOptions = [
     { key: "ALL", label: "Tous" },
+    { key: "PAYMENT_PENDING", label: "Paiement" },
+    { key: "PAID", label: "Payes" },
     { key: "EN_ATTENTE", label: "En attente" },
     { key: "EN_COURS", label: "En cours" },
     { key: "ON_HOLD", label: "En pause" },
@@ -647,6 +651,10 @@ const MyRendezVous = () => {
         .status-badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
         .s-wait    { background: #fef0e6; color: #b84d14; }
         .s-wait::before    { background: #c2601d; }
+        .s-pending { background: #fef9c3; color: #854d0e; }
+        .s-pending::before { background: #ca8a04; }
+        .s-paid    { background: #e5f5ed; color: #2b6b4e; }
+        .s-paid::before    { background: #2b6b4e; }
         .s-active  { background: #e5f5ed; color: #2b6b4e; }
         .s-active::before  { background: #2b6b4e; }
         .s-hold    { background: #fde8d1; color: #a84410; }
