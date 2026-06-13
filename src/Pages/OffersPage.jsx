@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Building2, Check, Lock, Stethoscope } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useFetch } from "../hooks/useFetch";
+import { useAction, useFetch } from "../hooks/useFetch";
 import { getOffersForAudience, getOfferViewerContext } from "../utils/offers";
 
 const formatPrice = (price) => {
@@ -42,8 +43,12 @@ const getOfferHighlights = (offer) => {
 
 export default function OffersPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const plansQuery = useFetch("/api/abonnements/plans");
   const profileQuery = useFetch(user?.id ? `/api/users/${user.id}` : null);
+  const checkoutAction = useAction();
+  const [checkoutError, setCheckoutError] = useState(null);
+  const [pendingOfferKey, setPendingOfferKey] = useState(null);
 
   const viewerContext = useMemo(
     () => getOfferViewerContext(user, profileQuery.data),
@@ -62,6 +67,43 @@ export default function OffersPage() {
   );
 
   const audienceLabel = selectedAudience === "CLINIQUE" ? "Clinique" : "Medecin";
+  const isCheckingAuth = user === undefined;
+
+  const handleChooseOffer = async (offer) => {
+    setCheckoutError(null);
+    checkoutAction.reset();
+
+    if (isCheckingAuth) return;
+
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
+    if (!offer.id) {
+      setCheckoutError("Cette offre vient des valeurs par defaut. Ajoutez le plan dans le backend pour lancer Stripe.");
+      return;
+    }
+
+    setPendingOfferKey(offer.key);
+
+    try {
+      const payment = await checkoutAction.execute(`/api/payments/plans/${offer.id}/checkout`, {
+        method: "POST",
+      });
+
+      if (payment?.checkoutUrl) {
+        window.location.href = payment.checkoutUrl;
+        return;
+      }
+
+      if (payment) {
+        setCheckoutError("Impossible de demarrer Stripe pour cette offre.");
+      }
+    } finally {
+      setPendingOfferKey(null);
+    }
+  };
 
   return (
     <>
@@ -299,6 +341,9 @@ export default function OffersPage() {
         }
 
         .of-cta {
+          border: none;
+          font-family: 'DM Sans', sans-serif;
+          cursor: pointer;
           text-decoration: none;
           background: linear-gradient(135deg, #064e3b, #047857);
           color: #fff;
@@ -309,6 +354,13 @@ export default function OffersPage() {
         .of-cta:hover {
           transform: translateY(-1px);
           box-shadow: 0 14px 28px rgba(6,78,59,0.22);
+        }
+
+        .of-cta:disabled {
+          opacity: 0.72;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: 0 10px 22px rgba(6,78,59,0.12);
         }
 
         .of-toggle button:focus-visible,
@@ -334,6 +386,16 @@ export default function OffersPage() {
           border: 1px dashed #a7f3d0;
           border-radius: 18px;
           background: rgba(255,255,255,0.65);
+        }
+
+        .of-error {
+          margin: 0 0 18px;
+          padding: 12px 14px;
+          border-radius: 14px;
+          border: 1px solid #fecaca;
+          background: #fef2f2;
+          color: #991b1b;
+          font-size: 14px;
         }
 
         .of-state {
@@ -432,6 +494,10 @@ export default function OffersPage() {
             </p>
           )}
 
+          {(checkoutError || checkoutAction.error) && (
+            <p className="of-error">{checkoutError || checkoutAction.error}</p>
+          )}
+
           {viewerContext.hideOffers ? (
             <section className="of-state">
               <Lock size={28} color="#059669" />
@@ -472,10 +538,15 @@ export default function OffersPage() {
                     </ul>
 
                     {viewerContext.canApply ? (
-                      <a className="of-cta" href="/auth">
-                        Choisir cette offre
+                      <button
+                        className="of-cta"
+                        type="button"
+                        onClick={() => handleChooseOffer(offer)}
+                        disabled={isCheckingAuth || checkoutAction.loading}
+                      >
+                        {pendingOfferKey === offer.key ? "Redirection vers Stripe..." : "Choisir cette offre"}
                         <ArrowRight size={15} />
-                      </a>
+                      </button>
                     ) : (
                       <div className="of-cta-disabled">
                         <Lock size={14} />
